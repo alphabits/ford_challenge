@@ -1,0 +1,132 @@
+.. image:: plots/hist-TrialID.png
+    :width: 700px
+    :target: ../../_images/hist-TrialID.png
+    
+.. image:: plots/hist-ObsNum.png
+    :width: 700px
+    :target: ../../_images/hist-ObsNum.png
+    
+.. image:: plots/hist-IsAlert.png
+    :width: 700px
+    :target: ../../_images/hist-IsAlert.png
+    
+.. image:: plots/hist-P1.png
+    :width: 700px
+    :target: ../../_images/hist-P1.png
+    
+.. image:: plots/hist-P2.png
+    :width: 700px
+    :target: ../../_images/hist-P2.png
+    
+.. image:: plots/hist-P3.png
+    :width: 700px
+    :target: ../../_images/hist-P3.png
+    
+.. image:: plots/hist-P4.png
+    :width: 700px
+    :target: ../../_images/hist-P4.png
+    
+.. image:: plots/hist-P5.png
+    :width: 700px
+    :target: ../../_images/hist-P5.png
+    
+.. image:: plots/hist-P6.png
+    :width: 700px
+    :target: ../../_images/hist-P6.png
+    
+.. image:: plots/hist-P7.png
+    :width: 700px
+    :target: ../../_images/hist-P7.png
+    
+.. image:: plots/hist-P8.png
+    :width: 700px
+    :target: ../../_images/hist-P8.png
+    
+.. image:: plots/hist-E1.png
+    :width: 700px
+    :target: ../../_images/hist-E1.png
+    
+.. image:: plots/hist-E2.png
+    :width: 700px
+    :target: ../../_images/hist-E2.png
+    
+.. image:: plots/hist-E3.png
+    :width: 700px
+    :target: ../../_images/hist-E3.png
+    
+.. image:: plots/hist-E4.png
+    :width: 700px
+    :target: ../../_images/hist-E4.png
+    
+.. image:: plots/hist-E5.png
+    :width: 700px
+    :target: ../../_images/hist-E5.png
+    
+.. image:: plots/hist-E6.png
+    :width: 700px
+    :target: ../../_images/hist-E6.png
+    
+.. image:: plots/hist-E7.png
+    :width: 700px
+    :target: ../../_images/hist-E7.png
+    
+.. image:: plots/hist-E8.png
+    :width: 700px
+    :target: ../../_images/hist-E8.png
+    
+.. image:: plots/hist-E9.png
+    :width: 700px
+    :target: ../../_images/hist-E9.png
+    
+.. image:: plots/hist-E10.png
+    :width: 700px
+    :target: ../../_images/hist-E10.png
+    
+.. image:: plots/hist-E11.png
+    :width: 700px
+    :target: ../../_images/hist-E11.png
+    
+.. image:: plots/hist-V1.png
+    :width: 700px
+    :target: ../../_images/hist-V1.png
+    
+.. image:: plots/hist-V2.png
+    :width: 700px
+    :target: ../../_images/hist-V2.png
+    
+.. image:: plots/hist-V3.png
+    :width: 700px
+    :target: ../../_images/hist-V3.png
+    
+.. image:: plots/hist-V4.png
+    :width: 700px
+    :target: ../../_images/hist-V4.png
+    
+.. image:: plots/hist-V5.png
+    :width: 700px
+    :target: ../../_images/hist-V5.png
+    
+.. image:: plots/hist-V6.png
+    :width: 700px
+    :target: ../../_images/hist-V6.png
+    
+.. image:: plots/hist-V7.png
+    :width: 700px
+    :target: ../../_images/hist-V7.png
+    
+.. image:: plots/hist-V8.png
+    :width: 700px
+    :target: ../../_images/hist-V8.png
+    
+.. image:: plots/hist-V9.png
+    :width: 700px
+    :target: ../../_images/hist-V9.png
+    
+.. image:: plots/hist-V10.png
+    :width: 700px
+    :target: ../../_images/hist-V10.png
+    
+.. image:: plots/hist-V11.png
+    :width: 700px
+    :target: ../../_images/hist-V11.png
+    

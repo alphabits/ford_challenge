@@ -1,0 +1,196 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Session 1: Initial data visualization &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Sessions" href="../index.html" />
+    <link rel="next" title="Session 1 (continued): Boxplots" href="boxplots.html" />
+    <link rel="prev" title="Sessions" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="boxplots.html" title="Session 1 (continued): Boxplots"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Sessions"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Sessions</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../index.html"
+                        title="previous chapter">Sessions</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="boxplots.html"
+                        title="next chapter">Session 1 (continued): Boxplots</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/sessions/1-initial-data-visualization/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="session-1-initial-data-visualization">
+<h1>Session 1: Initial data visualization<a class="headerlink" href="#session-1-initial-data-visualization" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>Start time</dt>
+<dd>22-02-2011 22:47</dd>
+<dt>End time</dt>
+<dd>23-02-2011 03:50</dd>
+</dl>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="boxplots.html">Session 1 (continued): Boxplots</a></li>
+</ul>
+</div>
+<p>This is the first session. I will start out by trying to get an overview of the data, look at some histograms make some boxplots and scatter plots and maybe try to start removing outliers from the dataset. First i will try to create boxplots of all features. But first I have to import the training data set into python.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="c"># Load training data set</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">loadtxt</span><span class="p">(</span><span class="s">&#39;data/fordTrain.csv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c"># Load labels</span>
+<span class="n">L</span> <span class="o">=</span> <span class="n">loadtxt</span><span class="p">(</span><span class="s">&#39;data/labels.csv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With the script to load data done, I can begin creating histograms for the data</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Session: 1-initial-data-visualization</span>
+
+<span class="kn">from</span> <span class="nn">data</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="n">SESSION_PATH</span> <span class="o">=</span> <span class="s">&#39;sessions/1-initial-data-visualization/plots&#39;</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">L</span><span class="p">)):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Histogram for {0}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">A</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="mi">50</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;{0}/hist-{1}.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">SESSION_PATH</span><span class="p">,</span> <span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;png&#39;</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The resulting histograms are</p>
+<img alt="../../_images/hist-TrialID11.png" src="../../_images/hist-TrialID11.png" style="width: 750px;" />
+<img alt="../../_images/hist-ObsNum11.png" src="../../_images/hist-ObsNum11.png" style="width: 750px;" />
+<img alt="../../_images/hist-IsAlert11.png" src="../../_images/hist-IsAlert11.png" style="width: 750px;" />
+<img alt="../../_images/hist-P111.png" src="../../_images/hist-P111.png" style="width: 750px;" />
+<img alt="../../_images/hist-P211.png" src="../../_images/hist-P211.png" style="width: 750px;" />
+<img alt="../../_images/hist-P311.png" src="../../_images/hist-P311.png" style="width: 750px;" />
+<img alt="../../_images/hist-P411.png" src="../../_images/hist-P411.png" style="width: 750px;" />
+<img alt="../../_images/hist-P511.png" src="../../_images/hist-P511.png" style="width: 750px;" />
+<img alt="../../_images/hist-P611.png" src="../../_images/hist-P611.png" style="width: 750px;" />
+<img alt="../../_images/hist-P711.png" src="../../_images/hist-P711.png" style="width: 750px;" />
+<img alt="../../_images/hist-P811.png" src="../../_images/hist-P811.png" style="width: 750px;" />
+<img alt="../../_images/hist-E123.png" src="../../_images/hist-E123.png" style="width: 750px;" />
+<img alt="../../_images/hist-E216.png" src="../../_images/hist-E216.png" style="width: 750px;" />
+<img alt="../../_images/hist-E311.png" src="../../_images/hist-E311.png" style="width: 750px;" />
+<img alt="../../_images/hist-E411.png" src="../../_images/hist-E411.png" style="width: 750px;" />
+<img alt="../../_images/hist-E511.png" src="../../_images/hist-E511.png" style="width: 750px;" />
+<img alt="../../_images/hist-E611.png" src="../../_images/hist-E611.png" style="width: 750px;" />
+<img alt="../../_images/hist-E711.png" src="../../_images/hist-E711.png" style="width: 750px;" />
+<img alt="../../_images/hist-E811.png" src="../../_images/hist-E811.png" style="width: 750px;" />
+<img alt="../../_images/hist-E911.png" src="../../_images/hist-E911.png" style="width: 750px;" />
+<img alt="../../_images/hist-E1011.png" src="../../_images/hist-E1011.png" style="width: 750px;" />
+<img alt="../../_images/hist-E1114.png" src="../../_images/hist-E1114.png" style="width: 750px;" />
+<img alt="../../_images/hist-V121.png" src="../../_images/hist-V121.png" style="width: 750px;" />
+<img alt="../../_images/hist-V211.png" src="../../_images/hist-V211.png" style="width: 750px;" />
+<img alt="../../_images/hist-V311.png" src="../../_images/hist-V311.png" style="width: 750px;" />
+<img alt="../../_images/hist-V411.png" src="../../_images/hist-V411.png" style="width: 750px;" />
+<img alt="../../_images/hist-V511.png" src="../../_images/hist-V511.png" style="width: 750px;" />
+<img alt="../../_images/hist-V611.png" src="../../_images/hist-V611.png" style="width: 750px;" />
+<img alt="../../_images/hist-V711.png" src="../../_images/hist-V711.png" style="width: 750px;" />
+<img alt="../../_images/hist-V811.png" src="../../_images/hist-V811.png" style="width: 750px;" />
+<img alt="../../_images/hist-V911.png" src="../../_images/hist-V911.png" style="width: 750px;" />
+<img alt="../../_images/hist-V1011.png" src="../../_images/hist-V1011.png" style="width: 750px;" />
+<img alt="../../_images/hist-V1111.png" src="../../_images/hist-V1111.png" style="width: 750px;" />
+<p>A couple of comments on the histograms...</p>
+<ul class="simple">
+<li>The feature E6 is zero for all data points and can be neglected</li>
+<li>The feature E5 is zero for almost all data points and could probably be neglected too</li>
+</ul>
+<p>Ok a lesson learned. Of course I can&#8217;t claim that E5 is zero for almost all data points, based on the histogram above. What i can say, is that most values of E5 is in the first bin, in the above histogram. If i change the range of the histogram I get another picture</p>
+<img alt="../../_images/hist-P5-manual7.png" src="../../_images/hist-P5-manual7.png" style="width: 750px;" />
+<p>The code to create the above histogram is:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">A</span><span class="p">[:,</span><span class="mi">7</span><span class="p">],</span> <span class="nb">range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="boxplots.html" title="Session 1 (continued): Boxplots"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Sessions"
+             >previous</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Sessions</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

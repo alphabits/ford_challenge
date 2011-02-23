@@ -1,0 +1,99 @@
+.. image:: plots/boxplots-TrialID.png
+    :width: 750px
+    
+.. image:: plots/boxplots-ObsNum.png
+    :width: 750px
+    
+.. image:: plots/boxplots-IsAlert.png
+    :width: 750px
+    
+.. image:: plots/boxplots-P1.png
+    :width: 750px
+    
+.. image:: plots/boxplots-P2.png
+    :width: 750px
+    
+.. image:: plots/boxplots-P3.png
+    :width: 750px
+    
+.. image:: plots/boxplots-P4.png
+    :width: 750px
+    
+.. image:: plots/boxplots-P5.png
+    :width: 750px
+    
+.. image:: plots/boxplots-P6.png
+    :width: 750px
+    
+.. image:: plots/boxplots-P7.png
+    :width: 750px
+    
+.. image:: plots/boxplots-P8.png
+    :width: 750px
+    
+.. image:: plots/boxplots-E1.png
+    :width: 750px
+    
+.. image:: plots/boxplots-E2.png
+    :width: 750px
+    
+.. image:: plots/boxplots-E3.png
+    :width: 750px
+    
+.. image:: plots/boxplots-E4.png
+    :width: 750px
+    
+.. image:: plots/boxplots-E5.png
+    :width: 750px
+    
+.. image:: plots/boxplots-E6.png
+    :width: 750px
+    
+.. image:: plots/boxplots-E7.png
+    :width: 750px
+    
+.. image:: plots/boxplots-E8.png
+    :width: 750px
+    
+.. image:: plots/boxplots-E9.png
+    :width: 750px
+    
+.. image:: plots/boxplots-E10.png
+    :width: 750px
+    
+.. image:: plots/boxplots-E11.png
+    :width: 750px
+    
+.. image:: plots/boxplots-V1.png
+    :width: 750px
+    
+.. image:: plots/boxplots-V2.png
+    :width: 750px
+    
+.. image:: plots/boxplots-V3.png
+    :width: 750px
+    
+.. image:: plots/boxplots-V4.png
+    :width: 750px
+    
+.. image:: plots/boxplots-V5.png
+    :width: 750px
+    
+.. image:: plots/boxplots-V6.png
+    :width: 750px
+    
+.. image:: plots/boxplots-V7.png
+    :width: 750px
+    
+.. image:: plots/boxplots-V8.png
+    :width: 750px
+    
+.. image:: plots/boxplots-V9.png
+    :width: 750px
+    
+.. image:: plots/boxplots-V10.png
+    :width: 750px
+    
+.. image:: plots/boxplots-V11.png
+    :width: 750px
+    
