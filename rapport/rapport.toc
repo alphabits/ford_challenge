@@ -1,0 +1,8 @@
+\select@language {danish}
+\contentsline {section}{\numberline {1}Indledning}{1}
+\contentsline {subsection}{\numberline {1.1}Problemformulering}{1}
+\contentsline {section}{\numberline {2}Kort om kaggle.com og The Ford Challenge}{2}
+\contentsline {section}{\numberline {3}Om machine learning, pattern recognition og alt det andet jazz}{3}
+\contentsline {section}{\numberline {4}Dataanalyse}{3}
+\contentsline {section}{\numberline {5}Resutltater}{3}
+\contentsline {section}{\numberline {6}Definitioner}{4}
