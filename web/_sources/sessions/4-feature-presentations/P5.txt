@@ -1,0 +1,14 @@
+==
+P5
+==
+
+**Min**: 0.03892
+**Max**: 27.2022
+**Mean**: 0.178922988496
+**Std**: 0.37230828061
+
+.. image:: plots/P5-hist.png
+    :width: 550px
+
+.. image:: plots/P5-box.png
+    :width: 550px

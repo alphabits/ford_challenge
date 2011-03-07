@@ -1,0 +1,14 @@
+===
+E10
+===
+
+**Min**: 0.0
+**Max**: 127.0
+**Mean**: 63.311255955
+**Std**: 18.8910133636
+
+.. image:: plots/E10-hist.png
+    :width: 550px
+
+.. image:: plots/E10-box.png
+    :width: 550px

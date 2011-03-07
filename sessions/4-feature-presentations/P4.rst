@@ -1,0 +1,14 @@
+==
+P4
+==
+
+**Min**: 23.8853
+**Max**: 119.048
+**Mean**: 64.0619652861
+**Std**: 19.7559338868
+
+.. image:: plots/P4-hist.png
+    :width: 550px
+
+.. image:: plots/P4-box.png
+    :width: 550px

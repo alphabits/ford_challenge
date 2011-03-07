@@ -1,0 +1,14 @@
+==
+E8
+==
+
+**Min**: 0.0
+**Max**: 9.0
+**Mean**: 1.38305790389
+**Std**: 1.608805571
+
+.. image:: plots/E8-hist.png
+    :width: 550px
+
+.. image:: plots/E8-box.png
+    :width: 550px

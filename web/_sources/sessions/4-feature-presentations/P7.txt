@@ -1,0 +1,14 @@
+==
+P7
+==
+
+**Min**: 0.262224
+**Max**: 468.75
+**Mean**: 77.8876278797
+**Std**: 18.5779147285
+
+.. image:: plots/P7-hist.png
+    :width: 550px
+
+.. image:: plots/P7-box.png
+    :width: 550px

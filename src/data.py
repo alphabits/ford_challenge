@@ -1,7 +1,7 @@
-from numpy import *
+import numpy as np
 
 # Load training data set
-A = loadtxt('data/fordTrain.csv', delimiter=',', skiprows=1)
+A = np.load('data/fordTrain.npy')
 
 # Load labels
-L = loadtxt('data/labels.csv', delimiter=',', dtype=str)
+L = np.loadtxt('data/labels.csv', delimiter=',', dtype=str)

@@ -1,0 +1,14 @@
+==
+E3
+==
+
+**Min**: 0.0
+**Max**: 4.0
+**Mean**: 0.290565238471
+**Std**: 1.00616111085
+
+.. image:: plots/E3-hist.png
+    :width: 550px
+
+.. image:: plots/E3-box.png
+    :width: 550px

@@ -1,0 +1,14 @@
+==
+E7
+==
+
+**Min**: 0.0
+**Max**: 25.0
+**Mean**: 1.75729610858
+**Std**: 2.85484991279
+
+.. image:: plots/E7-hist.png
+    :width: 550px
+
+.. image:: plots/E7-box.png
+    :width: 550px

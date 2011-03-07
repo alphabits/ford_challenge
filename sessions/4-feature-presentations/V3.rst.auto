@@ -1,0 +1,14 @@
+==
+V3
+==
+
+**Min**: 240.0
+**Max**: 1023.0
+**Mean**: 573.786432556
+**Std**: 298.412640862
+
+.. image:: plots/V3-hist.png
+    :width: 550px
+
+.. image:: plots/V3-box.png
+    :width: 550px

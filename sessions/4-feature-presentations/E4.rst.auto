@@ -1,0 +1,14 @@
+==
+E4
+==
+
+**Min**: -250.0
+**Max**: 260.0
+**Mean**: -4.23013623374
+**Std**: 35.5085664213
+
+.. image:: plots/E4-hist.png
+    :width: 550px
+
+.. image:: plots/E4-box.png
+    :width: 550px

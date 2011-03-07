@@ -1,0 +1,14 @@
+==
+E9
+==
+
+**Min**: 0.0
+**Max**: 1.0
+**Mean**: 0.876787312871
+**Std**: 0.328681184217
+
+.. image:: plots/E9-hist.png
+    :width: 550px
+
+.. image:: plots/E9-box.png
+    :width: 550px

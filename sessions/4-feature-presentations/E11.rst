@@ -1,0 +1,14 @@
+===
+E11
+===
+
+**Min**: 0.0
+**Max**: 52.4
+**Mean**: 1.31526502948
+**Std**: 5.2471995933
+
+.. image:: plots/E11-hist.png
+    :width: 550px
+
+.. image:: plots/E11-box.png
+    :width: 550px

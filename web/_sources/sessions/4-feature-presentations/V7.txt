@@ -1,0 +1,14 @@
+==
+V7
+==
+
+**Min**: 0.0
+**Max**: 0.0
+**Mean**: 0.0
+**Std**: 0.0
+
+.. image:: plots/V7-hist.png
+    :width: 550px
+
+.. image:: plots/V7-box.png
+    :width: 550px

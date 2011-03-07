@@ -1,0 +1,14 @@
+==
+V1
+==
+
+**Min**: 0.0
+**Max**: 129.7
+**Mean**: 76.9654118369
+**Std**: 44.386994015
+
+.. image:: plots/V1-hist.png
+    :width: 550px
+
+.. image:: plots/V1-box.png
+    :width: 550px

@@ -1,0 +1,14 @@
+===
+V10
+===
+
+**Min**: 1.0
+**Max**: 7.0
+**Mean**: 3.31225706527
+**Std**: 1.24358514144
+
+.. image:: plots/V10-hist.png
+    :width: 550px
+
+.. image:: plots/V10-box.png
+    :width: 550px

@@ -92,13 +92,13 @@
 </ul>
 </div>
 <p>This is the first session. I will start out by trying to get an overview of the data, look at some histograms make some boxplots and scatter plots and maybe try to start removing outliers from the dataset. First i will try to create boxplots of all features. But first I have to import the training data set into python.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="o">*</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
 <span class="c"># Load training data set</span>
-<span class="n">A</span> <span class="o">=</span> <span class="n">loadtxt</span><span class="p">(</span><span class="s">&#39;data/fordTrain.csv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&#39;data/fordTrain.npy&#39;</span><span class="p">)</span>
 
 <span class="c"># Load labels</span>
-<span class="n">L</span> <span class="o">=</span> <span class="n">loadtxt</span><span class="p">(</span><span class="s">&#39;data/labels.csv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s">&#39;data/labels.csv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>With the script to load data done, I can begin creating histograms for the data</p>
@@ -119,46 +119,46 @@
 </pre></div>
 </div>
 <p>The resulting histograms are</p>
-<img alt="../../_images/hist-TrialID11.png" src="../../_images/hist-TrialID11.png" style="width: 750px;" />
-<img alt="../../_images/hist-ObsNum11.png" src="../../_images/hist-ObsNum11.png" style="width: 750px;" />
-<img alt="../../_images/hist-IsAlert11.png" src="../../_images/hist-IsAlert11.png" style="width: 750px;" />
-<img alt="../../_images/hist-P111.png" src="../../_images/hist-P111.png" style="width: 750px;" />
-<img alt="../../_images/hist-P211.png" src="../../_images/hist-P211.png" style="width: 750px;" />
-<img alt="../../_images/hist-P311.png" src="../../_images/hist-P311.png" style="width: 750px;" />
-<img alt="../../_images/hist-P411.png" src="../../_images/hist-P411.png" style="width: 750px;" />
-<img alt="../../_images/hist-P511.png" src="../../_images/hist-P511.png" style="width: 750px;" />
-<img alt="../../_images/hist-P611.png" src="../../_images/hist-P611.png" style="width: 750px;" />
-<img alt="../../_images/hist-P711.png" src="../../_images/hist-P711.png" style="width: 750px;" />
-<img alt="../../_images/hist-P811.png" src="../../_images/hist-P811.png" style="width: 750px;" />
-<img alt="../../_images/hist-E123.png" src="../../_images/hist-E123.png" style="width: 750px;" />
-<img alt="../../_images/hist-E216.png" src="../../_images/hist-E216.png" style="width: 750px;" />
-<img alt="../../_images/hist-E311.png" src="../../_images/hist-E311.png" style="width: 750px;" />
-<img alt="../../_images/hist-E411.png" src="../../_images/hist-E411.png" style="width: 750px;" />
-<img alt="../../_images/hist-E511.png" src="../../_images/hist-E511.png" style="width: 750px;" />
-<img alt="../../_images/hist-E611.png" src="../../_images/hist-E611.png" style="width: 750px;" />
-<img alt="../../_images/hist-E711.png" src="../../_images/hist-E711.png" style="width: 750px;" />
-<img alt="../../_images/hist-E811.png" src="../../_images/hist-E811.png" style="width: 750px;" />
-<img alt="../../_images/hist-E911.png" src="../../_images/hist-E911.png" style="width: 750px;" />
-<img alt="../../_images/hist-E1011.png" src="../../_images/hist-E1011.png" style="width: 750px;" />
-<img alt="../../_images/hist-E1114.png" src="../../_images/hist-E1114.png" style="width: 750px;" />
-<img alt="../../_images/hist-V121.png" src="../../_images/hist-V121.png" style="width: 750px;" />
-<img alt="../../_images/hist-V211.png" src="../../_images/hist-V211.png" style="width: 750px;" />
-<img alt="../../_images/hist-V311.png" src="../../_images/hist-V311.png" style="width: 750px;" />
-<img alt="../../_images/hist-V411.png" src="../../_images/hist-V411.png" style="width: 750px;" />
-<img alt="../../_images/hist-V511.png" src="../../_images/hist-V511.png" style="width: 750px;" />
-<img alt="../../_images/hist-V611.png" src="../../_images/hist-V611.png" style="width: 750px;" />
-<img alt="../../_images/hist-V711.png" src="../../_images/hist-V711.png" style="width: 750px;" />
-<img alt="../../_images/hist-V811.png" src="../../_images/hist-V811.png" style="width: 750px;" />
-<img alt="../../_images/hist-V911.png" src="../../_images/hist-V911.png" style="width: 750px;" />
-<img alt="../../_images/hist-V1011.png" src="../../_images/hist-V1011.png" style="width: 750px;" />
-<img alt="../../_images/hist-V1111.png" src="../../_images/hist-V1111.png" style="width: 750px;" />
+<img alt="../../_images/hist-TrialID12.png" src="../../_images/hist-TrialID12.png" style="width: 750px;" />
+<img alt="../../_images/hist-ObsNum12.png" src="../../_images/hist-ObsNum12.png" style="width: 750px;" />
+<img alt="../../_images/hist-IsAlert12.png" src="../../_images/hist-IsAlert12.png" style="width: 750px;" />
+<img alt="../../_images/hist-P112.png" src="../../_images/hist-P112.png" style="width: 750px;" />
+<img alt="../../_images/hist-P212.png" src="../../_images/hist-P212.png" style="width: 750px;" />
+<img alt="../../_images/hist-P312.png" src="../../_images/hist-P312.png" style="width: 750px;" />
+<img alt="../../_images/hist-P412.png" src="../../_images/hist-P412.png" style="width: 750px;" />
+<img alt="../../_images/hist-P512.png" src="../../_images/hist-P512.png" style="width: 750px;" />
+<img alt="../../_images/hist-P612.png" src="../../_images/hist-P612.png" style="width: 750px;" />
+<img alt="../../_images/hist-P712.png" src="../../_images/hist-P712.png" style="width: 750px;" />
+<img alt="../../_images/hist-P812.png" src="../../_images/hist-P812.png" style="width: 750px;" />
+<img alt="../../_images/hist-E124.png" src="../../_images/hist-E124.png" style="width: 750px;" />
+<img alt="../../_images/hist-E217.png" src="../../_images/hist-E217.png" style="width: 750px;" />
+<img alt="../../_images/hist-E312.png" src="../../_images/hist-E312.png" style="width: 750px;" />
+<img alt="../../_images/hist-E412.png" src="../../_images/hist-E412.png" style="width: 750px;" />
+<img alt="../../_images/hist-E512.png" src="../../_images/hist-E512.png" style="width: 750px;" />
+<img alt="../../_images/hist-E612.png" src="../../_images/hist-E612.png" style="width: 750px;" />
+<img alt="../../_images/hist-E712.png" src="../../_images/hist-E712.png" style="width: 750px;" />
+<img alt="../../_images/hist-E812.png" src="../../_images/hist-E812.png" style="width: 750px;" />
+<img alt="../../_images/hist-E912.png" src="../../_images/hist-E912.png" style="width: 750px;" />
+<img alt="../../_images/hist-E1012.png" src="../../_images/hist-E1012.png" style="width: 750px;" />
+<img alt="../../_images/hist-E1115.png" src="../../_images/hist-E1115.png" style="width: 750px;" />
+<img alt="../../_images/hist-V122.png" src="../../_images/hist-V122.png" style="width: 750px;" />
+<img alt="../../_images/hist-V212.png" src="../../_images/hist-V212.png" style="width: 750px;" />
+<img alt="../../_images/hist-V312.png" src="../../_images/hist-V312.png" style="width: 750px;" />
+<img alt="../../_images/hist-V412.png" src="../../_images/hist-V412.png" style="width: 750px;" />
+<img alt="../../_images/hist-V512.png" src="../../_images/hist-V512.png" style="width: 750px;" />
+<img alt="../../_images/hist-V612.png" src="../../_images/hist-V612.png" style="width: 750px;" />
+<img alt="../../_images/hist-V712.png" src="../../_images/hist-V712.png" style="width: 750px;" />
+<img alt="../../_images/hist-V812.png" src="../../_images/hist-V812.png" style="width: 750px;" />
+<img alt="../../_images/hist-V912.png" src="../../_images/hist-V912.png" style="width: 750px;" />
+<img alt="../../_images/hist-V1012.png" src="../../_images/hist-V1012.png" style="width: 750px;" />
+<img alt="../../_images/hist-V1112.png" src="../../_images/hist-V1112.png" style="width: 750px;" />
 <p>A couple of comments on the histograms...</p>
 <ul class="simple">
 <li>The feature E6 is zero for all data points and can be neglected</li>
 <li>The feature E5 is zero for almost all data points and could probably be neglected too</li>
 </ul>
 <p>Ok a lesson learned. Of course I can&#8217;t claim that E5 is zero for almost all data points, based on the histogram above. What i can say, is that most values of E5 is in the first bin, in the above histogram. If i change the range of the histogram I get another picture</p>
-<img alt="../../_images/hist-P5-manual7.png" src="../../_images/hist-P5-manual7.png" style="width: 750px;" />
+<img alt="../../_images/hist-P5-manual8.png" src="../../_images/hist-P5-manual8.png" style="width: 750px;" />
 <p>The code to create the above histogram is:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">A</span><span class="p">[:,</span><span class="mi">7</span><span class="p">],</span> <span class="nb">range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
