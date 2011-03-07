@@ -5,14 +5,15 @@ Session 4: Feature presentations
 Start time
     07-03-2011 19:32
 
-End time
-    07-03-2011 
+Pause time
+    07-03-2011 22:34
 
 In this session I am going to walk through every feature of the data set. For every feature I describe the feature type, min/max values, histograms etc. 
 
 
 .. toctree::
-    
+
+    alert
     P1
     P2
     P3

@@ -2,7 +2,7 @@ Sessions
 ========
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     1-initial-data-visualization/index
     2-create-time-schedule/index
