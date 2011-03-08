@@ -1,0 +1,66 @@
+==
+P7
+==
+
+.. image:: plots/t12-P7.png
+    :width: 550px
+
+.. image:: plots/t147-P7.png
+    :width: 550px
+
+.. image:: plots/t201-P7.png
+    :width: 550px
+
+.. image:: plots/t203-P7.png
+    :width: 550px
+
+.. image:: plots/t252-P7.png
+    :width: 550px
+
+.. image:: plots/t268-P7.png
+    :width: 550px
+
+.. image:: plots/t288-P7.png
+    :width: 550px
+
+.. image:: plots/t294-P7.png
+    :width: 550px
+
+.. image:: plots/t313-P7.png
+    :width: 550px
+
+.. image:: plots/t316-P7.png
+    :width: 550px
+
+.. image:: plots/t328-P7.png
+    :width: 550px
+
+.. image:: plots/t333-P7.png
+    :width: 550px
+
+.. image:: plots/t411-P7.png
+    :width: 550px
+
+.. image:: plots/t435-P7.png
+    :width: 550px
+
+.. image:: plots/t442-P7.png
+    :width: 550px
+
+.. image:: plots/t47-P7.png
+    :width: 550px
+
+.. image:: plots/t490-P7.png
+    :width: 550px
+
+.. image:: plots/t494-P7.png
+    :width: 550px
+
+.. image:: plots/t500-P7.png
+    :width: 550px
+
+.. image:: plots/t86-P7.png
+    :width: 550px
+
+.. image:: plots/t89-P7.png
+    :width: 550px

@@ -1,0 +1,57 @@
+====
+t252
+====
+
+.. image:: plots/t252-E1.png
+    :width: 550px
+
+.. image:: plots/t252-E10.png
+    :width: 550px
+
+.. image:: plots/t252-E2.png
+    :width: 550px
+
+.. image:: plots/t252-E4.png
+    :width: 550px
+
+.. image:: plots/t252-E5.png
+    :width: 550px
+
+.. image:: plots/t252-E6.png
+    :width: 550px
+
+.. image:: plots/t252-IsAlert.png
+    :width: 550px
+
+.. image:: plots/t252-P1.png
+    :width: 550px
+
+.. image:: plots/t252-P4.png
+    :width: 550px
+
+.. image:: plots/t252-P5.png
+    :width: 550px
+
+.. image:: plots/t252-P6.png
+    :width: 550px
+
+.. image:: plots/t252-P7.png
+    :width: 550px
+
+.. image:: plots/t252-V1.png
+    :width: 550px
+
+.. image:: plots/t252-V11.png
+    :width: 550px
+
+.. image:: plots/t252-V2.png
+    :width: 550px
+
+.. image:: plots/t252-V3.png
+    :width: 550px
+
+.. image:: plots/t252-V6.png
+    :width: 550px
+
+.. image:: plots/t252-V8.png
+    :width: 550px

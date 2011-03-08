@@ -1,0 +1,66 @@
+==
+E4
+==
+
+.. image:: plots/t12-E4.png
+    :width: 550px
+
+.. image:: plots/t147-E4.png
+    :width: 550px
+
+.. image:: plots/t201-E4.png
+    :width: 550px
+
+.. image:: plots/t203-E4.png
+    :width: 550px
+
+.. image:: plots/t252-E4.png
+    :width: 550px
+
+.. image:: plots/t268-E4.png
+    :width: 550px
+
+.. image:: plots/t288-E4.png
+    :width: 550px
+
+.. image:: plots/t294-E4.png
+    :width: 550px
+
+.. image:: plots/t313-E4.png
+    :width: 550px
+
+.. image:: plots/t316-E4.png
+    :width: 550px
+
+.. image:: plots/t328-E4.png
+    :width: 550px
+
+.. image:: plots/t333-E4.png
+    :width: 550px
+
+.. image:: plots/t411-E4.png
+    :width: 550px
+
+.. image:: plots/t435-E4.png
+    :width: 550px
+
+.. image:: plots/t442-E4.png
+    :width: 550px
+
+.. image:: plots/t47-E4.png
+    :width: 550px
+
+.. image:: plots/t490-E4.png
+    :width: 550px
+
+.. image:: plots/t494-E4.png
+    :width: 550px
+
+.. image:: plots/t500-E4.png
+    :width: 550px
+
+.. image:: plots/t86-E4.png
+    :width: 550px
+
+.. image:: plots/t89-E4.png
+    :width: 550px

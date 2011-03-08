@@ -1,0 +1,57 @@
+====
+t500
+====
+
+.. image:: plots/t500-E1.png
+    :width: 550px
+
+.. image:: plots/t500-E10.png
+    :width: 550px
+
+.. image:: plots/t500-E2.png
+    :width: 550px
+
+.. image:: plots/t500-E4.png
+    :width: 550px
+
+.. image:: plots/t500-E5.png
+    :width: 550px
+
+.. image:: plots/t500-E6.png
+    :width: 550px
+
+.. image:: plots/t500-IsAlert.png
+    :width: 550px
+
+.. image:: plots/t500-P1.png
+    :width: 550px
+
+.. image:: plots/t500-P4.png
+    :width: 550px
+
+.. image:: plots/t500-P5.png
+    :width: 550px
+
+.. image:: plots/t500-P6.png
+    :width: 550px
+
+.. image:: plots/t500-P7.png
+    :width: 550px
+
+.. image:: plots/t500-V1.png
+    :width: 550px
+
+.. image:: plots/t500-V11.png
+    :width: 550px
+
+.. image:: plots/t500-V2.png
+    :width: 550px
+
+.. image:: plots/t500-V3.png
+    :width: 550px
+
+.. image:: plots/t500-V6.png
+    :width: 550px
+
+.. image:: plots/t500-V8.png
+    :width: 550px

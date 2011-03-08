@@ -7,6 +7,10 @@ P3
 **Mean**: 1026.67103515
 **Std**: 309.277621275
 
+.. note::
+
+    Important! P3 is inversely proportional with P4
+
 .. image:: plots/P3-hist.png
     :width: 550px
 

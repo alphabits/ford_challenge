@@ -1,0 +1,187 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Session 5: First classifier attempt &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Sessions" href="../index.html" />
+    <link rel="next" title="E1" href="E1.html" />
+    <link rel="prev" title="V11" href="../4-feature-presentations/V11.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="E1.html" title="E1"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../4-feature-presentations/V11.html" title="V11"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Sessions</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Session 5: First classifier attempt</a><ul>
+<li><a class="reference internal" href="#feature-safari">Feature safari</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../4-feature-presentations/V11.html"
+                        title="previous chapter">V11</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="E1.html"
+                        title="next chapter">E1</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/sessions/5-first-classifier-attempt/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="session-5-first-classifier-attempt">
+<h1>Session 5: First classifier attempt<a class="headerlink" href="#session-5-first-classifier-attempt" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>Start time</dt>
+<dd>07-03-2011 23:01</dd>
+<dt>End time</dt>
+<dd>08-03-2011 22:34</dd>
+</dl>
+<p>I will try to create my first classifier. I am by no means ready, but I was a bit shocked, when I realised that the official competition is going to end in two days. I can&#8217;t finish this project without a single contribution to the original competition. Before I can start making a classifier, I am going to find a couple of features that looks promising.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Apparently trials 469-479 (both inclusive) is missing...</p>
+</div>
+<div class="section" id="feature-safari">
+<h2>Feature safari<a class="headerlink" href="#feature-safari" title="Permalink to this headline">¶</a></h2>
+<p>First I am trying to find some interesting features. P3 and P4 looks promising. But after i plotted a scatter plot of 80 random inputs, I realised that the product of P3 and P4 is a constant (approx. 60000). Further investigations shows that the data varies between the different trials. I think that some of the features is corrupted in some of the trials. To get a better view of the data I will plot some of the features for 10-15 random trials. Links to the results:</p>
+<p>First filtered by feature</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="E1.html">E1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="E10.html">E10</a></li>
+<li class="toctree-l1"><a class="reference internal" href="E2.html">E2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="E4.html">E4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="E5.html">E5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="E6.html">E6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="IsAlert.html">IsAlert</a></li>
+<li class="toctree-l1"><a class="reference internal" href="P1.html">P1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="P4.html">P4</a></li>
+<li class="toctree-l1"><a class="reference internal" href="P5.html">P5</a></li>
+<li class="toctree-l1"><a class="reference internal" href="P6.html">P6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="P7.html">P7</a></li>
+<li class="toctree-l1"><a class="reference internal" href="V1.html">V1</a></li>
+<li class="toctree-l1"><a class="reference internal" href="V11.html">V11</a></li>
+<li class="toctree-l1"><a class="reference internal" href="V2.html">V2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="V3.html">V3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="V6.html">V6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="V8.html">V8</a></li>
+</ul>
+</div>
+<p>And then by trial</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="t12.html">t12</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t47.html">t47</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t86.html">t86</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t89.html">t89</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t147.html">t147</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t201.html">t201</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t203.html">t203</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t204.html">t204</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t252.html">t252</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t268.html">t268</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t288.html">t288</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t294.html">t294</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t313.html">t313</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t316.html">t316</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t328.html">t328</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t333.html">t333</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t411.html">t411</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t435.html">t435</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t442.html">t442</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t490.html">t490</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t494.html">t494</a></li>
+<li class="toctree-l1"><a class="reference internal" href="t500.html">t500</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="E1.html" title="E1"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../4-feature-presentations/V11.html" title="V11"
+             >previous</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Sessions</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

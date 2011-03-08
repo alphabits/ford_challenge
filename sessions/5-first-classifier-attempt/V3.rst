@@ -1,0 +1,66 @@
+==
+V3
+==
+
+.. image:: plots/t12-V3.png
+    :width: 550px
+
+.. image:: plots/t147-V3.png
+    :width: 550px
+
+.. image:: plots/t201-V3.png
+    :width: 550px
+
+.. image:: plots/t203-V3.png
+    :width: 550px
+
+.. image:: plots/t252-V3.png
+    :width: 550px
+
+.. image:: plots/t268-V3.png
+    :width: 550px
+
+.. image:: plots/t288-V3.png
+    :width: 550px
+
+.. image:: plots/t294-V3.png
+    :width: 550px
+
+.. image:: plots/t313-V3.png
+    :width: 550px
+
+.. image:: plots/t316-V3.png
+    :width: 550px
+
+.. image:: plots/t328-V3.png
+    :width: 550px
+
+.. image:: plots/t333-V3.png
+    :width: 550px
+
+.. image:: plots/t411-V3.png
+    :width: 550px
+
+.. image:: plots/t435-V3.png
+    :width: 550px
+
+.. image:: plots/t442-V3.png
+    :width: 550px
+
+.. image:: plots/t47-V3.png
+    :width: 550px
+
+.. image:: plots/t490-V3.png
+    :width: 550px
+
+.. image:: plots/t494-V3.png
+    :width: 550px
+
+.. image:: plots/t500-V3.png
+    :width: 550px
+
+.. image:: plots/t86-V3.png
+    :width: 550px
+
+.. image:: plots/t89-V3.png
+    :width: 550px

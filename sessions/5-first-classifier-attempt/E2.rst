@@ -1,0 +1,66 @@
+==
+E2
+==
+
+.. image:: plots/t12-E2.png
+    :width: 550px
+
+.. image:: plots/t147-E2.png
+    :width: 550px
+
+.. image:: plots/t201-E2.png
+    :width: 550px
+
+.. image:: plots/t203-E2.png
+    :width: 550px
+
+.. image:: plots/t252-E2.png
+    :width: 550px
+
+.. image:: plots/t268-E2.png
+    :width: 550px
+
+.. image:: plots/t288-E2.png
+    :width: 550px
+
+.. image:: plots/t294-E2.png
+    :width: 550px
+
+.. image:: plots/t313-E2.png
+    :width: 550px
+
+.. image:: plots/t316-E2.png
+    :width: 550px
+
+.. image:: plots/t328-E2.png
+    :width: 550px
+
+.. image:: plots/t333-E2.png
+    :width: 550px
+
+.. image:: plots/t411-E2.png
+    :width: 550px
+
+.. image:: plots/t435-E2.png
+    :width: 550px
+
+.. image:: plots/t442-E2.png
+    :width: 550px
+
+.. image:: plots/t47-E2.png
+    :width: 550px
+
+.. image:: plots/t490-E2.png
+    :width: 550px
+
+.. image:: plots/t494-E2.png
+    :width: 550px
+
+.. image:: plots/t500-E2.png
+    :width: 550px
+
+.. image:: plots/t86-E2.png
+    :width: 550px
+
+.. image:: plots/t89-E2.png
+    :width: 550px

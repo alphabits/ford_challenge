@@ -1,0 +1,57 @@
+===
+t86
+===
+
+.. image:: plots/t86-E1.png
+    :width: 550px
+
+.. image:: plots/t86-E10.png
+    :width: 550px
+
+.. image:: plots/t86-E2.png
+    :width: 550px
+
+.. image:: plots/t86-E4.png
+    :width: 550px
+
+.. image:: plots/t86-E5.png
+    :width: 550px
+
+.. image:: plots/t86-E6.png
+    :width: 550px
+
+.. image:: plots/t86-IsAlert.png
+    :width: 550px
+
+.. image:: plots/t86-P1.png
+    :width: 550px
+
+.. image:: plots/t86-P4.png
+    :width: 550px
+
+.. image:: plots/t86-P5.png
+    :width: 550px
+
+.. image:: plots/t86-P6.png
+    :width: 550px
+
+.. image:: plots/t86-P7.png
+    :width: 550px
+
+.. image:: plots/t86-V1.png
+    :width: 550px
+
+.. image:: plots/t86-V11.png
+    :width: 550px
+
+.. image:: plots/t86-V2.png
+    :width: 550px
+
+.. image:: plots/t86-V3.png
+    :width: 550px
+
+.. image:: plots/t86-V6.png
+    :width: 550px
+
+.. image:: plots/t86-V8.png
+    :width: 550px

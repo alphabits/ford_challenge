@@ -8,3 +8,4 @@ Sessions
     2-create-time-schedule/index
     3-write-report-introduction/index
     4-feature-presentations/index
+    5-first-classifier-attempt/index

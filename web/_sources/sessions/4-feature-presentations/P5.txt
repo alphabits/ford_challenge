@@ -12,3 +12,8 @@ P5
 
 .. image:: plots/P5-box.png
     :width: 550px
+
+All the interesting data is in the range [0, 0.5]. Below is a histogram of the range [0, 0.4].
+
+.. image:: plots/P5-hist-0-05.png
+    :width: 550px

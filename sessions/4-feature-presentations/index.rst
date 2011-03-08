@@ -44,33 +44,3 @@ In this session I am going to walk through every feature of the data set. For ev
     V9
     V10
     V11
-    P1
-    P2
-    P3
-    P4
-    P5
-    P6
-    P7
-    P8
-    E1
-    E2
-    E3
-    E4
-    E5
-    E6
-    E7
-    E8
-    E9
-    E10
-    E11
-    V1
-    V2
-    V3
-    V4
-    V5
-    V6
-    V7
-    V8
-    V9
-    V10
-    V11

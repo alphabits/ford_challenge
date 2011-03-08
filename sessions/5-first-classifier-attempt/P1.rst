@@ -1,0 +1,69 @@
+==
+P1
+==
+
+.. image:: plots/t12-P1.png
+    :width: 550px
+
+.. image:: plots/t147-P1.png
+    :width: 550px
+
+.. image:: plots/t201-P1.png
+    :width: 550px
+
+.. image:: plots/t203-P1.png
+    :width: 550px
+
+.. image:: plots/t204-P1.png
+    :width: 550px
+
+.. image:: plots/t252-P1.png
+    :width: 550px
+
+.. image:: plots/t268-P1.png
+    :width: 550px
+
+.. image:: plots/t288-P1.png
+    :width: 550px
+
+.. image:: plots/t294-P1.png
+    :width: 550px
+
+.. image:: plots/t313-P1.png
+    :width: 550px
+
+.. image:: plots/t316-P1.png
+    :width: 550px
+
+.. image:: plots/t328-P1.png
+    :width: 550px
+
+.. image:: plots/t333-P1.png
+    :width: 550px
+
+.. image:: plots/t411-P1.png
+    :width: 550px
+
+.. image:: plots/t435-P1.png
+    :width: 550px
+
+.. image:: plots/t442-P1.png
+    :width: 550px
+
+.. image:: plots/t47-P1.png
+    :width: 550px
+
+.. image:: plots/t490-P1.png
+    :width: 550px
+
+.. image:: plots/t494-P1.png
+    :width: 550px
+
+.. image:: plots/t500-P1.png
+    :width: 550px
+
+.. image:: plots/t86-P1.png
+    :width: 550px
+
+.. image:: plots/t89-P1.png
+    :width: 550px

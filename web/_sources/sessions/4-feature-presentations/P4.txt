@@ -7,6 +7,10 @@ P4
 **Mean**: 64.0619652861
 **Std**: 19.7559338868
 
+.. note::
+
+    Important! P3 is inversely proportional with P4
+
 .. image:: plots/P4-hist.png
     :width: 550px
 
