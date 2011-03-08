@@ -9,3 +9,4 @@ Sessions
     3-write-report-introduction/index
     4-feature-presentations/index
     5-first-classifier-attempt/index
+    6-meeting-with-morten/index
