@@ -1,0 +1,33 @@
+\chapter{Data}
+
+In this chapter the main data set used to create the classifier is introduced. The first section describes the general structure of the data set and then a section about the initial data cleanup follows. After the cleanup section comes the main section about feature exploration. Finally a section about feature transformations finishes the chapter.
+
+
+\section{Structure of the data set}
+
+The data is available through the kaggle website \citep{kaggle_data} and consists of measurements for 500 \mydef{trials}\footnote{On the kaggle website there is two data sets available. One training data set (500 trials) and one test data set (100 trials). Since the competition is finished and it isn't possible to get a test data set with the IsAlert-feature included, only the training data set is used.}. For each trial 2 minutes of sequential data is recorded and the interval between two recordings of a \mydef{row} is 100\,ms, giving approximately 1200 rows for each trial. For each row 33 features are measured. The 33 features are:
+\begin{itemize}
+    \item TrialID - The trial id. Is zero based.
+    \item ObsNum - The observation number within the trial. Is zero based, so a row with ObsNum=33 is the 34th row in the trial.
+    \item IsAlert - A binary variable describing whether the driver was alert or not. This is the feature that should be classified.
+    \item P1-P8 -- Eight physiological features.
+    \item E1-E11 -- Eleven environmental features.
+    \item V1-V11 -- Eleven vehicular features.
+\end{itemize}
+The spokesperson from Ford has repeatedly \citep{kaggle_forum_266,kaggle_forum_317} denied to disclose any additional information about the features, so nothing is known about what the different features represents, apart from the feature type (physiological, environmental, vehicular). Also nothing is known about the data type of the features (nominal, ordinal, ratio etc.). To get a better picture of the data a thorough exploration of the different features is needed.
+
+
+\section{Feature exploration and data cleaning} % (fold)
+\label{sec:data_cleaning_and_feature_exploration}
+
+It is time to get familiar with the data. To start out the min, max, mean and standard deviation is calculated for every feature across the whole data set. The results of the calculation (along with the source code used to make the calculation) are in Appendix ??. 
+
+% section Data cleaning and feature exploration (end)
+
+
+\section{Feature transformation} % (fold)
+\label{sec:feature_transformation}
+
+In this section
+% section feature_transformation (end)
+
