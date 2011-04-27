@@ -1,9 +1,11 @@
 from __future__ import division
 
+from random import random
+
 import numpy as np
 import matplotlib.pyplot as plt
 
-from data import A, L, CD
+from data import A, L, CD, TRD
 
 
 class Trial(object):
@@ -86,6 +88,17 @@ class Feature(object):
     def max(self):
         return self.view().max()
 
+    def std(self):
+        return self.view().std()
+
+    def unique_values(self):
+        return np.unique(self.view()).size
+
+    def scatter_plot(self, other_feature, obs_nums=None):
+        if obs_nums is None:
+            obs_nums = random.sample(range(self.num_rows()), 50)
+        v = self.view()
+
     def MI(self, nbins=10):
         v = self.view()
         tv = self.trial.view()
@@ -130,4 +143,4 @@ class Feature(object):
 
 d = Trial()
 cd = Trial(data=CD)
-
+trd = Trial(data=TRD)

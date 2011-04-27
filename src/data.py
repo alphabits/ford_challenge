@@ -10,8 +10,16 @@ f = open('data/fordTrainNoZeroTrials.pckl', 'rb')
 _clean_data_rows = pickle.load(f)
 f.close()
 
+# Load row number of training data set
+f = open('data/my_training_data_set_row_ids.pckl', 'rb')
+_training_data_rows = pickle.load(f)
+f.close()
+
 # Clean data array
 CD = A[_clean_data_rows, :]
+
+# Training data set
+TRD = A[_training_data_rows, :]
 
 # Load labels
 L = np.loadtxt('data/labels.csv', delimiter=',', dtype=str)

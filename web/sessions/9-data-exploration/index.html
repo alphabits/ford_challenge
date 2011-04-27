@@ -22,7 +22,9 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="Ford challenge v1.0 documentation" href="../../index.html" /> 
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Sessions" href="../index.html" />
+    <link rel="prev" title="Session 8: Meeting with Morten" href="../8-meeting-with-morten/index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -31,11 +33,30 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
-        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="../8-meeting-with-morten/index.html" title="Session 8: Meeting with Morten"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Sessions</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Session 9: Data exploration</a><ul>
+<li><a class="reference internal" href="#unique-values">Unique values</a></li>
+<li><a class="reference internal" href="#binary-features">Binary features</a></li>
+<li><a class="reference internal" href="#the-gear-idea">The gear idea</a></li>
+<li><a class="reference internal" href="#the-big-correlation-hunt">The big correlation hunt</a></li>
+<li><a class="reference internal" href="#finding-important-features-by-logistic-regression">Finding important features by logistic regression</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../8-meeting-with-morten/index.html"
+                        title="previous chapter">Session 8: Meeting with Morten</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../../_sources/sessions/9-data-exploration/index.txt"
@@ -72,10 +93,544 @@
 </dl>
 <p>This may be the first real working session.</p>
 <p>First I will calculate summary statistics for every feature across the whole data set. That leads to the abandoning of three features that turns out to be 0 in all rows.</p>
-<p>After that I create scatter plots of all combination of features, to find possible good features for classification. Also it is found that some of the features are inversely proportional to each other, and hopefully some of the features turns out to be useful for use in the classifier. The total number of unique combinations of features are given by</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">dump</span>
+
+<span class="kn">from</span> <span class="nn">src.data_interface</span> <span class="kn">import</span> <span class="n">trd</span><span class="p">,</span> <span class="n">L</span>
+<span class="kn">from</span> <span class="nn">src.utils</span> <span class="kn">import</span> <span class="n">get_path</span>
+
+
+<span class="n">sess_root</span> <span class="o">=</span> <span class="n">get_path</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/../scr&#39;</span>
+
+<span class="n">summary_statistics</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;min&#39;</span><span class="p">,</span> <span class="s">&#39;max&#39;</span><span class="p">,</span> <span class="s">&#39;mean&#39;</span><span class="p">,</span> <span class="s">&#39;std&#39;</span><span class="p">]</span>
+<span class="n">features_to_calculate</span> <span class="o">=</span> <span class="n">L</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+<span class="n">calculations</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">feature_name</span> <span class="ow">in</span> <span class="n">features_to_calculate</span><span class="p">:</span>
+    <span class="n">calculations</span><span class="p">[</span><span class="n">feature_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">statistic</span> <span class="ow">in</span> <span class="n">summary_statistics</span><span class="p">:</span>
+        <span class="n">stat_function</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">trd</span><span class="o">.</span><span class="n">get_feature</span><span class="p">(</span><span class="n">feature_name</span><span class="p">),</span> <span class="n">statistic</span><span class="p">)</span>
+        <span class="n">calculations</span><span class="p">[</span><span class="n">feature_name</span><span class="p">][</span><span class="n">statistic</span><span class="p">]</span> <span class="o">=</span> <span class="n">stat_function</span><span class="p">()</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">sess_root</span> <span class="o">+</span> <span class="s">&#39;/summary_statistics.json&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+<span class="n">dump</span><span class="p">(</span><span class="n">calculations</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;E11&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">5.3680706118227475</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">52.399999999999999</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">1.3680270856644134</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E10&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">19.225848177569208</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">127.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">63.383606720123765</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;IsAlert&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">0.49274173218481437</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">1.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">0.5848857194267667</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V1&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">44.939454615930146</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">129.69999999999999</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">75.578530060825912</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V2&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">0.41552855405905609</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">3.9900000000000002</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.042021962635219949</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">4.7949999999999999</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V3&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">299.02466537837739</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">1023.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">569.77905617958936</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">240.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E9&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">0.33309600056184263</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">1.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">0.87289013718632558</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E8&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">1.6206071264874979</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">9.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">1.3881465058127871</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V6&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">626.26885909010286</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">4892.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">1699.3444652877024</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V7&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">0.0</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">0.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">0.0</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E5&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">0.0023483882165350172</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">0.023938999999999998</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">0.016277118100601118</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0080000000000000002</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E4&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">34.801210476192722</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">260.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">3.9919338659739445</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">250.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E7&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">2.9524553169225811</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">25.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">1.8105037610935195</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E6&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">27.835399964819679</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">513.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">358.5008200569593</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">260.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E1&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">14.001419899514028</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">243.99100000000001</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">10.541855237712753</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E3&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">1.0327277679174485</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">4.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">0.29839938945570144</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E2&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">128.32653422852991</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">359.995</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">105.04587853850168</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P2&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">3.7374687342404909</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">71.173699999999997</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">12.007656977416872</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">45.629199999999997</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P3&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">309.70068902522655</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">2512.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">1028.0000827295798</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">504.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P1&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">7.3577113178289641</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">101.351</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">35.452121895911311</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">22.481200000000001</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P6&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">2795.3175086232773</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">228812.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">843.72575971607205</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">128.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P7&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">18.786148339301718</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">468.75</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">78.396266502870134</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.26222400000000001</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P4&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">19.764207622194103</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">119.048</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">63.989796643430701</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">23.885300000000001</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P5&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">0.38727852340161711</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">27.202200000000001</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">0.1806010104838727</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.038920000000000003</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P8&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">0.0</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">0.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">0.0</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V4&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">67.214163491853952</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">484.488</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">21.23810942205775</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V8&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">11.540861639690451</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">82.099999999999994</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">12.456263973539082</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V9&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">0.0</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">0.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">0.0</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V5&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">0.38274668403308171</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">1.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">0.17827810789178145</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">0.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V10&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">1.2665512523830937</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">7.0</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">3.2767159666020689</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">1.0</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V11&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;std&quot;</span><span class="o">:</span> <span class="mf">8.4293128281527228</span><span class="p">,</span> 
+        <span class="s2">&quot;max&quot;</span><span class="o">:</span> <span class="mf">262.45499999999998</span><span class="p">,</span> 
+        <span class="s2">&quot;mean&quot;</span><span class="o">:</span> <span class="mf">11.587314729464051</span><span class="p">,</span> 
+        <span class="s2">&quot;min&quot;</span><span class="o">:</span> <span class="mf">1.6767300000000001</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As can be seen the result is saved to a json data file. What is worth noticing...</p>
+<blockquote>
+<div><ul class="simple">
+<li>P8, V7, V9 is zero in all rows and can be discarded</li>
+<li>V5, E9 could be binary</li>
+<li>It looks like a little over half the time the drivers is alert... hmm... a little less than expected</li>
+</ul>
+</div></blockquote>
+<div class="section" id="unique-values">
+<h2>Unique values<a class="headerlink" href="#unique-values" title="Permalink to this headline">¶</a></h2>
+<p>To continue the exploration I wil try to calculate how many different values the various features span. That is done in a simple script</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">dump</span>
+
+<span class="kn">from</span> <span class="nn">src.data_interface</span> <span class="kn">import</span> <span class="n">trd</span><span class="p">,</span> <span class="n">L</span>
+<span class="kn">from</span> <span class="nn">src.utils</span> <span class="kn">import</span> <span class="n">get_path</span>
+
+
+<span class="n">sess_root</span> <span class="o">=</span> <span class="n">get_path</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/../src&#39;</span>
+
+<span class="n">features_to_calculate</span> <span class="o">=</span> <span class="n">L</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+<span class="n">unique_values</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">feature_name</span> <span class="ow">in</span> <span class="n">features_to_calculate</span><span class="p">:</span>
+    <span class="n">unique_values</span><span class="p">[</span><span class="n">feature_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">trd</span><span class="o">.</span><span class="n">get_feature</span><span class="p">(</span><span class="n">feature_name</span><span class="p">)</span><span class="o">.</span><span class="n">unique_values</span><span class="p">()</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">sess_root</span> <span class="o">+</span> <span class="s">&#39;/unique_values.json&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+<span class="n">dump</span><span class="p">(</span><span class="n">unique_values</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;E11&quot;</span><span class="o">:</span> <span class="mi">116</span><span class="p">,</span> 
+    <span class="s2">&quot;E10&quot;</span><span class="o">:</span> <span class="mi">121</span><span class="p">,</span> 
+    <span class="s2">&quot;IsAlert&quot;</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> 
+    <span class="s2">&quot;V1&quot;</span><span class="o">:</span> <span class="mi">12374</span><span class="p">,</span> 
+    <span class="s2">&quot;V2&quot;</span><span class="o">:</span> <span class="mi">90</span><span class="p">,</span> 
+    <span class="s2">&quot;V3&quot;</span><span class="o">:</span> <span class="mi">33</span><span class="p">,</span> 
+    <span class="s2">&quot;E9&quot;</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> 
+    <span class="s2">&quot;E8&quot;</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span> 
+    <span class="s2">&quot;V6&quot;</span><span class="o">:</span> <span class="mi">2727</span><span class="p">,</span> 
+    <span class="s2">&quot;V7&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+    <span class="s2">&quot;E5&quot;</span><span class="o">:</span> <span class="mi">254</span><span class="p">,</span> 
+    <span class="s2">&quot;E4&quot;</span><span class="o">:</span> <span class="mi">249</span><span class="p">,</span> 
+    <span class="s2">&quot;E7&quot;</span><span class="o">:</span> <span class="mi">25</span><span class="p">,</span> 
+    <span class="s2">&quot;E6&quot;</span><span class="o">:</span> <span class="mi">247</span><span class="p">,</span> 
+    <span class="s2">&quot;E1&quot;</span><span class="o">:</span> <span class="mi">12265</span><span class="p">,</span> 
+    <span class="s2">&quot;E3&quot;</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span> 
+    <span class="s2">&quot;E2&quot;</span><span class="o">:</span> <span class="mi">28502</span><span class="p">,</span> 
+    <span class="s2">&quot;P2&quot;</span><span class="o">:</span> <span class="mi">128666</span><span class="p">,</span> 
+    <span class="s2">&quot;P3&quot;</span><span class="o">:</span> <span class="mi">406</span><span class="p">,</span> 
+    <span class="s2">&quot;P1&quot;</span><span class="o">:</span> <span class="mi">105715</span><span class="p">,</span> 
+    <span class="s2">&quot;P6&quot;</span><span class="o">:</span> <span class="mi">406</span><span class="p">,</span> 
+    <span class="s2">&quot;P7&quot;</span><span class="o">:</span> <span class="mi">406</span><span class="p">,</span> 
+    <span class="s2">&quot;P4&quot;</span><span class="o">:</span> <span class="mi">406</span><span class="p">,</span> 
+    <span class="s2">&quot;P5&quot;</span><span class="o">:</span> <span class="mi">1070</span><span class="p">,</span> 
+    <span class="s2">&quot;P8&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+    <span class="s2">&quot;V4&quot;</span><span class="o">:</span> <span class="mi">324</span><span class="p">,</span> 
+    <span class="s2">&quot;V8&quot;</span><span class="o">:</span> <span class="mi">323</span><span class="p">,</span> 
+    <span class="s2">&quot;V9&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+    <span class="s2">&quot;V5&quot;</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> 
+    <span class="s2">&quot;V10&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> 
+    <span class="s2">&quot;V11&quot;</span><span class="o">:</span> <span class="mi">166455</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>And what do we get? A couple of things</p>
+<blockquote>
+<div><ul class="simple">
+<li>V5 and E9 are binary</li>
+<li>E3 has 3 levels and V10 has 5 levels. That ain&#8217;t that many and could be interesting to look closer into</li>
+<li>20 (not counting the three features with only one unique value) of the features have under 500 unique values, which actually surprises me a bit</li>
+<li>P3 and P4 has exactly the same number of unique values. The same is true for P6 and P7. There also exists a couple of groups with almost the same number of unique values: (E10, E11), (E4, E5, E6) and (V4, V8)</li>
+</ul>
+</div></blockquote>
+<p>Somehow the number of unique values for the different features seems interesting. The next thing to test how many unique values a feature assumes within a single trial. A script is created that for every feature and every trial calculates the number of unique values. The script is</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">dump</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">src.data_interface</span> <span class="kn">import</span> <span class="n">trd</span><span class="p">,</span> <span class="n">L</span>
+<span class="kn">from</span> <span class="nn">src.utils</span> <span class="kn">import</span> <span class="n">get_path</span>
+
+
+<span class="n">sess_root</span> <span class="o">=</span> <span class="n">get_path</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/..&#39;</span>
+
+<span class="n">features_to_calculate</span> <span class="o">=</span> <span class="n">L</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+<span class="n">trials</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">trd</span><span class="o">.</span><span class="n">trial_id_list</span><span class="p">)</span>
+<span class="n">calculations</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">feature_name</span> <span class="ow">in</span> <span class="n">features_to_calculate</span><span class="p">:</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="p">{</span><span class="s">&quot;trial_results&quot;</span><span class="p">:</span> <span class="p">{}}</span>
+    <span class="k">for</span> <span class="n">trial_id</span> <span class="ow">in</span> <span class="n">trials</span><span class="p">:</span>
+        <span class="n">unique_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span>
+                <span class="n">trd</span><span class="o">.</span><span class="n">get_trial</span><span class="p">(</span><span class="n">trial_id</span><span class="p">)</span><span class="o">.</span><span class="n">get_feature</span><span class="p">(</span><span class="n">feature_name</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">())</span>
+        <span class="n">tmp</span><span class="p">[</span><span class="s">&quot;trial_results&quot;</span><span class="p">][</span><span class="n">trial_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">unique_values</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">tmp</span><span class="p">[</span><span class="s">&quot;max&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="s">&quot;trial_results&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">tmp</span><span class="p">[</span><span class="s">&quot;min&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">tmp</span><span class="p">[</span><span class="s">&quot;trial_results&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+    <span class="n">calculations</span><span class="p">[</span><span class="n">feature_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span>
+
+<span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">sess_root</span> <span class="o">+</span> <span class="s">&#39;/src/unique_values_pr_trial.json&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+<span class="n">dump</span><span class="p">(</span><span class="n">calculations</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The data is a bit to large to show here (about 15000 lines), so another script extracts the maximum unique values pr. trial for each feature and combines it with the number of unique values over the whole data set. The result is</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;E11&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">116</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">79</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E10&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">121</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">86</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;IsAlert&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">2</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V1&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">12374</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">969</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V2&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">90</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">76</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V3&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">33</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">29</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E9&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">2</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E8&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">10</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">10</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V6&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">2727</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">775</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V7&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E5&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">254</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">134</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E4&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">249</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">97</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E7&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">25</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">15</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E6&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">247</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">116</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E1&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">12265</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">131</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E3&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">3</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;E2&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">28502</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">129</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P2&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1155</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">128666</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1207</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P3&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">24</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">406</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">106</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P1&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">967</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">105715</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1208</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P6&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">406</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">99</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P7&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">3</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">406</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">99</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P4&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">24</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">406</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">106</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P5&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">34</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">1070</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">114</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;P8&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V4&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">324</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">204</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V8&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">323</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">239</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V9&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V5&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">2</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">2</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V10&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">5</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">5</span>
+    <span class="p">},</span> 
+    <span class="s2">&quot;V11&quot;</span><span class="o">:</span> <span class="p">{</span>
+        <span class="s2">&quot;min_pr_trial&quot;</span><span class="o">:</span> <span class="mi">875</span><span class="p">,</span> 
+        <span class="s2">&quot;all_data&quot;</span><span class="o">:</span> <span class="mi">166455</span><span class="p">,</span> 
+        <span class="s2">&quot;max_pr_trial&quot;</span><span class="o">:</span> <span class="mi">1206</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This did not create that many interesting results. A few things can be commented</p>
+<blockquote>
+<div><ul class="simple">
+<li>P3 and P4 continues to have an equal number of unique values and so do P6 and P7</li>
+<li>On the contrary the three groups (E10, E11), (E4, E5, E6) and (V4, V8) seems to have been separated more by the per trial count.</li>
+</ul>
+</div></blockquote>
+<p>Now an interesting thing to notice is the feature V10. It has 5 unique values also when we calculate pr. trial. What are these 5 different values</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">src.data_interface</span> <span class="kn">import</span> <span class="n">trd</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">trd</span><span class="o">.</span><span class="n">V10</span><span class="o">.</span><span class="n">view</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Gives the following result</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">array</span><span class="p">([</span> <span class="mf">1.</span><span class="p">,</span>  <span class="mf">2.</span><span class="p">,</span>  <span class="mf">3.</span><span class="p">,</span>  <span class="mf">4.</span><span class="p">,</span>  <span class="mf">7.</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Could V10 be the gear? Maybe 7 is reverse?</p>
+</div>
+<p>Yet another thing to notice is the unique values of V3</p>
+<div class="highlight-python"><pre>&gt;&gt; np.unique(trd.V3.view())
+array([  240.,   241.,   242.,   243.,   244.,   253.,   254.,   255.,
+     496.,   497.,   498.,   499.,   508.,   509.,   510.,   511.,
+     752.,   753.,   754.,   755.,   756.,   764.,   765.,   766.,
+     767.,  1008.,  1009.,  1010.,  1011.,  1020.,  1021.,  1022.,
+    1023.])</pre>
+</div>
+<p>They somehow seems to appear in groups of 3, 4 or 5: 240-244, 253-255, 496-499, 508-511, 752-756, 764-767, 1008-1011, 1020-1023</p>
+</div>
+<div class="section" id="binary-features">
+<h2>Binary features<a class="headerlink" href="#binary-features" title="Permalink to this headline">¶</a></h2>
+<p>The features E9 and V5 are binary. I will try to see if they are in any way correlated to the IsAlert feature. A quick way to test it, is to calculate a new feature given as the distance between the feature (E9/V5) and IsAlert. The mean value of the calculated feature gives a hint about a possible correlation.</p>
+<div class="highlight-python"><pre>from numpy import abs
+from src.data_interface import trd
+
+&gt;&gt; diffE9 = abs(trd.E9.view() - trd.IsAlert.view())
+&gt;&gt; diffE9.mean()
+0.3071811343466328
+
+&gt;&gt; diffV5 = abs(trd.V5.view() - trd.IsAlert.view())
+&gt;&gt; diffV5.mean()
+0.53159132414897114</pre>
+</div>
+<p>It actually looks as if E9 might be a good feature for the classifier</p>
+</div>
+<div class="section" id="the-gear-idea">
+<h2>The gear idea<a class="headerlink" href="#the-gear-idea" title="Permalink to this headline">¶</a></h2>
+<p>Before I talked about the possibility that V10 is the gear placement. Can I test my idea in any way? Well it depends... First of all let&#8217;s say that it is the gear. Then it could be an automatic gear or it could be a manual gear. Does it matter? If it is manual, you could hypothesise that if the gear level is changing the driver is somehow alert. It takes a little attention to manually change gear. On the other hand if the gear is automatic, it requires no attention to change it. But if it is automatic and it changes rapidly, the driver is probably accelerating. Maybe he is breaking because he was inattentive a moment ago. What do I get from all this? If the gear level has been constant for some time the probability of an inattentive driver increases... Sounds ok...</p>
+</div>
+<div class="section" id="the-big-correlation-hunt">
+<h2>The big correlation hunt<a class="headerlink" href="#the-big-correlation-hunt" title="Permalink to this headline">¶</a></h2>
+<p>It is now time for the big correlation hunt which means I have to plot way to many scatter plots. More precisely there are 27 features and I like to create scatter plots of all pairs of features. This gives a total of</p>
 <div class="math">
-<p><img src="../../_images/math/21dce6e2e94b280ab4638d420581f7d8f13d8987.png" alt="C = \frac{25!}{2!23!} = \frac{25\cdot 24}{2} = 12\cdot 25 = 300" /></p>
-</div><p>Which isn&#8217;t totally unmanagable...</p>
+<p><img src="../../_images/math/735ae79c3c96069ed24fb14d94c88d63866ad716.png" alt="C = \frac{27!}{2!25!} = \frac{27\cdot 26}{2} = 13\cdot 27 = 351" /></p>
+</div><p>Which isn&#8217;t totally unmanagable... But how should I select which rows are included? There should probably only be between 50 and 100 rows in one scatter plot</p>
+</div>
+<div class="section" id="finding-important-features-by-logistic-regression">
+<h2>Finding important features by logistic regression<a class="headerlink" href="#finding-important-features-by-logistic-regression" title="Permalink to this headline">¶</a></h2>
+</div>
 </div>
 
 
@@ -90,7 +645,11 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
-        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+        <li class="right" >
+          <a href="../8-meeting-with-morten/index.html" title="Session 8: Meeting with Morten"
+             >previous</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Sessions</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
