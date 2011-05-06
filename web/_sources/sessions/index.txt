@@ -13,4 +13,5 @@ Sessions
     7-create-python-data-interface/index
     8-meeting-with-morten/index
     9-data-exploration/index
+    10-meeting-with-morten/index
 

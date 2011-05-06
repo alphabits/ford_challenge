@@ -5,8 +5,8 @@ Session 9: Data exploration
 Start time
     26-04-2011 12:00
 
-End time
-    27-04-2011 05:00
+Pause time
+    27-04-2011 04:20
 
 This may be the first real working session. 
 
@@ -134,7 +134,7 @@ It is now time for the big correlation hunt which means I have to plot way to ma
 
     C = \frac{27!}{2!25!} = \frac{27\cdot 26}{2} = 13\cdot 27 = 351
 
-Which isn't totally unmanagable... But how should I select which rows are included? There should probably only be between 50 and 100 rows in one scatter plot
+Which isn't totally unmanagable... But how should I select which rows are included? There should probably only be between 50 and 100 rows in one scatter plot, and I would like about an equal number of rows with IsAlert=0 and IsAlert=1. Should the rows come from the same trial? And if they are from different trials shouldn't I normalize the features first. Speaking of normalization... I will try to normalize the features. Read more
 
 
 Finding important features by logistic regression

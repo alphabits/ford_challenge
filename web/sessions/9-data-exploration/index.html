@@ -88,8 +88,8 @@
 <dl class="docutils">
 <dt>Start time</dt>
 <dd>26-04-2011 12:00</dd>
-<dt>End time</dt>
-<dd>27-04-2011 05:00</dd>
+<dt>Pause time</dt>
+<dd>27-04-2011 04:20</dd>
 </dl>
 <p>This may be the first real working session.</p>
 <p>First I will calculate summary statistics for every feature across the whole data set. That leads to the abandoning of three features that turns out to be 0 in all rows.</p>
@@ -626,7 +626,7 @@ from src.data_interface import trd
 <p>It is now time for the big correlation hunt which means I have to plot way to many scatter plots. More precisely there are 27 features and I like to create scatter plots of all pairs of features. This gives a total of</p>
 <div class="math">
 <p><img src="../../_images/math/735ae79c3c96069ed24fb14d94c88d63866ad716.png" alt="C = \frac{27!}{2!25!} = \frac{27\cdot 26}{2} = 13\cdot 27 = 351" /></p>
-</div><p>Which isn&#8217;t totally unmanagable... But how should I select which rows are included? There should probably only be between 50 and 100 rows in one scatter plot</p>
+</div><p>Which isn&#8217;t totally unmanagable... But how should I select which rows are included? There should probably only be between 50 and 100 rows in one scatter plot, and I would like about an equal number of rows with IsAlert=0 and IsAlert=1. Should the rows come from the same trial? And if they are from different trials shouldn&#8217;t I normalize the features first. Speaking of normalization... I will try to normalize the features. Read more</p>
 </div>
 <div class="section" id="finding-important-features-by-logistic-regression">
 <h2>Finding important features by logistic regression<a class="headerlink" href="#finding-important-features-by-logistic-regression" title="Permalink to this headline">¶</a></h2>
