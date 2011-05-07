@@ -8,3 +8,6 @@
 *.pyc
 *.npy
 *.auto
+build/fabric/*
+build/paramiko/*
+build/pycrypto/*
