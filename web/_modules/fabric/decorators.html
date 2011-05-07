@@ -1,0 +1,193 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>fabric.decorators &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for fabric.decorators</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Convenience decorators for use in fabfiles.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">StringTypes</span>
+
+
+<div class="viewcode-block" id="hosts"><a class="viewcode-back" href="../../build/fabric/docs/api/core/decorators.html#fabric.decorators.hosts">[docs]</a><span class="k">def</span> <span class="nf">hosts</span><span class="p">(</span><span class="o">*</span><span class="n">host_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator defining which host or hosts to execute the wrapped function on.</span>
+
+<span class="sd">    For example, the following will ensure that, barring an override on the</span>
+<span class="sd">    command line, ``my_func`` will be run on ``host1``, ``host2`` and</span>
+<span class="sd">    ``host3``, and with specific users on ``host1`` and ``host3``::</span>
+
+<span class="sd">        @hosts(&#39;user1@host1&#39;, &#39;host2&#39;, &#39;user2@host3&#39;)</span>
+<span class="sd">        def my_func():</span>
+<span class="sd">            pass</span>
+
+<span class="sd">    `~fabric.decorators.hosts` may be invoked with either an argument list</span>
+<span class="sd">    (``@hosts(&#39;host1&#39;)``, ``@hosts(&#39;host1&#39;, &#39;host2&#39;)``) or a single, iterable</span>
+<span class="sd">    argument (``@hosts([&#39;host1&#39;, &#39;host2&#39;])``).</span>
+
+<span class="sd">    Note that this decorator actually just sets the function&#39;s ``.hosts``</span>
+<span class="sd">    attribute, which is then read prior to executing the function.</span>
+
+<span class="sd">    .. versionchanged:: 0.9.2</span>
+<span class="sd">        Allow a single, iterable argument (``@hosts(iterable)``) to be used</span>
+<span class="sd">        instead of requiring ``@hosts(*iterable)``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">attach_hosts</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">inner_decorator</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">_hosts</span> <span class="o">=</span> <span class="n">host_list</span>
+        <span class="c"># Allow for single iterable argument as well as *args</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_hosts</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_hosts</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">StringTypes</span><span class="p">):</span>
+            <span class="n">_hosts</span> <span class="o">=</span> <span class="n">_hosts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">inner_decorator</span><span class="o">.</span><span class="n">hosts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_hosts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">inner_decorator</span>
+    <span class="k">return</span> <span class="n">attach_hosts</span>
+
+</div>
+<div class="viewcode-block" id="roles"><a class="viewcode-back" href="../../build/fabric/docs/api/core/decorators.html#fabric.decorators.roles">[docs]</a><span class="k">def</span> <span class="nf">roles</span><span class="p">(</span><span class="o">*</span><span class="n">role_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator defining a list of role names, used to look up host lists.</span>
+
+<span class="sd">    A role is simply defined as a key in `env` whose value is a list of one or</span>
+<span class="sd">    more host connection strings. For example, the following will ensure that,</span>
+<span class="sd">    barring an override on the command line, ``my_func`` will be executed</span>
+<span class="sd">    against the hosts listed in the ``webserver`` and ``dbserver`` roles::</span>
+
+<span class="sd">        env.roledefs.update({</span>
+<span class="sd">            &#39;webserver&#39;: [&#39;www1&#39;, &#39;www2&#39;],</span>
+<span class="sd">            &#39;dbserver&#39;: [&#39;db1&#39;]</span>
+<span class="sd">        })</span>
+
+<span class="sd">        @roles(&#39;webserver&#39;, &#39;dbserver&#39;)</span>
+<span class="sd">        def my_func():</span>
+<span class="sd">            pass</span>
+
+<span class="sd">    As with `~fabric.decorators.hosts`, `~fabric.decorators.roles` may be</span>
+<span class="sd">    invoked with either an argument list or a single, iterable argument.</span>
+<span class="sd">    Similarly, this decorator uses the same mechanism as</span>
+<span class="sd">    `~fabric.decorators.hosts` and simply sets ``&lt;function&gt;.roles``.</span>
+
+<span class="sd">    .. versionchanged:: 0.9.2</span>
+<span class="sd">        Allow a single, iterable argument to be used (same as</span>
+<span class="sd">        `~fabric.decorators.hosts`).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">attach_roles</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+        <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+        <span class="k">def</span> <span class="nf">inner_decorator</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">_roles</span> <span class="o">=</span> <span class="n">role_list</span>
+        <span class="c"># Allow for single iterable argument as well as *args</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_roles</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_roles</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">StringTypes</span><span class="p">):</span>
+            <span class="n">_roles</span> <span class="o">=</span> <span class="n">_roles</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">inner_decorator</span><span class="o">.</span><span class="n">roles</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">_roles</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">inner_decorator</span>
+    <span class="k">return</span> <span class="n">attach_roles</span>
+
+</div>
+<div class="viewcode-block" id="runs_once"><a class="viewcode-back" href="../../build/fabric/docs/api/core/decorators.html#fabric.decorators.runs_once">[docs]</a><span class="k">def</span> <span class="nf">runs_once</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decorator preventing wrapped function from running more than once.</span>
+
+<span class="sd">    By keeping internal state, this decorator allows you to mark a function</span>
+<span class="sd">    such that it will only run once per Python interpreter session, which in</span>
+<span class="sd">    typical use means &quot;once per invocation of the ``fab`` program&quot;.</span>
+
+<span class="sd">    Any function wrapped with this decorator will silently fail to execute the</span>
+<span class="sd">    2nd, 3rd, ..., Nth time it is called, and will return the value of the</span>
+<span class="sd">    original run.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">decorated</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">decorated</span><span class="p">,</span> <span class="s">&#39;return_value&#39;</span><span class="p">):</span>
+            <span class="n">decorated</span><span class="o">.</span><span class="n">return_value</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">decorated</span><span class="o">.</span><span class="n">return_value</span>
+    <span class="k">return</span> <span class="n">decorated</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

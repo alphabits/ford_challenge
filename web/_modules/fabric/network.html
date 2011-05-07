@@ -1,0 +1,432 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>fabric.network &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for fabric.network</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Classes and subroutines dealing with network connections and related topics.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">import</span> <span class="nn">getpass</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">select</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">fabric.utils</span> <span class="kn">import</span> <span class="n">abort</span>
+<span class="kn">from</span> <span class="nn">fabric.auth</span> <span class="kn">import</span> <span class="n">get_password</span><span class="p">,</span> <span class="n">set_password</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">warnings</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s">&#39;ignore&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+    <span class="kn">import</span> <span class="nn">paramiko</span> <span class="kn">as</span> <span class="nn">ssh</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">abort</span><span class="p">(</span><span class="s">&quot;paramiko is a required module. Please install it:</span><span class="se">\n\t</span><span class="s">$ sudo easy_install paramiko&quot;</span><span class="p">)</span>
+
+
+
+<span class="n">host_pattern</span> <span class="o">=</span> <span class="s">r&#39;((?P&lt;user&gt;.+)@)?(?P&lt;host&gt;[^:]+)(:(?P&lt;port&gt;\d+))?&#39;</span>
+<span class="n">host_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">host_pattern</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">HostConnectionCache</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Dict subclass allowing for caching of host connections/clients.</span>
+
+<span class="sd">    This subclass does not offer any extra methods, but will intelligently</span>
+<span class="sd">    create new client connections when keys are requested, or return previously</span>
+<span class="sd">    created connections instead.</span>
+
+<span class="sd">    Key values are the same as host specifiers throughout Fabric: optional</span>
+<span class="sd">    username + ``@``, mandatory hostname, optional ``:`` + port number.</span>
+<span class="sd">    Examples:</span>
+
+<span class="sd">    * ``example.com`` - typical Internet host address.</span>
+<span class="sd">    * ``firewall`` - atypical, but still legal, local host address.</span>
+<span class="sd">    * ``user@example.com`` - with specific username attached.</span>
+<span class="sd">    * ``bob@smith.org:222`` - with specific nonstandard port attached.</span>
+
+<span class="sd">    When the username is not given, ``env.user`` is used. ``env.user``</span>
+<span class="sd">    defaults to the currently running user at startup but may be overwritten by</span>
+<span class="sd">    user code or by specifying a command-line flag.</span>
+
+<span class="sd">    Note that differing explicit usernames for the same hostname will result in</span>
+<span class="sd">    multiple client connections being made. For example, specifying</span>
+<span class="sd">    ``user1@example.com`` will create a connection to ``example.com``, logged</span>
+<span class="sd">    in as ``user1``; later specifying ``user2@example.com`` will create a new,</span>
+<span class="sd">    2nd connection as ``user2``.</span>
+<span class="sd">    </span>
+<span class="sd">    The same applies to ports: specifying two different ports will result in</span>
+<span class="sd">    two different connections to the same host being made. If no port is given,</span>
+<span class="sd">    22 is assumed, so ``example.com`` is equivalent to ``example.com:22``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="c"># Normalize given key (i.e. obtain username and port, if not given)</span>
+        <span class="n">user</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="c"># Recombine for use as a key.</span>
+        <span class="n">real_key</span> <span class="o">=</span> <span class="n">join_host_strings</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+        <span class="c"># If not found, create new connection and store it</span>
+        <span class="k">if</span> <span class="n">real_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">real_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">connect</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+        <span class="c"># Return the value either way</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="o">.</span><span class="n">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">real_key</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="o">.</span><span class="n">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">join_host_strings</span><span class="p">(</span><span class="o">*</span><span class="n">normalize</span><span class="p">(</span><span class="n">key</span><span class="p">)))</span>
+
+
+<span class="k">def</span> <span class="nf">normalize</span><span class="p">(</span><span class="n">host_string</span><span class="p">,</span> <span class="n">omit_port</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Normalizes a given host string, returning explicit host, user, port.</span>
+
+<span class="sd">    If ``omit_port`` is given and is True, only the host and user are returned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">fabric.state</span> <span class="kn">import</span> <span class="n">env</span>
+    <span class="c"># Gracefully handle &quot;empty&quot; input by returning empty output</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">host_string</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">omit_port</span> <span class="k">else</span> <span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span>
+    <span class="c"># Get user, host and port separately</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">host_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">host_string</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+    <span class="c"># Add any necessary defaults in</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;user&#39;</span><span class="p">)</span>
+    <span class="n">host</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s">&#39;host&#39;</span><span class="p">]</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s">&#39;port&#39;</span><span class="p">]</span> <span class="ow">or</span> <span class="s">&#39;22&#39;</span>
+    <span class="k">if</span> <span class="n">omit_port</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">user</span><span class="p">,</span> <span class="n">host</span>
+    <span class="k">return</span> <span class="n">user</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span>
+
+
+<span class="k">def</span> <span class="nf">denormalize</span><span class="p">(</span><span class="n">host_string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Strips out default values for the given host string.</span>
+
+<span class="sd">    If the user part is the default user, it is removed; if the port is port 22,</span>
+<span class="sd">    it also is removed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">state</span> <span class="kn">import</span> <span class="n">env</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">host_regex</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">host_string</span><span class="p">)</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">r</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">env</span><span class="o">.</span><span class="n">user</span><span class="p">:</span>
+        <span class="n">user</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="s">&#39;user&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;@&#39;</span>
+    <span class="n">port</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">r</span><span class="p">[</span><span class="s">&#39;port&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">r</span><span class="p">[</span><span class="s">&#39;port&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;22&#39;</span><span class="p">:</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="s">&#39;:&#39;</span> <span class="o">+</span> <span class="n">r</span><span class="p">[</span><span class="s">&#39;port&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">user</span> <span class="o">+</span> <span class="n">r</span><span class="p">[</span><span class="s">&#39;host&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">port</span>
+
+
+<span class="k">def</span> <span class="nf">join_host_strings</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Turns user/host/port strings into ``user@host:port`` combined string.</span>
+
+<span class="sd">    This function is not responsible for handling missing user/port strings; for</span>
+<span class="sd">    that, see the ``normalize`` function.</span>
+
+<span class="sd">    If ``port`` is omitted, the returned string will be of the form</span>
+<span class="sd">    ``user@host``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">port_string</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">port</span><span class="p">:</span>
+        <span class="n">port_string</span> <span class="o">=</span> <span class="s">&quot;:</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">port</span>
+    <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">@</span><span class="si">%s%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port_string</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create and return a new SSHClient instance connected to given host.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">state</span> <span class="kn">import</span> <span class="n">env</span>
+
+    <span class="c">#</span>
+    <span class="c"># Initialization</span>
+    <span class="c">#</span>
+
+    <span class="c"># Init client</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">SSHClient</span><span class="p">()</span>
+
+    <span class="c"># Load known host keys (e.g. ~/.ssh/known_hosts) unless user says not to.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">env</span><span class="o">.</span><span class="n">disable_known_hosts</span><span class="p">:</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">load_system_host_keys</span><span class="p">()</span>
+    <span class="c"># Unless user specified not to, accept/add new, unknown host keys</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">env</span><span class="o">.</span><span class="n">reject_unknown_hosts</span><span class="p">:</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">set_missing_host_key_policy</span><span class="p">(</span><span class="n">ssh</span><span class="o">.</span><span class="n">AutoAddPolicy</span><span class="p">())</span>
+
+
+    <span class="c">#</span>
+    <span class="c"># Connection attempt loop</span>
+    <span class="c">#</span>
+
+    <span class="c"># Initialize loop variables</span>
+    <span class="n">connected</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">get_password</span><span class="p">()</span>
+
+    <span class="c"># Loop until successful connect (keep prompting for new password)</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">connected</span><span class="p">:</span>
+        <span class="c"># Attempt connection</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+                <span class="n">hostname</span><span class="o">=</span><span class="n">host</span><span class="p">,</span>
+                <span class="n">port</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">port</span><span class="p">),</span>
+                <span class="n">username</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+                <span class="n">password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span>
+                <span class="n">key_filename</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">key_filename</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                <span class="n">allow_agent</span><span class="o">=</span><span class="ow">not</span> <span class="n">env</span><span class="o">.</span><span class="n">no_agent</span><span class="p">,</span>
+                <span class="n">look_for_keys</span><span class="o">=</span><span class="ow">not</span> <span class="n">env</span><span class="o">.</span><span class="n">no_keys</span>
+            <span class="p">)</span>
+            <span class="n">connected</span> <span class="o">=</span> <span class="bp">True</span>
+            <span class="k">return</span> <span class="n">client</span>
+        <span class="c"># BadHostKeyException corresponds to key mismatch, i.e. what on the</span>
+        <span class="c"># command line results in the big banner error about man-in-the-middle</span>
+        <span class="c"># attacks.</span>
+        <span class="k">except</span> <span class="n">ssh</span><span class="o">.</span><span class="n">BadHostKeyException</span><span class="p">:</span>
+            <span class="n">abort</span><span class="p">(</span><span class="s">&quot;Host key for </span><span class="si">%s</span><span class="s"> did not match pre-existing key! Server&#39;s key was changed recently, or possible man-in-the-middle attack.&quot;</span> <span class="o">%</span> <span class="n">env</span><span class="o">.</span><span class="n">host</span><span class="p">)</span>
+        <span class="c"># Prompt for new password to try on auth failure</span>
+        <span class="k">except</span> <span class="p">(</span>
+            <span class="n">ssh</span><span class="o">.</span><span class="n">AuthenticationException</span><span class="p">,</span>
+            <span class="n">ssh</span><span class="o">.</span><span class="n">PasswordRequiredException</span><span class="p">,</span>
+            <span class="n">ssh</span><span class="o">.</span><span class="n">SSHException</span>
+        <span class="p">),</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c"># For whatever reason, empty password + no ssh key or agent results</span>
+            <span class="c"># in an SSHException instead of an AuthenticationException. Since</span>
+            <span class="c"># it&#39;s difficult to do otherwise, we must assume empty password +</span>
+            <span class="c"># SSHException == auth exception. Conversely: if we get</span>
+            <span class="c"># SSHException and there *was* a password -- it is probably</span>
+            <span class="c"># something non auth related, and should be sent upwards.</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">__class__</span> <span class="ow">is</span> <span class="n">ssh</span><span class="o">.</span><span class="n">SSHException</span> <span class="ow">and</span> <span class="n">password</span><span class="p">:</span>
+                <span class="n">abort</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
+            <span class="c"># Otherwise, assume an auth exception, and prompt for new/better</span>
+            <span class="c"># password.</span>
+
+            <span class="c"># Paramiko doesn&#39;t handle prompting for locked private keys (i.e.</span>
+            <span class="c"># keys with a passphrase and not loaded into an agent) so we have</span>
+            <span class="c"># to detect this and tweak our prompt slightly.  (Otherwise,</span>
+            <span class="c"># however, the logic flow is the same, because Paramiko&#39;s connect()</span>
+            <span class="c"># method overrides the password argument to be either the login</span>
+            <span class="c"># password OR the private key passphrase. Meh.)</span>
+            <span class="c">#</span>
+            <span class="c"># NOTE: This will come up if you normally use a</span>
+            <span class="c"># passphrase-protected private key with ssh-agent, and enter an</span>
+            <span class="c"># incorrect remote username, because Paramiko:</span>
+            <span class="c"># * Tries the agent first, which will fail as you gave the wrong</span>
+            <span class="c"># username, so obviously any loaded keys aren&#39;t gonna work for a</span>
+            <span class="c"># nonexistent remote account;</span>
+            <span class="c"># * Then tries the on-disk key file, which is passphrased;</span>
+            <span class="c"># * Realizes there&#39;s no password to try unlocking that key with,</span>
+            <span class="c"># because you didn&#39;t enter a password, because you&#39;re using</span>
+            <span class="c"># ssh-agent;</span>
+            <span class="c"># * In this condition (trying a key file, password is None)</span>
+            <span class="c"># Paramiko raises PasswordRequiredException.</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">__class__</span> <span class="ow">is</span> <span class="n">ssh</span><span class="o">.</span><span class="n">PasswordRequiredException</span><span class="p">:</span>
+                <span class="c"># NOTE: we can&#39;t easily say WHICH key&#39;s passphrase is needed,</span>
+                <span class="c"># because Paramiko doesn&#39;t provide us with that info, and</span>
+                <span class="c"># env.key_filename may be a list of keys, so we can&#39;t know</span>
+                <span class="c"># which one raised the exception. Best not to try.</span>
+                <span class="n">prompt</span> <span class="o">=</span> <span class="s">&quot;[</span><span class="si">%s</span><span class="s">] Passphrase for private key&quot;</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">prompt</span> <span class="o">%</span> <span class="n">env</span><span class="o">.</span><span class="n">host_string</span>
+            <span class="n">password</span> <span class="o">=</span> <span class="n">prompt_for_password</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+            <span class="c"># Update env.password, env.passwords if empty</span>
+            <span class="n">set_password</span><span class="p">(</span><span class="n">password</span><span class="p">)</span>
+        <span class="c"># Ctrl-D / Ctrl-C for exit</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">EOFError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="c"># Print a newline (in case user was sitting at prompt)</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c"># Handle timeouts</span>
+        <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+            <span class="n">abort</span><span class="p">(</span><span class="s">&#39;Timed out trying to connect to </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">host</span><span class="p">)</span>
+        <span class="c"># Handle DNS error / name lookup failure</span>
+        <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">gaierror</span><span class="p">:</span>
+            <span class="n">abort</span><span class="p">(</span><span class="s">&#39;Name lookup failed for </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">host</span><span class="p">)</span>
+        <span class="c"># Handle generic network-related errors</span>
+        <span class="c"># NOTE: In 2.6, socket.error subclasses IOError</span>
+        <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">error</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">abort</span><span class="p">(</span><span class="s">&#39;Low level socket error connecting to host </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                <span class="n">host</span><span class="p">,</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">prompt_for_password</span><span class="p">(</span><span class="n">prompt</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">no_colon</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prompts for and returns a new password if required; otherwise, returns None.</span>
+
+<span class="sd">    A trailing colon is appended unless ``no_colon`` is True.</span>
+
+<span class="sd">    If the user supplies an empty password, the user will be re-prompted until</span>
+<span class="sd">    they enter a non-empty password.</span>
+
+<span class="sd">    ``prompt_for_password`` autogenerates the user prompt based on the current</span>
+<span class="sd">    host being connected to. To override this, specify a string value for</span>
+<span class="sd">    ``prompt``.</span>
+
+<span class="sd">    ``stream`` is the stream the prompt will be printed to; if not given,</span>
+<span class="sd">    defaults to ``sys.stderr``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">fabric.state</span> <span class="kn">import</span> <span class="n">env</span>
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">stream</span> <span class="ow">or</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span>
+    <span class="c"># Construct prompt</span>
+    <span class="n">default</span> <span class="o">=</span> <span class="s">&quot;[</span><span class="si">%s</span><span class="s">] Login password&quot;</span> <span class="o">%</span> <span class="n">env</span><span class="o">.</span><span class="n">host_string</span>
+    <span class="n">password_prompt</span> <span class="o">=</span> <span class="n">prompt</span> <span class="k">if</span> <span class="p">(</span><span class="n">prompt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)</span> <span class="k">else</span> <span class="n">default</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">no_colon</span><span class="p">:</span>
+        <span class="n">password_prompt</span> <span class="o">+=</span> <span class="s">&quot;: &quot;</span>
+    <span class="c"># Get new password value</span>
+    <span class="n">new_password</span> <span class="o">=</span> <span class="n">getpass</span><span class="o">.</span><span class="n">getpass</span><span class="p">(</span><span class="n">password_prompt</span><span class="p">,</span> <span class="n">stream</span><span class="p">)</span>
+    <span class="c"># Otherwise, loop until user gives us a non-empty password (to prevent</span>
+    <span class="c"># returning the empty string, and to avoid unnecessary network overhead.)</span>
+    <span class="k">while</span> <span class="ow">not</span> <span class="n">new_password</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;Sorry, you can&#39;t enter an empty password. Please try again.&quot;</span><span class="p">)</span>
+        <span class="n">new_password</span> <span class="o">=</span> <span class="n">getpass</span><span class="o">.</span><span class="n">getpass</span><span class="p">(</span><span class="n">password_prompt</span><span class="p">,</span> <span class="n">stream</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_password</span>
+
+
+<span class="k">def</span> <span class="nf">needs_host</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prompt user for value of ``env.host_string`` when ``env.host_string`` is</span>
+<span class="sd">    empty.</span>
+
+<span class="sd">    This decorator is basically a safety net for silly users who forgot to</span>
+<span class="sd">    specify the host/host list in one way or another. It should be used to wrap</span>
+<span class="sd">    operations which require a network connection.</span>
+<span class="sd">    </span>
+<span class="sd">    Due to how we execute commands per-host in ``main()``, it&#39;s not possible to</span>
+<span class="sd">    specify multiple hosts at this point in time, so only a single host will be</span>
+<span class="sd">    prompted for.</span>
+
+<span class="sd">    Because this decorator sets ``env.host_string``, it will prompt once (and</span>
+<span class="sd">    only once) per command. As ``main()`` clears ``env.host_string`` between</span>
+<span class="sd">    commands, this decorator will also end up prompting the user once per</span>
+<span class="sd">    command (in the case where multiple commands have no hosts set, of course.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">fabric.state</span> <span class="kn">import</span> <span class="n">env</span>
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">host_prompting_wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;host_string&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">):</span>
+            <span class="n">host_string</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="s">&quot;No hosts found. Please specify (single) host string for connection: &quot;</span><span class="p">)</span>
+            <span class="n">interpret_host_string</span><span class="p">(</span><span class="n">host_string</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">host_prompting_wrapper</span>
+
+
+<span class="k">def</span> <span class="nf">interpret_host_string</span><span class="p">(</span><span class="n">host_string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply given host string to the env dict.</span>
+
+<span class="sd">    Split it into hostname, username and port (using</span>
+<span class="sd">    `~fabric.network.normalize`) and store the full host string plus its</span>
+<span class="sd">    constituent parts into the appropriate env vars.</span>
+
+<span class="sd">    Returns the parts as split out by ``normalize`` for convenience.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">fabric.state</span> <span class="kn">import</span> <span class="n">env</span>
+    <span class="n">username</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">host_string</span><span class="p">)</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">host_string</span> <span class="o">=</span> <span class="n">host_string</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">hostname</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">user</span> <span class="o">=</span> <span class="n">username</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+    <span class="k">return</span> <span class="n">username</span><span class="p">,</span> <span class="n">hostname</span><span class="p">,</span> <span class="n">port</span>
+
+
+<div class="viewcode-block" id="disconnect_all"><a class="viewcode-back" href="../../build/fabric/docs/api/core/network.html#fabric.network.disconnect_all">[docs]</a><span class="k">def</span> <span class="nf">disconnect_all</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Disconnect from all currently connected servers.</span>
+
+<span class="sd">    Used at the end of ``fab``&#39;s main loop, and also intended for use by</span>
+<span class="sd">    library users.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">fabric.state</span> <span class="kn">import</span> <span class="n">connections</span><span class="p">,</span> <span class="n">output</span>
+    <span class="c"># Explicitly disconnect from all servers</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">connections</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">status</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;Disconnecting from </span><span class="si">%s</span><span class="s">...&quot;</span> <span class="o">%</span> <span class="n">denormalize</span><span class="p">(</span><span class="n">key</span><span class="p">),</span>
+        <span class="n">connections</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">del</span> <span class="n">connections</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">status</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;done.&quot;</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

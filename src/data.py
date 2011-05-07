@@ -23,4 +23,6 @@ TRD = A[_training_data_rows, :]
 
 # Load labels
 L = np.loadtxt('data/labels.csv', delimiter=',', dtype=str)
+L_clean = [l for l in L if l not in ['P8','V7','V9','ObsNum','TrialID']]
+
 

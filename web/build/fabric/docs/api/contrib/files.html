@@ -1,0 +1,234 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>File and Directory Management &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../../../_sources/build/fabric/docs/api/contrib/files.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-fabric.contrib.files">
+<span id="file-and-directory-management"></span><h1>File and Directory Management<a class="headerlink" href="#module-fabric.contrib.files" title="Permalink to this headline">¶</a></h1>
+<p>Module providing easy API for working with remote files and folders.</p>
+<dl class="function">
+<dt id="fabric.contrib.files.append">
+<tt class="descclassname">fabric.contrib.files.</tt><tt class="descname">append</tt><big>(</big><em>filename</em>, <em>text</em>, <em>use_sudo=False</em>, <em>partial=False</em>, <em>escape=True</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/contrib/files.html#append"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.contrib.files.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append string (or list of strings) <tt class="docutils literal"><span class="pre">text</span></tt> to <tt class="docutils literal"><span class="pre">filename</span></tt>.</p>
+<p>When a list is given, each string inside is handled independently (but in
+the order given.)</p>
+<p>If <tt class="docutils literal"><span class="pre">text</span></tt> is already found in <tt class="docutils literal"><span class="pre">filename</span></tt>, the append is not run, and
+None is returned immediately. Otherwise, the given text is appended to the
+end of the given <tt class="docutils literal"><span class="pre">filename</span></tt> via e.g. <tt class="docutils literal"><span class="pre">echo</span> <span class="pre">'$text'</span> <span class="pre">&gt;&gt;</span> <span class="pre">$filename</span></tt>.</p>
+<p>The test for whether <tt class="docutils literal"><span class="pre">text</span></tt> already exists defaults to a full line match,
+e.g. <tt class="docutils literal"><span class="pre">^&lt;text&gt;$</span></tt>, as this seems to be the most sensible approach for the
+&#8220;append lines to a file&#8221; use case. You may override this and force partial
+searching (e.g. <tt class="docutils literal"><span class="pre">^&lt;text&gt;</span></tt>) by specifying <tt class="docutils literal"><span class="pre">partial=True</span></tt>.</p>
+<p>Because <tt class="docutils literal"><span class="pre">text</span></tt> is single-quoted, single quotes will be transparently 
+backslash-escaped. This can be disabled with <tt class="docutils literal"><span class="pre">escape=False</span></tt>.</p>
+<p>If <tt class="docutils literal"><span class="pre">use_sudo</span></tt> is True, will use <cite>sudo</cite> instead of <cite>run</cite>.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 0.9.1: </span>Added the <tt class="docutils literal"><span class="pre">partial</span></tt> keyword argument.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>Swapped the order of the <tt class="docutils literal"><span class="pre">filename</span></tt> and <tt class="docutils literal"><span class="pre">text</span></tt> arguments to be
+consistent with other functions in this module.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>Changed default value of <tt class="docutils literal"><span class="pre">partial</span></tt> kwarg to be <tt class="xref docutils literal"><span class="pre">False</span></tt>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.contrib.files.comment">
+<tt class="descclassname">fabric.contrib.files.</tt><tt class="descname">comment</tt><big>(</big><em>filename</em>, <em>regex</em>, <em>use_sudo=False</em>, <em>char='#'</em>, <em>backup='.bak'</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/contrib/files.html#comment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.contrib.files.comment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempt to comment out all lines in <tt class="docutils literal"><span class="pre">filename</span></tt> matching <tt class="docutils literal"><span class="pre">regex</span></tt>.</p>
+<p>The default commenting character is <cite>#</cite> and may be overridden by the
+<tt class="docutils literal"><span class="pre">char</span></tt> argument.</p>
+<p>This function uses the <cite>sed</cite> function, and will accept the same
+<tt class="docutils literal"><span class="pre">use_sudo</span></tt> and <tt class="docutils literal"><span class="pre">backup</span></tt> keyword arguments that <cite>sed</cite> does.</p>
+<p><cite>comment</cite> will prepend the comment character to the beginning of the line,
+so that lines end up looking like so:</p>
+<div class="highlight-python"><pre>this line is uncommented
+#this line is commented
+#   this line is indented and commented</pre>
+</div>
+<p>In other words, comment characters will not &#8220;follow&#8221; indentation as they
+sometimes do when inserted by hand. Neither will they have a trailing space
+unless you specify e.g. <tt class="docutils literal"><span class="pre">char='#</span> <span class="pre">'</span></tt>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In order to preserve the line being commented out, this function will
+wrap your <tt class="docutils literal"><span class="pre">regex</span></tt> argument in parentheses, so you don&#8217;t need to. It
+will ensure that any preceding/trailing <tt class="docutils literal"><span class="pre">^</span></tt> or <tt class="docutils literal"><span class="pre">$</span></tt> characters are
+correctly moved outside the parentheses. For example, calling
+<tt class="docutils literal"><span class="pre">comment(filename,</span> <span class="pre">r'^foo$')</span></tt> will result in a <cite>sed</cite> call with the
+&#8220;before&#8221; regex of <tt class="docutils literal"><span class="pre">r'^(foo)$'</span></tt> (and the &#8220;after&#8221; regex, naturally, of
+<tt class="docutils literal"><span class="pre">r'#\1'</span></tt>.)</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.contrib.files.contains">
+<tt class="descclassname">fabric.contrib.files.</tt><tt class="descname">contains</tt><big>(</big><em>filename</em>, <em>text</em>, <em>exact=False</em>, <em>use_sudo=False</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/contrib/files.html#contains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.contrib.files.contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if <tt class="docutils literal"><span class="pre">filename</span></tt> contains <tt class="docutils literal"><span class="pre">text</span></tt>.</p>
+<p>By default, this function will consider a partial line match (i.e. where
+the given text only makes up part of the line it&#8217;s on). Specify
+<tt class="docutils literal"><span class="pre">exact=True</span></tt> to change this behavior so that only a line containing
+exactly <tt class="docutils literal"><span class="pre">text</span></tt> results in a True return value.</p>
+<p>Double-quotes in either <tt class="docutils literal"><span class="pre">text</span></tt> or <tt class="docutils literal"><span class="pre">filename</span></tt> will be automatically
+backslash-escaped in order to behave correctly during the remote shell
+invocation.</p>
+<p>If <tt class="docutils literal"><span class="pre">use_sudo</span></tt> is True, will use <cite>sudo</cite> instead of <cite>run</cite>.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>Swapped the order of the <tt class="docutils literal"><span class="pre">filename</span></tt> and <tt class="docutils literal"><span class="pre">text</span></tt> arguments to be
+consistent with other functions in this module.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.contrib.files.exists">
+<tt class="descclassname">fabric.contrib.files.</tt><tt class="descname">exists</tt><big>(</big><em>path</em>, <em>use_sudo=False</em>, <em>verbose=False</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/contrib/files.html#exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.contrib.files.exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if given path exists on the current remote host.</p>
+<p>If <tt class="docutils literal"><span class="pre">use_sudo</span></tt> is True, will use <cite>sudo</cite> instead of <cite>run</cite>.</p>
+<p><cite>exists</cite> will, by default, hide all output (including the run line, stdout,
+stderr and any warning resulting from the file not existing) in order to
+avoid cluttering output. You may specify <tt class="docutils literal"><span class="pre">verbose=True</span></tt> to change this
+behavior.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.contrib.files.first">
+<tt class="descclassname">fabric.contrib.files.</tt><tt class="descname">first</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/contrib/files.html#first"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.contrib.files.first" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given one or more file paths, returns first one found, or None if none
+exist. May specify <tt class="docutils literal"><span class="pre">use_sudo</span></tt> which is passed to <cite>exists</cite>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.contrib.files.sed">
+<tt class="descclassname">fabric.contrib.files.</tt><tt class="descname">sed</tt><big>(</big><em>filename</em>, <em>before</em>, <em>after</em>, <em>limit=''</em>, <em>use_sudo=False</em>, <em>backup='.bak'</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/contrib/files.html#sed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.contrib.files.sed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a search-and-replace on <tt class="docutils literal"><span class="pre">filename</span></tt> with given regex patterns.</p>
+<p>Equivalent to <tt class="docutils literal"><span class="pre">sed</span> <span class="pre">-i&lt;backup&gt;</span> <span class="pre">-r</span> <span class="pre">-e</span> <span class="pre">&quot;/&lt;limit&gt;/</span> <span class="pre">s/&lt;before&gt;/&lt;after&gt;/g</span>
+<span class="pre">&lt;filename&gt;&quot;</span></tt>.</p>
+<p>For convenience, <tt class="docutils literal"><span class="pre">before</span></tt> and <tt class="docutils literal"><span class="pre">after</span></tt> will automatically escape forward
+slashes, single quotes and parentheses for you, so you don&#8217;t need to
+specify e.g.  <tt class="docutils literal"><span class="pre">http:\/\/foo\.com</span></tt>, instead just using <tt class="docutils literal"><span class="pre">http://foo\.com</span></tt>
+is fine.</p>
+<p>If <tt class="docutils literal"><span class="pre">use_sudo</span></tt> is True, will use <cite>sudo</cite> instead of <cite>run</cite>.</p>
+<p><cite>sed</cite> will pass <tt class="docutils literal"><span class="pre">shell=False</span></tt> to <cite>run</cite>/<cite>sudo</cite>, in order to avoid problems
+with many nested levels of quotes and backslashes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.contrib.files.uncomment">
+<tt class="descclassname">fabric.contrib.files.</tt><tt class="descname">uncomment</tt><big>(</big><em>filename</em>, <em>regex</em>, <em>use_sudo=False</em>, <em>char='#'</em>, <em>backup='.bak'</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/contrib/files.html#uncomment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.contrib.files.uncomment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempt to uncomment all lines in <tt class="docutils literal"><span class="pre">filename</span></tt> matching <tt class="docutils literal"><span class="pre">regex</span></tt>.</p>
+<p>The default comment delimiter is <cite>#</cite> and may be overridden by the <tt class="docutils literal"><span class="pre">char</span></tt>
+argument.</p>
+<p>This function uses the <cite>sed</cite> function, and will accept the same
+<tt class="docutils literal"><span class="pre">use_sudo</span></tt> and <tt class="docutils literal"><span class="pre">backup</span></tt> keyword arguments that <cite>sed</cite> does.</p>
+<p><cite>uncomment</cite> will remove a single whitespace character following the comment
+character, if it exists, but will preserve all preceding whitespace.  For
+example, <tt class="docutils literal"><span class="pre">#</span> <span class="pre">foo</span></tt> would become <tt class="docutils literal"><span class="pre">foo</span></tt> (the single space is stripped) but
+``    # foo`` would become ``    foo`` (the single space is still stripped,
+but the preceding 4 spaces are not.)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.contrib.files.upload_template">
+<tt class="descclassname">fabric.contrib.files.</tt><tt class="descname">upload_template</tt><big>(</big><em>filename</em>, <em>destination</em>, <em>context=None</em>, <em>use_jinja=False</em>, <em>template_dir=None</em>, <em>use_sudo=False</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/contrib/files.html#upload_template"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.contrib.files.upload_template" title="Permalink to this definition">¶</a></dt>
+<dd><p>Render and upload a template text file to a remote host.</p>
+<p><tt class="docutils literal"><span class="pre">filename</span></tt> should be the path to a text file, which may contain <a class="reference external" href="http://docs.python.org/release/2.5.4/lib/typesseq-strings.html">Python
+string interpolation formatting</a> and will
+be rendered with the given context dictionary <tt class="docutils literal"><span class="pre">context</span></tt> (if given.)</p>
+<p>Alternately, if <tt class="docutils literal"><span class="pre">use_jinja</span></tt> is set to True and you have the Jinja2
+templating library available, Jinja will be used to render the template
+instead. Templates will be loaded from the invoking user&#8217;s current working
+directory by default, or from <tt class="docutils literal"><span class="pre">template_dir</span></tt> if given.</p>
+<p>The resulting rendered file will be uploaded to the remote file path
+<tt class="docutils literal"><span class="pre">destination</span></tt> (which should include the desired remote filename.) If the
+destination file already exists, it will be renamed with a <tt class="docutils literal"><span class="pre">.bak</span></tt>
+extension.</p>
+<p>By default, the file will be copied to <tt class="docutils literal"><span class="pre">destination</span></tt> as the logged-in
+user; specify <tt class="docutils literal"><span class="pre">use_sudo=True</span></tt> to use <cite>sudo</cite> instead.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

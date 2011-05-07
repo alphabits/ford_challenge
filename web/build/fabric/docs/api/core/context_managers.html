@@ -1,0 +1,319 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Context Managers &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../../../_sources/build/fabric/docs/api/core/context_managers.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-fabric.context_managers">
+<span id="context-managers"></span><h1>Context Managers<a class="headerlink" href="#module-fabric.context_managers" title="Permalink to this headline">¶</a></h1>
+<p>Context managers for use with the <tt class="docutils literal"><span class="pre">with</span></tt> statement.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">When using Python 2.5, you will need to start your fabfile
+with <tt class="docutils literal"><span class="pre">from</span> <span class="pre">__future__</span> <span class="pre">import</span> <span class="pre">with_statement</span></tt> in order to make use of
+the <tt class="docutils literal"><span class="pre">with</span></tt> statement (which is a regular, non <tt class="docutils literal"><span class="pre">__future__</span></tt> feature of
+Python 2.6+.)</p>
+</div>
+<dl class="function">
+<dt id="fabric.context_managers.cd">
+<tt class="descclassname">fabric.context_managers.</tt><tt class="descname">cd</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/context_managers.html#cd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.context_managers.cd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Context manager that keeps directory state when calling operations.</p>
+<p>Any calls to <cite>run</cite>, <cite>sudo</cite>, <cite>get</cite>, or <cite>put</cite> within the wrapped block will
+implicitly have a string similar to <tt class="docutils literal"><span class="pre">&quot;cd</span> <span class="pre">&lt;path&gt;</span> <span class="pre">&amp;&amp;</span> <span class="pre">&quot;</span></tt> prefixed in order
+to give the sense that there is actually statefulness involved.  <cite>cd</cite> only
+affects the remote paths for <cite>get</cite> and <cite>put</cite> &#8211; local paths are untouched.</p>
+<p>Because use of <cite>cd</cite> affects all such invocations, any code making use of
+those operations, such as much of the <tt class="docutils literal"><span class="pre">contrib</span></tt> section, will also be
+affected by use of <cite>cd</cite>.</p>
+<p>Like the actual &#8216;cd&#8217; shell builtin, <cite>cd</cite> may be called with relative paths
+(keep in mind that your default starting directory is your remote user&#8217;s
+<tt class="docutils literal"><span class="pre">$HOME</span></tt>) and may be nested as well.</p>
+<p>Below is a &#8220;normal&#8221; attempt at using the shell &#8216;cd&#8217;, which doesn&#8217;t work due
+to how shell-less SSH connections are implemented &#8211; state is <strong>not</strong> kept
+between invocations of <cite>run</cite> or <cite>sudo</cite>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">run</span><span class="p">(</span><span class="s">&#39;cd /var/www&#39;</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="s">&#39;ls&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above snippet will list the contents of the remote user&#8217;s <tt class="docutils literal"><span class="pre">$HOME</span></tt>
+instead of <tt class="docutils literal"><span class="pre">/var/www</span></tt>. With <cite>cd</cite>, however, it will work as expected:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;/var/www&#39;</span><span class="p">):</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;ls&#39;</span><span class="p">)</span> <span class="c"># Turns into &quot;cd /var/www &amp;&amp; ls&quot;</span>
+</pre></div>
+</div>
+<p>Finally, a demonstration (see inline comments) of nesting:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;/var/www&#39;</span><span class="p">):</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;ls&#39;</span><span class="p">)</span> <span class="c"># cd /var/www &amp;&amp; ls</span>
+    <span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;website1&#39;</span><span class="p">):</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;ls&#39;</span><span class="p">)</span> <span class="c"># cd /var/www/website1 &amp;&amp; ls</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This context manager is currently implemented by appending to (and, as
+always, restoring afterwards) the current value of an environment
+variable, <tt class="docutils literal"><span class="pre">env.cwd</span></tt>. However, this implementation may change in the
+future, so we do not recommend manually altering <tt class="docutils literal"><span class="pre">env.cwd</span></tt> &#8211; only
+the <em>behavior</em> of <cite>cd</cite> will have any guarantee of backwards
+compatibility.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Space characters will be escaped automatically to make dealing with
+such directory names easier.</p>
+</div>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>Applies to <cite>get</cite> and <cite>put</cite> in addition to the command-running
+operations.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.context_managers.hide">
+<tt class="descclassname">fabric.context_managers.</tt><tt class="descname">hide</tt><big>(</big><em>*groups</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/context_managers.html#hide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.context_managers.hide" title="Permalink to this definition">¶</a></dt>
+<dd><p>Context manager for setting the given output <tt class="docutils literal"><span class="pre">groups</span></tt> to False.</p>
+<p><tt class="docutils literal"><span class="pre">groups</span></tt> must be one or more strings naming the output groups defined in
+<cite>~fabric.state.output</cite>. The given groups will be set to False for the
+duration of the enclosed block, and restored to their previous value
+afterwards.</p>
+<p>For example, to hide the &#8220;[hostname] run:&#8221; status lines, as well as
+preventing printout of stdout and stderr, one might use <cite>hide</cite> as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">my_task</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">hide</span><span class="p">(</span><span class="s">&#39;running&#39;</span><span class="p">,</span> <span class="s">&#39;stdout&#39;</span><span class="p">,</span> <span class="s">&#39;stderr&#39;</span><span class="p">):</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;ls /var/www&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.context_managers.lcd">
+<tt class="descclassname">fabric.context_managers.</tt><tt class="descname">lcd</tt><big>(</big><em>path</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/context_managers.html#lcd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.context_managers.lcd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Context manager for updating local current working directory.</p>
+<p>This context manager is identical to <cite>~fabric.context_managers.cd</cite>, except
+that it changes a different env var (<cite>lcwd</cite>, instead of <cite>cwd</cite>) and thus
+only affects the invocation of <cite>~fabric.operations.local</cite> and the local
+arguments to <cite>~fabric.operations.get</cite>/<cite>~fabric.operations.put</cite>.</p>
+<p class="versionadded">
+<span class="versionmodified">New in version 1.0.</span></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.context_managers.path">
+<tt class="descclassname">fabric.context_managers.</tt><tt class="descname">path</tt><big>(</big><em>path</em>, <em>behavior='append'</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/context_managers.html#path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.context_managers.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append the given <tt class="docutils literal"><span class="pre">path</span></tt> to the PATH used to execute any wrapped commands.</p>
+<p>Any calls to <cite>run</cite> or <cite>sudo</cite> within the wrapped block will implicitly have
+a string similar to <tt class="docutils literal"><span class="pre">&quot;PATH=$PATH:&lt;path&gt;</span> <span class="pre">&quot;</span></tt> prepended before the given
+command.</p>
+<p>You may customize the behavior of <cite>path</cite> by specifying the optional
+<tt class="docutils literal"><span class="pre">behavior</span></tt> keyword argument, as follows:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">'append'</span></tt>: append given path to the current <tt class="docutils literal"><span class="pre">$PATH</span></tt>, e.g.
+<tt class="docutils literal"><span class="pre">PATH=$PATH:&lt;path&gt;</span></tt>. This is the default behavior.</li>
+<li><tt class="docutils literal"><span class="pre">'prepend'</span></tt>: prepend given path to the current <tt class="docutils literal"><span class="pre">$PATH</span></tt>, e.g.
+<tt class="docutils literal"><span class="pre">PATH=&lt;path&gt;:$PATH</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">'replace'</span></tt>: ignore previous value of <tt class="docutils literal"><span class="pre">$PATH</span></tt> altogether, e.g.
+<tt class="docutils literal"><span class="pre">PATH=&lt;path&gt;</span></tt>.</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This context manager is currently implemented by modifying (and, as
+always, restoring afterwards) the current value of environment
+variables, <tt class="docutils literal"><span class="pre">env.path</span></tt> and <tt class="docutils literal"><span class="pre">env.path_behavior</span></tt>. However, this
+implementation may change in the future, so we do not recommend
+manually altering them directly.</p>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 1.0.</span></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.context_managers.prefix">
+<tt class="descclassname">fabric.context_managers.</tt><tt class="descname">prefix</tt><big>(</big><em>command</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/context_managers.html#prefix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.context_managers.prefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prefix all wrapped <cite>run</cite>/<cite>sudo</cite> commands with given command plus <tt class="docutils literal"><span class="pre">&amp;&amp;</span></tt>.</p>
+<p>This is nearly identical to <cite>~fabric.operations.cd</cite>, except that nested
+invocations append to a list of command strings instead of modifying a
+single string.</p>
+<p>Most of the time, you&#8217;ll want to be using this alongside a shell script
+which alters shell state, such as ones which export or alter shell
+environment variables.</p>
+<p>For example, one of the most common uses of this tool is with the
+<tt class="docutils literal"><span class="pre">workon</span></tt> command from <a class="reference external" href="http://www.doughellmann.com/projects/virtualenvwrapper/">virtualenvwrapper</a>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">prefix</span><span class="p">(</span><span class="s">&#39;workon myvenv&#39;</span><span class="p">):</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;./manage.py syncdb&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the above snippet, the actual shell command run would be this:</p>
+<div class="highlight-python"><pre>$ workon myvenv &amp;&amp; ./manage.py syncdb</pre>
+</div>
+<p>This context manager is compatible with <cite>~fabric.context_managers.cd</cite>, so
+if your virtualenv doesn&#8217;t <tt class="docutils literal"><span class="pre">cd</span></tt> in its <tt class="docutils literal"><span class="pre">postactivate</span></tt> script, you could
+do the following:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;/path/to/app&#39;</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">prefix</span><span class="p">(</span><span class="s">&#39;workon myvenv&#39;</span><span class="p">):</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;./manage.py syncdb&#39;</span><span class="p">)</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;./manage.py loaddata myfixture&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Which would result in executions like so:</p>
+<div class="highlight-python"><pre>$ cd /path/to/app &amp;&amp; workon myvenv &amp;&amp; ./manage.py syncdb
+$ cd /path/to/app &amp;&amp; workon myvenv &amp;&amp; ./manage.py loaddata myfixture</pre>
+</div>
+<p>Finally, as alluded to near the beginning,
+<cite>~fabric.context_managers.prefix</cite> may be nested if desired, e.g.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">prefix</span><span class="p">(</span><span class="s">&#39;workon myenv&#39;</span><span class="p">):</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;ls&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">prefix</span><span class="p">(</span><span class="s">&#39;source /some/script&#39;</span><span class="p">):</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;touch a_file&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The result:</p>
+<div class="highlight-python"><pre>$ workon myenv &amp;&amp; ls
+$ workon myenv &amp;&amp; source /some/script &amp;&amp; touch a_file</pre>
+</div>
+<p>Contrived, but hopefully illustrative.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.context_managers.settings">
+<tt class="descclassname">fabric.context_managers.</tt><tt class="descname">settings</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/context_managers.html#settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.context_managers.settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Nest context managers and/or override <tt class="docutils literal"><span class="pre">env</span></tt> variables.</p>
+<p><cite>settings</cite> serves two purposes:</p>
+<ul class="simple">
+<li>Most usefully, it allows temporary overriding/updating of <tt class="docutils literal"><span class="pre">env</span></tt> with
+any provided keyword arguments, e.g. <tt class="docutils literal"><span class="pre">with</span> <span class="pre">settings(user='foo'):</span></tt>.
+Original values, if any, will be restored once the <tt class="docutils literal"><span class="pre">with</span></tt> block closes.</li>
+<li>In addition, it will use <a class="reference external" href="http://docs.python.org/library/contextlib.html#contextlib.nested">contextlib.nested</a> to nest any given
+non-keyword arguments, which should be other context managers, e.g.
+<tt class="docutils literal"><span class="pre">with</span> <span class="pre">settings(hide('stderr'),</span> <span class="pre">show('stdout')):</span></tt>.</li>
+</ul>
+<p>These behaviors may be specified at the same time if desired. An example
+will hopefully illustrate why this is considered useful:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">my_task</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">settings</span><span class="p">(</span>
+        <span class="n">hide</span><span class="p">(</span><span class="s">&#39;warnings&#39;</span><span class="p">,</span> <span class="s">&#39;running&#39;</span><span class="p">,</span> <span class="s">&#39;stdout&#39;</span><span class="p">,</span> <span class="s">&#39;stderr&#39;</span><span class="p">),</span>
+        <span class="n">warn_only</span><span class="o">=</span><span class="bp">True</span>
+    <span class="p">):</span>
+        <span class="k">if</span> <span class="n">run</span><span class="p">(</span><span class="s">&#39;ls /etc/lsb-release&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s">&#39;Ubuntu&#39;</span>
+        <span class="k">elif</span> <span class="n">run</span><span class="p">(</span><span class="s">&#39;ls /etc/redhat-release&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="s">&#39;RedHat&#39;</span>
+</pre></div>
+</div>
+<p>The above task executes a <cite>run</cite> statement, but will warn instead of
+aborting if the <tt class="docutils literal"><span class="pre">ls</span></tt> fails, and all output &#8211; including the warning
+itself &#8211; is prevented from printing to the user. The end result, in this
+scenario, is a completely silent task that allows the caller to figure out
+what type of system the remote host is, without incurring the handful of
+output that would normally occur.</p>
+<p>Thus, <cite>settings</cite> may be used to set any combination of environment
+variables in tandem with hiding (or showing) specific levels of output, or
+in tandem with any other piece of Fabric functionality implemented as a
+context manager.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.context_managers.show">
+<tt class="descclassname">fabric.context_managers.</tt><tt class="descname">show</tt><big>(</big><em>*groups</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/context_managers.html#show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.context_managers.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Context manager for setting the given output <tt class="docutils literal"><span class="pre">groups</span></tt> to True.</p>
+<p><tt class="docutils literal"><span class="pre">groups</span></tt> must be one or more strings naming the output groups defined in
+<cite>~fabric.state.output</cite>. The given groups will be set to True for the
+duration of the enclosed block, and restored to their previous value
+afterwards.</p>
+<p>For example, to turn on debug output (which is typically off by default):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">my_task</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">show</span><span class="p">(</span><span class="s">&#39;debug&#39;</span><span class="p">):</span>
+        <span class="n">run</span><span class="p">(</span><span class="s">&#39;ls /var/www&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As almost all output groups are displayed by default, <cite>show</cite> is most useful
+for turning on the normally-hidden <tt class="docutils literal"><span class="pre">debug</span></tt> group, or when you know or
+suspect that code calling your own code is trying to hide output with
+<cite>hide</cite>.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

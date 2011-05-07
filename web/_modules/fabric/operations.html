@@ -1,0 +1,1140 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>fabric.operations &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for fabric.operations</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Functions to be used in fabfiles and other non-core code, such as run()/sudo().</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">with_statement</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">stat</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+<span class="kn">from</span> <span class="nn">traceback</span> <span class="kn">import</span> <span class="n">format_exc</span>
+
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">closing</span>
+
+<span class="kn">from</span> <span class="nn">fabric.context_managers</span> <span class="kn">import</span> <span class="n">settings</span><span class="p">,</span> <span class="n">char_buffered</span>
+<span class="kn">from</span> <span class="nn">fabric.io</span> <span class="kn">import</span> <span class="n">output_loop</span><span class="p">,</span> <span class="n">input_loop</span>
+<span class="kn">from</span> <span class="nn">fabric.network</span> <span class="kn">import</span> <span class="n">needs_host</span>
+<span class="kn">from</span> <span class="nn">fabric.state</span> <span class="kn">import</span> <span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">connections</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">win32</span><span class="p">,</span> <span class="n">default_channel</span><span class="p">,</span>
+    <span class="n">io_sleep</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">fabric.utils</span> <span class="kn">import</span> <span class="n">abort</span><span class="p">,</span> <span class="n">indent</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">puts</span>
+<span class="kn">from</span> <span class="nn">fabric.thread_handling</span> <span class="kn">import</span> <span class="n">ThreadHandler</span>
+<span class="kn">from</span> <span class="nn">fabric.sftp</span> <span class="kn">import</span> <span class="n">SFTP</span>
+
+<span class="c"># For terminal size logic below</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">win32</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">fcntl</span>
+    <span class="kn">import</span> <span class="nn">termios</span>
+    <span class="kn">import</span> <span class="nn">struct</span>
+
+
+<span class="k">def</span> <span class="nf">_pty_size</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Obtain (rows, cols) tuple for sizing a pty on the remote end.</span>
+
+<span class="sd">    Defaults to 80x24 (which is also the Paramiko default) but will detect</span>
+<span class="sd">    local (stdout-based) terminal window size on non-Windows platforms.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="mi">24</span><span class="p">,</span> <span class="mi">80</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">win32</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">isatty</span><span class="p">():</span>
+        <span class="c"># We want two short unsigned integers (rows, cols)</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="s">&#39;HH&#39;</span>
+        <span class="c"># Create an empty (zeroed) buffer for ioctl to map onto. Yay for C!</span>
+        <span class="nb">buffer</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c"># Call TIOCGWINSZ to get window size of stdout, returns our filled buffer</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">ioctl</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="n">termios</span><span class="o">.</span><span class="n">TIOCGWINSZ</span><span class="p">,</span>
+                <span class="nb">buffer</span><span class="p">)</span>
+            <span class="c"># Unpack buffer back into Python data types</span>
+            <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="n">fmt</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="c"># Deal with e.g. sys.stdout being monkeypatched, such as in testing.</span>
+        <span class="c"># Or termios not having a TIOCGWINSZ.</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span>
+
+
+<span class="k">def</span> <span class="nf">_handle_failure</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call `abort` or `warn` with the given message.</span>
+
+<span class="sd">    The value of ``env.warn_only`` determines which method is called.</span>
+
+<span class="sd">    If ``exception`` is given, it is inspected to get a string message, which</span>
+<span class="sd">    is printed alongside the user-generated ``message``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">func</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">warn_only</span> <span class="ow">and</span> <span class="n">warn</span> <span class="ow">or</span> <span class="n">abort</span>
+    <span class="c"># If debug printing is on, append a traceback to the message</span>
+    <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span> <span class="o">+</span> <span class="n">format_exc</span><span class="p">()</span>
+    <span class="c"># Otherwise, if we were given an exception, append its contents.</span>
+    <span class="k">elif</span> <span class="n">exception</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c"># Figure out how to get a string out of the exception; EnvironmentError</span>
+        <span class="c"># subclasses, for example, &quot;are&quot; integers and .strerror is the string.</span>
+        <span class="c"># Others &quot;are&quot; strings themselves. May have to expand this further for</span>
+        <span class="c"># other error types.</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">exception</span><span class="p">,</span> <span class="s">&#39;strerror&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">exception</span><span class="o">.</span><span class="n">strerror</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">underlying</span> <span class="o">=</span> <span class="n">exception</span><span class="o">.</span><span class="n">strerror</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">underlying</span> <span class="o">=</span> <span class="n">exception</span>
+        <span class="n">message</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">Underlying exception message:</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">+</span> <span class="n">indent</span><span class="p">(</span><span class="n">underlying</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_shell_escape</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Escape double quotes, backticks and dollar signs in given ``string``.</span>
+
+<span class="sd">    For example::</span>
+
+<span class="sd">        &gt;&gt;&gt; _shell_escape(&#39;abc$&#39;)</span>
+<span class="sd">        &#39;abc\\\\$&#39;</span>
+<span class="sd">        &gt;&gt;&gt; _shell_escape(&#39;&quot;&#39;)</span>
+<span class="sd">        &#39;\\\\&quot;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="p">(</span><span class="s">&#39;&quot;&#39;</span><span class="p">,</span> <span class="s">&#39;$&#39;</span><span class="p">,</span> <span class="s">&#39;`&#39;</span><span class="p">):</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">char</span><span class="p">,</span> <span class="s">&#39;\</span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">char</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">string</span>
+
+
+<span class="k">class</span> <span class="nc">_AttributeString</span><span class="p">(</span><span class="nb">str</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simple string subclass to allow arbitrary attribute access.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stdout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_AttributeList</span><span class="p">(</span><span class="nb">list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Like _AttributeString, but for lists.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+<span class="c"># Can&#39;t wait till Python versions supporting &#39;def func(*args, foo=bar)&#39; become</span>
+<span class="c"># widespread :(</span>
+<div class="viewcode-block" id="require"><a class="viewcode-back" href="../../build/fabric/docs/api/core/operations.html#fabric.operations.require">[docs]</a><span class="k">def</span> <span class="nf">require</span><span class="p">(</span><span class="o">*</span><span class="n">keys</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check for given keys in the shared environment dict and abort if not found.</span>
+
+<span class="sd">    Positional arguments should be strings signifying what env vars should be</span>
+<span class="sd">    checked for. If any of the given arguments do not exist, Fabric will abort</span>
+<span class="sd">    execution and print the names of the missing keys.</span>
+
+<span class="sd">    The optional keyword argument ``used_for`` may be a string, which will be</span>
+<span class="sd">    printed in the error output to inform users why this requirement is in</span>
+<span class="sd">    place. ``used_for`` is printed as part of a string similar to::</span>
+
+<span class="sd">        &quot;Th(is|ese) variable(s) (are|is) used for %s&quot;</span>
+
+<span class="sd">    so format it appropriately.</span>
+
+<span class="sd">    The optional keyword argument ``provided_by`` may be a list of functions or</span>
+<span class="sd">    function names which the user should be able to execute in order to set the</span>
+<span class="sd">    key or keys; it will be included in the error output if requirements are</span>
+<span class="sd">    not met.</span>
+
+<span class="sd">    Note: it is assumed that the keyword arguments apply to all given keys as a</span>
+<span class="sd">    group. If you feel the need to specify more than one ``used_for``, for</span>
+<span class="sd">    example, you should break your logic into multiple calls to ``require()``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># If all keys exist, we&#39;re good, so keep going.</span>
+    <span class="n">missing_keys</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">env</span><span class="p">,</span> <span class="n">keys</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">missing_keys</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="c"># Pluralization</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing_keys</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">variable</span> <span class="o">=</span> <span class="s">&quot;variables were&quot;</span>
+        <span class="n">used</span> <span class="o">=</span> <span class="s">&quot;These variables are&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">variable</span> <span class="o">=</span> <span class="s">&quot;variable was&quot;</span>
+        <span class="n">used</span> <span class="o">=</span> <span class="s">&quot;This variable is&quot;</span>
+    <span class="c"># Regardless of kwargs, print what was missing. (Be graceful if used outside</span>
+    <span class="c"># of a command.)</span>
+    <span class="k">if</span> <span class="s">&#39;command&#39;</span> <span class="ow">in</span> <span class="n">env</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s">&quot;The command &#39;</span><span class="si">%s</span><span class="s">&#39; failed because the &quot;</span> <span class="o">%</span> <span class="n">env</span><span class="o">.</span><span class="n">command</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s">&quot;The &quot;</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">following required environment </span><span class="si">%s</span><span class="s"> not defined:</span><span class="se">\n</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span>
+        <span class="n">prefix</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">indent</span><span class="p">(</span><span class="n">missing_keys</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="c"># Print used_for if given</span>
+    <span class="k">if</span> <span class="s">&#39;used_for&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="si">%s</span><span class="s"> used for </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">used</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;used_for&#39;</span><span class="p">])</span>
+    <span class="c"># And print provided_by if given</span>
+    <span class="k">if</span> <span class="s">&#39;provided_by&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">funcs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s">&#39;provided_by&#39;</span><span class="p">]</span>
+        <span class="c"># Pluralize this too</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">funcs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s">&quot;one of the following commands&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s">&quot;the following command&quot;</span>
+        <span class="n">to_s</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">obj</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="s">&#39;__name__&#39;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+        <span class="n">provided_by</span> <span class="o">=</span> <span class="p">[</span><span class="n">to_s</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">]</span>
+        <span class="n">msg</span> <span class="o">+=</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">Try running </span><span class="si">%s</span><span class="s"> prior to this one, to fix the problem:</span><span class="se">\n</span><span class="si">%s</span><span class="s">&quot;</span>\
+            <span class="o">%</span> <span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">indent</span><span class="p">(</span><span class="n">provided_by</span><span class="p">))</span>
+    <span class="n">abort</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="prompt"><a class="viewcode-back" href="../../build/fabric/docs/api/core/operations.html#fabric.operations.prompt">[docs]</a><span class="k">def</span> <span class="nf">prompt</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prompt user with ``text`` and return the input (like ``raw_input``).</span>
+
+<span class="sd">    A single space character will be appended for convenience, but nothing</span>
+<span class="sd">    else. Thus, you may want to end your prompt text with a question mark or a</span>
+<span class="sd">    colon, e.g. ``prompt(&quot;What hostname?&quot;)``.</span>
+
+<span class="sd">    If ``key`` is given, the user&#39;s input will be stored as ``env.&lt;key&gt;`` in</span>
+<span class="sd">    addition to being returned by `prompt`. If the key already existed in</span>
+<span class="sd">    ``env``, its value will be overwritten and a warning printed to the user.</span>
+
+<span class="sd">    If ``default`` is given, it is displayed in square brackets and used if the</span>
+<span class="sd">    user enters nothing (i.e. presses Enter without entering any text).</span>
+<span class="sd">    ``default`` defaults to the empty string. If non-empty, a space will be</span>
+<span class="sd">    appended, so that a call such as ``prompt(&quot;What hostname?&quot;,</span>
+<span class="sd">    default=&quot;foo&quot;)`` would result in a prompt of ``What hostname? [foo]`` (with</span>
+<span class="sd">    a trailing space after the ``[foo]``.)</span>
+
+<span class="sd">    The optional keyword argument ``validate`` may be a callable or a string:</span>
+
+<span class="sd">    * If a callable, it is called with the user&#39;s input, and should return the</span>
+<span class="sd">      value to be stored on success. On failure, it should raise an exception</span>
+<span class="sd">      with an exception message, which will be printed to the user.</span>
+<span class="sd">    * If a string, the value passed to ``validate`` is used as a regular</span>
+<span class="sd">      expression. It is thus recommended to use raw strings in this case. Note</span>
+<span class="sd">      that the regular expression, if it is not fully matching (bounded by</span>
+<span class="sd">      ``^`` and ``$``) it will be made so. In other words, the input must fully</span>
+<span class="sd">      match the regex.</span>
+
+<span class="sd">    Either way, `prompt` will re-prompt until validation passes (or the user</span>
+<span class="sd">    hits ``Ctrl-C``).</span>
+
+<span class="sd">    Examples::</span>
+
+<span class="sd">        # Simplest form:</span>
+<span class="sd">        environment = prompt(&#39;Please specify target environment: &#39;)</span>
+
+<span class="sd">        # With default, and storing as env.dish:</span>
+<span class="sd">        prompt(&#39;Specify favorite dish: &#39;, &#39;dish&#39;, default=&#39;spam &amp; eggs&#39;)</span>
+
+<span class="sd">        # With validation, i.e. requiring integer input:</span>
+<span class="sd">        prompt(&#39;Please specify process nice level: &#39;, key=&#39;nice&#39;, validate=int)</span>
+
+<span class="sd">        # With validation against a regular expression:</span>
+<span class="sd">        release = prompt(&#39;Please supply a release name&#39;,</span>
+<span class="sd">                validate=r&#39;^\w+-\d+(\.\d+)?$&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Store previous env value for later display, if necessary</span>
+    <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+        <span class="n">previous_value</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="c"># Set up default display</span>
+    <span class="n">default_str</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">default</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">default_str</span> <span class="o">=</span> <span class="s">&quot; [</span><span class="si">%s</span><span class="s">] &quot;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">default</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">default_str</span> <span class="o">=</span> <span class="s">&quot; &quot;</span>
+    <span class="c"># Construct full prompt string</span>
+    <span class="n">prompt_str</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">+</span> <span class="n">default_str</span>
+    <span class="c"># Loop until we pass validation</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">while</span> <span class="n">value</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="c"># Get input</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">raw_input</span><span class="p">(</span><span class="n">prompt_str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">default</span>
+        <span class="c"># Handle validation</span>
+        <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
+            <span class="c"># Callable</span>
+            <span class="k">if</span> <span class="nb">callable</span><span class="p">(</span><span class="n">validate</span><span class="p">):</span>
+                <span class="c"># Callable validate() must raise an exception if validation</span>
+                <span class="c"># fails.</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">validate</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="c"># Reset value so we stay in the loop</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="bp">None</span>
+                    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Validation failed for the following reason:&quot;</span><span class="p">)</span>
+                    <span class="k">print</span><span class="p">(</span><span class="n">indent</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+            <span class="c"># String / regex must match and will be empty if validation fails.</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c"># Need to transform regex into full-matching one if it&#39;s not.</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">validate</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;^&#39;</span><span class="p">):</span>
+                    <span class="n">validate</span> <span class="o">=</span> <span class="s">r&#39;^&#39;</span> <span class="o">+</span> <span class="n">validate</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">validate</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;$&#39;</span><span class="p">):</span>
+                    <span class="n">validate</span> <span class="o">+=</span> <span class="s">r&#39;$&#39;</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">validate</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Regular expression validation failed: &#39;</span><span class="si">%s</span><span class="s">&#39; does not match &#39;</span><span class="si">%s</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">validate</span><span class="p">))</span>
+                    <span class="c"># Reset value so we stay in the loop</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="c"># At this point, value must be valid, so update env if necessary</span>
+    <span class="k">if</span> <span class="n">key</span><span class="p">:</span>
+        <span class="n">env</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="c"># Print warning if we overwrote some other value</span>
+    <span class="k">if</span> <span class="n">key</span> <span class="ow">and</span> <span class="n">previous_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">previous_value</span> <span class="o">!=</span> <span class="n">value</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s">&quot;overwrote previous env variable &#39;</span><span class="si">%s</span><span class="s">&#39;; used to be &#39;</span><span class="si">%s</span><span class="s">&#39;, is now &#39;</span><span class="si">%s</span><span class="s">&#39;.&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">previous_value</span><span class="p">,</span> <span class="n">value</span>
+        <span class="p">))</span>
+    <span class="c"># And return the value, too, just in case someone finds that useful.</span>
+    <span class="k">return</span> <span class="n">value</span>
+
+</div>
+<span class="nd">@needs_host</span>
+<div class="viewcode-block" id="put"><a class="viewcode-back" href="../../build/fabric/docs/api/core/operations.html#fabric.operations.put">[docs]</a><span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">local_path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">remote_path</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">use_sudo</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+    <span class="n">mirror_local_mode</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Upload one or more files to a remote host.</span>
+
+<span class="sd">    `~fabric.operations.put` returns an iterable containing the absolute file</span>
+<span class="sd">    paths of all remote files uploaded. This iterable also exhibits a</span>
+<span class="sd">    ``.failed`` attribute containing any local file paths which failed to</span>
+<span class="sd">    upload (and may thus be used as a boolean test.) You may also check</span>
+<span class="sd">    ``.succeeded`` which is equivalent to ``not .failed``.</span>
+
+<span class="sd">    ``local_path`` may be a relative or absolute local file or directory path,</span>
+<span class="sd">    and may contain shell-style wildcards, as understood by the Python ``glob``</span>
+<span class="sd">    module.  Tilde expansion (as implemented by ``os.path.expanduser``) is also</span>
+<span class="sd">    performed.</span>
+
+<span class="sd">    ``local_path`` may alternately be a file-like object, such as the result of</span>
+<span class="sd">    ``open(&#39;path&#39;)`` or a ``StringIO`` instance.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        In this case, `~fabric.operations.put` will attempt to read the entire</span>
+<span class="sd">        contents of the file-like object by rewinding it using ``seek`` (and</span>
+<span class="sd">        will use ``tell`` afterwards to preserve the previous file position).</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        Use of a file-like object in `~fabric.operations.put`&#39;s ``local_path``</span>
+<span class="sd">        argument will cause a temporary file to be utilized due to limitations</span>
+<span class="sd">        in our SSH layer&#39;s API.</span>
+
+<span class="sd">    ``remote_path`` may also be a relative or absolute location, but applied to</span>
+<span class="sd">    the remote host. Relative paths are relative to the remote user&#39;s home</span>
+<span class="sd">    directory, but tilde expansion (e.g. ``~/.ssh/``) will also be performed if</span>
+<span class="sd">    necessary.</span>
+
+<span class="sd">    An empty string, in either path argument, will be replaced by the</span>
+<span class="sd">    appropriate end&#39;s current working directory.</span>
+
+<span class="sd">    While the SFTP protocol (which `put` uses) has no direct ability to upload</span>
+<span class="sd">    files to locations not owned by the connecting user, you may specify</span>
+<span class="sd">    ``use_sudo=True`` to work around this. When set, this setting causes `put`</span>
+<span class="sd">    to upload the local files to a temporary location on the remote end, and</span>
+<span class="sd">    then use `sudo` to move them to ``remote_path``.</span>
+
+<span class="sd">    In some use cases, it is desirable to force a newly uploaded file to match</span>
+<span class="sd">    the mode of its local counterpart (such as when uploading executable</span>
+<span class="sd">    scripts). To do this, specify ``mirror_local_mode=True``.</span>
+
+<span class="sd">    Alternately, you may use the ``mode`` kwarg to specify an exact mode, in</span>
+<span class="sd">    the same vein as ``os.chmod`` or the Unix ``chmod`` command.</span>
+
+<span class="sd">    `~fabric.operations.put` will honor `~fabric.context_managers.cd`, so</span>
+<span class="sd">    relative values in ``remote_path`` will be prepended by the current remote</span>
+<span class="sd">    working directory, if applicable. Thus, for example, the below snippet</span>
+<span class="sd">    would attempt to upload to ``/tmp/files/test.txt`` instead of</span>
+<span class="sd">    ``~/files/test.txt``::</span>
+
+<span class="sd">        with cd(&#39;/tmp&#39;):</span>
+<span class="sd">            put(&#39;/path/to/local/test.txt&#39;, &#39;files&#39;)</span>
+
+<span class="sd">    Use of `~fabric.context_managers.lcd` will affect ``local_path`` in the</span>
+<span class="sd">    same manner.</span>
+
+<span class="sd">    Examples::</span>
+
+<span class="sd">        put(&#39;bin/project.zip&#39;, &#39;/tmp/project.zip&#39;)</span>
+<span class="sd">        put(&#39;*.py&#39;, &#39;cgi-bin/&#39;)</span>
+<span class="sd">        put(&#39;index.html&#39;, &#39;index.html&#39;, mode=0755)</span>
+
+<span class="sd">    .. versionchanged:: 1.0</span>
+<span class="sd">        Now honors the remote working directory as manipulated by</span>
+<span class="sd">        `~fabric.context_managers.cd`, and the local working directory as</span>
+<span class="sd">        manipulated by `~fabric.context_managers.lcd`.</span>
+<span class="sd">    .. versionchanged:: 1.0</span>
+<span class="sd">        Now allows file-like objects in the ``local_path`` argument.</span>
+<span class="sd">    .. versionchanged:: 1.0</span>
+<span class="sd">        Directories may be specified in the ``local_path`` argument and will</span>
+<span class="sd">        trigger recursive uploads.</span>
+<span class="sd">    .. versionchanged:: 1.0</span>
+<span class="sd">        Return value is now an iterable of uploaded remote file paths which</span>
+<span class="sd">        also exhibits the ``.failed`` and ``.succeeded`` attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Handle empty local path</span>
+    <span class="n">local_path</span> <span class="o">=</span> <span class="n">local_path</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+    <span class="c"># Test whether local_path is a path or a file-like object</span>
+    <span class="n">local_is_path</span> <span class="o">=</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="s">&#39;read&#39;</span><span class="p">)</span> \
+        <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">local_path</span><span class="o">.</span><span class="n">read</span><span class="p">))</span>
+
+    <span class="n">ftp</span> <span class="o">=</span> <span class="n">SFTP</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">host_string</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">closing</span><span class="p">(</span><span class="n">ftp</span><span class="p">)</span> <span class="k">as</span> <span class="n">ftp</span><span class="p">:</span>
+        <span class="c"># Expand tildes (assumption: default remote cwd is user $HOME)</span>
+        <span class="n">home</span> <span class="o">=</span> <span class="n">ftp</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span>
+
+        <span class="c"># Empty remote path implies cwd</span>
+        <span class="n">remote_path</span> <span class="o">=</span> <span class="n">remote_path</span> <span class="ow">or</span> <span class="n">home</span>
+
+        <span class="c"># Honor cd() (assumes Unix style file paths on remote end)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">remote_path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;cwd&#39;</span><span class="p">):</span>
+            <span class="n">remote_path</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">cwd</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">remote_path</span>
+
+        <span class="k">if</span> <span class="n">local_is_path</span><span class="p">:</span>
+            <span class="c"># Expand local paths</span>
+            <span class="n">local_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">local_path</span><span class="p">)</span>
+            <span class="c"># Honor lcd() where it makes sense</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">local_path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">env</span><span class="o">.</span><span class="n">lcwd</span><span class="p">:</span>
+                <span class="n">local_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">lcwd</span><span class="p">,</span> <span class="n">local_path</span><span class="p">)</span>
+
+            <span class="c"># Glob local path</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="n">local_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">local_path</span><span class="p">]</span>
+
+        <span class="c"># Make sure local arg exists</span>
+        <span class="k">if</span> <span class="n">local_is_path</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">names</span><span class="p">:</span>
+            <span class="n">err</span> <span class="o">=</span> <span class="s">&quot;&#39;</span><span class="si">%s</span><span class="s">&#39; is not a valid local path or glob.&quot;</span> <span class="o">%</span> <span class="n">local_path</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+        <span class="c"># Sanity check and wierd cases</span>
+        <span class="k">if</span> <span class="n">ftp</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">remote_path</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">local_is_path</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ftp</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">remote_path</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;&#39;</span><span class="si">%s</span><span class="s">&#39; is not a directory&quot;</span> <span class="o">%</span> <span class="n">remote_path</span><span class="p">)</span>
+
+        <span class="c"># Iterate over all given local files</span>
+        <span class="n">remote_paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">failed_local_paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">lpath</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">local_is_path</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">lpath</span><span class="p">):</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">ftp</span><span class="o">.</span><span class="n">put_dir</span><span class="p">(</span><span class="n">lpath</span><span class="p">,</span> <span class="n">remote_path</span><span class="p">,</span> <span class="n">use_sudo</span><span class="p">,</span>
+                        <span class="n">mirror_local_mode</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+                    <span class="n">remote_paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">ftp</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">lpath</span><span class="p">,</span> <span class="n">remote_path</span><span class="p">,</span> <span class="n">use_sudo</span><span class="p">,</span> <span class="n">mirror_local_mode</span><span class="p">,</span>
+                        <span class="n">mode</span><span class="p">,</span> <span class="n">local_is_path</span><span class="p">)</span>
+                    <span class="n">remote_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;put() encountered an exception while uploading &#39;</span><span class="si">%s</span><span class="s">&#39;&quot;</span>
+                <span class="n">failure</span> <span class="o">=</span> <span class="n">lpath</span> <span class="k">if</span> <span class="n">local_is_path</span> <span class="k">else</span> <span class="s">&quot;&lt;StringIO&gt;&quot;</span>
+                <span class="n">failed_local_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">failure</span><span class="p">)</span>
+                <span class="n">_handle_failure</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">msg</span> <span class="o">%</span> <span class="n">lpath</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">_AttributeList</span><span class="p">(</span><span class="n">remote_paths</span><span class="p">)</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">failed</span> <span class="o">=</span> <span class="n">failed_local_paths</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">ret</span><span class="o">.</span><span class="n">failed</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+</div>
+<span class="nd">@needs_host</span>
+<div class="viewcode-block" id="get"><a class="viewcode-back" href="../../build/fabric/docs/api/core/operations.html#fabric.operations.get">[docs]</a><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">remote_path</span><span class="p">,</span> <span class="n">local_path</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Download one or more files from a remote host.</span>
+
+<span class="sd">    `~fabric.operations.get` returns an iterable containing the absolute paths</span>
+<span class="sd">    to all local files downloaded, which will be empty if ``local_path`` was a</span>
+<span class="sd">    StringIO object (see below for more on using StringIO). This object will</span>
+<span class="sd">    also exhibit a ``.failed`` attribute containing any remote file paths which</span>
+<span class="sd">    failed to download, and a ``.succeeded`` attribute equivalent to ``not</span>
+<span class="sd">    .failed``.</span>
+
+<span class="sd">    ``remote_path`` is the remote file or directory path to download, which may</span>
+<span class="sd">    contain shell glob syntax, e.g. ``&quot;/var/log/apache2/*.log&quot;``, and will have</span>
+<span class="sd">    tildes replaced by the remote home directory. Relative paths will be</span>
+<span class="sd">    considered relative to the remote user&#39;s home directory, or the current</span>
+<span class="sd">    remote working directory as manipulated by `~fabric.context_managers.cd`.</span>
+<span class="sd">    If the remote path points to a directory, that directory will be downloaded</span>
+<span class="sd">    recursively.</span>
+
+<span class="sd">    ``local_path`` is the local file path where the downloaded file or files</span>
+<span class="sd">    will be stored. If relative, it will honor the local current working</span>
+<span class="sd">    directory as manipulated by `~fabric.context_managers.lcd`. It may be</span>
+<span class="sd">    interpolated, using standard Python dict-based interpolation, with the</span>
+<span class="sd">    following variables:</span>
+
+<span class="sd">    * ``host``: The value of ``env.host_string``, eg ``myhostname`` or</span>
+<span class="sd">      ``user@myhostname-222`` (the colon between hostname and port is turned</span>
+<span class="sd">      into a dash to maximize filesystem compatibility)</span>
+<span class="sd">    * ``dirname``: The directory part of the remote file path, e.g. the</span>
+<span class="sd">      ``src/projectname`` in ``src/projectname/utils.py``.</span>
+<span class="sd">    * ``basename``: The filename part of the remote file path, e.g. the</span>
+<span class="sd">      ``utils.py`` in ``src/projectname/utils.py``</span>
+<span class="sd">    * ``path``: The full remote path, e.g. ``src/projectname/utils.py``.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        When ``remote_path`` is an absolute directory path, only the inner</span>
+<span class="sd">        directories will be recreated locally and passed into the above</span>
+<span class="sd">        variables. So for example, ``get(&#39;/var/log&#39;, &#39;%(path)s&#39;)`` would start</span>
+<span class="sd">        writing out files like ``apache2/access.log``,</span>
+<span class="sd">        ``postgresql/8.4/postgresql.log``, etc, in the local working directory.</span>
+<span class="sd">        It would **not** write out e.g.  ``var/log/apache2/access.log``.</span>
+
+<span class="sd">        Additionally, when downloading a single file, ``%(dirname)s`` and</span>
+<span class="sd">        ``%(path)s`` do not make as much sense and will be empty and equivalent</span>
+<span class="sd">        to ``%(basename)s``, respectively. Thus a call like</span>
+<span class="sd">        ``get(&#39;/var/log/apache2/access.log&#39;, &#39;%(path)s&#39;)`` will save a local</span>
+<span class="sd">        file named ``access.log``, not ``var/log/apache2/access.log``.</span>
+
+<span class="sd">        This behavior is intended to be consistent with the command-line</span>
+<span class="sd">        ``scp`` program.</span>
+
+<span class="sd">    If left blank, ``local_path`` defaults to ``&quot;%(host)s/%(path)s&quot;`` in order</span>
+<span class="sd">    to be safe for multi-host invocations.</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        If your ``local_path`` argument does not contain ``%(host)s`` and your</span>
+<span class="sd">        `~fabric.operations.get` call runs against multiple hosts, your local</span>
+<span class="sd">        files will be overwritten on each successive run!</span>
+
+<span class="sd">    If ``local_path`` does not make use of the above variables (i.e. if it is a</span>
+<span class="sd">    simple, explicit file path) it will act similar to ``scp`` or ``cp``,</span>
+<span class="sd">    overwriting pre-existing files if necessary, downloading into a directory</span>
+<span class="sd">    if given (e.g. ``get(&#39;/path/to/remote_file.txt&#39;, &#39;local_directory&#39;)`` will</span>
+<span class="sd">    create ``local_directory/remote_file.txt``) and so forth.</span>
+
+<span class="sd">    ``local_path`` may alternately be a file-like object, such as the result of</span>
+<span class="sd">    ``open(&#39;path&#39;, &#39;w&#39;)`` or a ``StringIO`` instance.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        Attempting to `get` a directory into a file-like object is not valid</span>
+<span class="sd">        and will result in an error.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        This function will use ``seek`` and ``tell`` to overwrite the entire</span>
+<span class="sd">        contents of the file-like object, in order to be consistent with the</span>
+<span class="sd">        behavior of `~fabric.operations.put` (which also considers the entire</span>
+<span class="sd">        file). However, unlike `~fabric.operations.put`, the file pointer will</span>
+<span class="sd">        not be restored to its previous location, as that doesn&#39;t make as much</span>
+<span class="sd">        sense here and/or may not even be possible.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        Due to how our SSH layer works, a temporary file will still be written</span>
+<span class="sd">        to your hard disk even if you specify a file-like object such as a</span>
+<span class="sd">        StringIO for the ``local_path`` argument. Cleanup is performed,</span>
+<span class="sd">        however -- we just note this for users expecting straight-to-memory</span>
+<span class="sd">        transfers. (We hope to patch our SSH layer in the future to enable true</span>
+<span class="sd">        straight-to-memory downloads.)</span>
+
+<span class="sd">    .. versionchanged:: 1.0</span>
+<span class="sd">        Now honors the remote working directory as manipulated by</span>
+<span class="sd">        `~fabric.context_managers.cd`, and the local working directory as</span>
+<span class="sd">        manipulated by `~fabric.context_managers.lcd`.</span>
+<span class="sd">    .. versionchanged:: 1.0</span>
+<span class="sd">        Now allows file-like objects in the ``local_path`` argument.</span>
+<span class="sd">    .. versionchanged:: 1.0</span>
+<span class="sd">        ``local_path`` may now contain interpolated path- and host-related</span>
+<span class="sd">        variables.</span>
+<span class="sd">    .. versionchanged:: 1.0</span>
+<span class="sd">        Directories may be specified in the ``remote_path`` argument and will</span>
+<span class="sd">        trigger recursive downloads.</span>
+<span class="sd">    .. versionchanged:: 1.0</span>
+<span class="sd">        Return value is now an iterable of downloaded local file paths, which</span>
+<span class="sd">        also exhibits the ``.failed`` and ``.succeeded`` attributes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Handle empty local path / default kwarg value</span>
+    <span class="n">local_path</span> <span class="o">=</span> <span class="n">local_path</span> <span class="ow">or</span> <span class="s">&quot;</span><span class="si">%(host)s</span><span class="s">/</span><span class="si">%(path)s</span><span class="s">&quot;</span>
+
+    <span class="c"># Test whether local_path is a path or a file-like object</span>
+    <span class="n">local_is_path</span> <span class="o">=</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">local_path</span><span class="p">,</span> <span class="s">&#39;write&#39;</span><span class="p">)</span> \
+        <span class="ow">and</span> <span class="nb">callable</span><span class="p">(</span><span class="n">local_path</span><span class="o">.</span><span class="n">write</span><span class="p">))</span>
+
+    <span class="c"># Honor lcd() where it makes sense</span>
+    <span class="k">if</span> <span class="n">local_is_path</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">local_path</span><span class="p">)</span> <span class="ow">and</span> <span class="n">env</span><span class="o">.</span><span class="n">lcwd</span><span class="p">:</span>
+        <span class="n">local_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">lcwd</span><span class="p">,</span> <span class="n">local_path</span><span class="p">)</span>
+
+    <span class="n">ftp</span> <span class="o">=</span> <span class="n">SFTP</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">host_string</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">closing</span><span class="p">(</span><span class="n">ftp</span><span class="p">)</span> <span class="k">as</span> <span class="n">ftp</span><span class="p">:</span>
+        <span class="n">home</span> <span class="o">=</span> <span class="n">ftp</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">)</span>
+        <span class="c"># Expand home directory markers (tildes, etc)</span>
+        <span class="k">if</span> <span class="n">remote_path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;~&#39;</span><span class="p">):</span>
+            <span class="n">remote_path</span> <span class="o">=</span> <span class="n">remote_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;~&#39;</span><span class="p">,</span> <span class="n">home</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">local_is_path</span><span class="p">:</span>
+            <span class="n">local_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="n">local_path</span><span class="p">)</span>
+
+        <span class="c"># Honor cd() (assumes Unix style file paths on remote end)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">remote_path</span><span class="p">):</span>
+            <span class="c"># Honor cwd if it&#39;s set (usually by with cd():)</span>
+            <span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;cwd&#39;</span><span class="p">):</span>
+                <span class="n">remote_path</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">cwd</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">remote_path</span>
+            <span class="c"># Otherwise, be relative to remote home directory (SFTP server&#39;s</span>
+            <span class="c"># &#39;.&#39;)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">remote_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">home</span><span class="p">,</span> <span class="n">remote_path</span><span class="p">)</span>
+
+        <span class="c"># Track final local destination files so we can return a list</span>
+        <span class="n">local_files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">failed_remote_files</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c"># Glob remote path</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="n">ftp</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">remote_path</span><span class="p">)</span>
+
+            <span class="c"># Handle invalid local-file-object situations</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">local_is_path</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">ftp</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">_handle_failure</span><span class="p">(</span><span class="s">&quot;[</span><span class="si">%s</span><span class="s">] </span><span class="si">%s</span><span class="s"> is a glob or directory, but local_path is a file object!&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">host_string</span><span class="p">,</span> <span class="n">remote_path</span><span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">remote_path</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ftp</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">remote_path</span><span class="p">):</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">ftp</span><span class="o">.</span><span class="n">get_dir</span><span class="p">(</span><span class="n">remote_path</span><span class="p">,</span> <span class="n">local_path</span><span class="p">)</span>
+                    <span class="n">local_files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c"># Result here can be file contents (if not local_is_path)</span>
+                    <span class="c"># or final resultant file path (if local_is_path)</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">ftp</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">remote_path</span><span class="p">,</span> <span class="n">local_path</span><span class="p">,</span> <span class="n">local_is_path</span><span class="p">,</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">remote_path</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">local_is_path</span><span class="p">:</span>
+                        <span class="c"># Overwrite entire contents of local_path</span>
+                        <span class="n">local_path</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                        <span class="n">local_path</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">local_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">failed_remote_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">remote_path</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;get() encountered an exception while downloading &#39;</span><span class="si">%s</span><span class="s">&#39;&quot;</span>
+            <span class="n">_handle_failure</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">msg</span> <span class="o">%</span> <span class="n">remote_path</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">_AttributeList</span><span class="p">(</span><span class="n">local_files</span> <span class="k">if</span> <span class="n">local_is_path</span> <span class="k">else</span> <span class="p">[])</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">failed</span> <span class="o">=</span> <span class="n">failed_remote_files</span>
+        <span class="n">ret</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">ret</span><span class="o">.</span><span class="n">failed</span>
+        <span class="k">return</span> <span class="n">ret</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_sudo_prefix</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return ``env.sudo_prefix`` with ``user`` inserted if necessary.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Insert env.sudo_prompt into env.sudo_prefix</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">sudo_prefix</span> <span class="o">%</span> <span class="n">env</span><span class="o">.</span><span class="n">sudo_prompt</span>
+    <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="s">&quot;#</span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">user</span>
+        <span class="k">return</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s"> -u </span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">prefix</span>
+
+
+<span class="k">def</span> <span class="nf">_shell_wrap</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">sudo_prefix</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Conditionally wrap given command in env.shell (while honoring sudo.)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Honor env.shell, while allowing the &#39;shell&#39; kwarg to override it (at</span>
+    <span class="c"># least in terms of turning it off.)</span>
+    <span class="k">if</span> <span class="n">shell</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">env</span><span class="o">.</span><span class="n">use_shell</span><span class="p">:</span>
+        <span class="n">shell</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="c"># Sudo plus space, or empty string</span>
+    <span class="k">if</span> <span class="n">sudo_prefix</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">sudo_prefix</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sudo_prefix</span> <span class="o">+=</span> <span class="s">&quot; &quot;</span>
+    <span class="c"># If we&#39;re shell wrapping, prefix shell and space, escape the command and</span>
+    <span class="c"># then quote it. Otherwise, empty string.</span>
+    <span class="k">if</span> <span class="n">shell</span><span class="p">:</span>
+        <span class="n">shell</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">shell</span> <span class="o">+</span> <span class="s">&quot; &quot;</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s">&#39;&quot;</span><span class="si">%s</span><span class="s">&quot;&#39;</span> <span class="o">%</span> <span class="n">_shell_escape</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">shell</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+    <span class="c"># Resulting string should now have correct formatting</span>
+    <span class="k">return</span> <span class="n">sudo_prefix</span> <span class="o">+</span> <span class="n">shell</span> <span class="o">+</span> <span class="n">command</span>
+
+
+<span class="k">def</span> <span class="nf">_prefix_commands</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">which</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prefixes ``command`` with all prefixes found in ``env.command_prefixes``.</span>
+
+<span class="sd">    ``env.command_prefixes`` is a list of strings which is modified by the</span>
+<span class="sd">    `~fabric.context_managers.prefix` context manager.</span>
+
+<span class="sd">    This function also handles a special-case prefix, ``cwd``, used by</span>
+<span class="sd">    `~fabric.context_managers.cd`. The ``which`` kwarg should be a string,</span>
+<span class="sd">    ``&quot;local&quot;`` or ``&quot;remote&quot;``, which will determine whether ``cwd`` or</span>
+<span class="sd">    ``lcwd`` is used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Local prefix list (to hold env.command_prefixes + any special cases)</span>
+    <span class="n">prefixes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">command_prefixes</span><span class="p">)</span>
+    <span class="c"># Handle current working directory, which gets its own special case due to</span>
+    <span class="c"># being a path string that gets grown/shrunk, instead of just a single</span>
+    <span class="c"># string or lack thereof.</span>
+    <span class="c"># Also place it at the front of the list, in case user is expecting another</span>
+    <span class="c"># prefixed command to be &quot;in&quot; the current working directory.</span>
+    <span class="n">cwd</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">cwd</span> <span class="k">if</span> <span class="n">which</span> <span class="o">==</span> <span class="s">&#39;remote&#39;</span> <span class="k">else</span> <span class="n">env</span><span class="o">.</span><span class="n">lcwd</span>
+    <span class="k">if</span> <span class="n">cwd</span><span class="p">:</span>
+        <span class="n">prefixes</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s">&#39;cd </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="n">cwd</span><span class="p">)</span>
+    <span class="n">glue</span> <span class="o">=</span> <span class="s">&quot; &amp;&amp; &quot;</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="p">(</span><span class="n">glue</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefixes</span><span class="p">)</span> <span class="o">+</span> <span class="n">glue</span><span class="p">)</span> <span class="k">if</span> <span class="n">prefixes</span> <span class="k">else</span> <span class="s">&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">command</span>
+
+
+<span class="k">def</span> <span class="nf">_prefix_env_vars</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prefixes ``command`` with any shell environment vars, e.g. ``PATH=foo ``.</span>
+
+<span class="sd">    Currently, this only applies the PATH updating implemented in</span>
+<span class="sd">    `~fabric.context_managers.path`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># path(): local shell env var update, appending/prepending/replacing $PATH</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">path</span>
+    <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">path_behavior</span> <span class="o">==</span> <span class="s">&#39;append&#39;</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;PATH=$PATH:</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="n">path</span>
+        <span class="k">elif</span> <span class="n">env</span><span class="o">.</span><span class="n">path_behavior</span> <span class="o">==</span> <span class="s">&#39;prepend&#39;</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;PATH=</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s">:$PATH &#39;</span> <span class="o">%</span> <span class="n">path</span>
+        <span class="k">elif</span> <span class="n">env</span><span class="o">.</span><span class="n">path_behavior</span> <span class="o">==</span> <span class="s">&#39;replace&#39;</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;PATH=</span><span class="se">\&quot;</span><span class="si">%s</span><span class="se">\&quot;</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="n">path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">path</span> <span class="o">+</span> <span class="n">command</span>
+
+
+<span class="k">def</span> <span class="nf">_execute</span><span class="p">(</span><span class="n">channel</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">pty</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">combine_stderr</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">invoke_shell</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Execute ``command`` over ``channel``.</span>
+
+<span class="sd">    ``pty`` controls whether a pseudo-terminal is created.</span>
+
+<span class="sd">    ``combine_stderr`` controls whether we call ``channel.set_combine_stderr``.</span>
+
+<span class="sd">    ``invoke_shell`` controls whether we use ``exec_command`` or</span>
+<span class="sd">    ``invoke_shell`` (plus a handful of other things, such as always forcing a</span>
+<span class="sd">    pty.)</span>
+
+<span class="sd">    Returns a three-tuple of (``stdout``, ``stderr``, ``status``), where</span>
+<span class="sd">    ``stdout``/``stderr`` are captured output strings and ``status`` is the</span>
+<span class="sd">    program&#39;s return code, if applicable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">char_buffered</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="p">):</span>
+        <span class="c"># Combine stdout and stderr to get around oddball mixing issues</span>
+        <span class="k">if</span> <span class="n">combine_stderr</span> <span class="ow">or</span> <span class="n">env</span><span class="o">.</span><span class="n">combine_stderr</span><span class="p">:</span>
+            <span class="n">channel</span><span class="o">.</span><span class="n">set_combine_stderr</span><span class="p">(</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="c"># Assume pty use, and allow overriding of this either via kwarg or env</span>
+        <span class="c"># var.  (invoke_shell always wants a pty no matter what.)</span>
+        <span class="n">using_pty</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">invoke_shell</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">pty</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">env</span><span class="o">.</span><span class="n">always_use_pty</span><span class="p">):</span>
+            <span class="n">using_pty</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="c"># Request pty with size params (default to 80x24, obtain real</span>
+        <span class="c"># parameters if on POSIX platform)</span>
+        <span class="k">if</span> <span class="n">using_pty</span><span class="p">:</span>
+            <span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">_pty_size</span><span class="p">()</span>
+            <span class="n">channel</span><span class="o">.</span><span class="n">get_pty</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">rows</span><span class="p">)</span>
+
+        <span class="c"># Kick off remote command</span>
+        <span class="k">if</span> <span class="n">invoke_shell</span><span class="p">:</span>
+            <span class="n">channel</span><span class="o">.</span><span class="n">invoke_shell</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">command</span><span class="p">:</span>
+                <span class="n">channel</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">command</span> <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">channel</span><span class="o">.</span><span class="n">exec_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+        <span class="c"># Init stdout, stderr capturing. Must use lists instead of strings as</span>
+        <span class="c"># strings are immutable and we&#39;re using these as pass-by-reference</span>
+        <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">invoke_shell</span><span class="p">:</span>
+            <span class="n">stdout</span> <span class="o">=</span> <span class="n">stderr</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="n">workers</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">ThreadHandler</span><span class="p">(</span><span class="s">&#39;out&#39;</span><span class="p">,</span> <span class="n">output_loop</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="s">&quot;recv&quot;</span><span class="p">,</span> <span class="n">stdout</span><span class="p">),</span>
+            <span class="n">ThreadHandler</span><span class="p">(</span><span class="s">&#39;err&#39;</span><span class="p">,</span> <span class="n">output_loop</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="s">&quot;recv_stderr&quot;</span><span class="p">,</span> <span class="n">stderr</span><span class="p">),</span>
+            <span class="n">ThreadHandler</span><span class="p">(</span><span class="s">&#39;in&#39;</span><span class="p">,</span> <span class="n">input_loop</span><span class="p">,</span> <span class="n">channel</span><span class="p">,</span> <span class="n">using_pty</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">channel</span><span class="o">.</span><span class="n">exit_status_ready</span><span class="p">():</span>
+                <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">workers</span><span class="p">:</span>
+                    <span class="n">e</span> <span class="o">=</span> <span class="n">worker</span><span class="o">.</span><span class="n">exception</span>
+                    <span class="k">if</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">io_sleep</span><span class="p">)</span>
+
+        <span class="c"># Obtain exit code of remote program now that we&#39;re done.</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">channel</span><span class="o">.</span><span class="n">recv_exit_status</span><span class="p">()</span>
+
+        <span class="c"># Wait for threads to exit so we aren&#39;t left with stale threads</span>
+        <span class="k">for</span> <span class="n">worker</span> <span class="ow">in</span> <span class="n">workers</span><span class="p">:</span>
+            <span class="n">worker</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+        <span class="c"># Close channel</span>
+        <span class="n">channel</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="c"># Update stdout/stderr with captured values if applicable</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">invoke_shell</span><span class="p">:</span>
+            <span class="n">stdout</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">stderr</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">stderr</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="c"># Tie off &quot;loose&quot; output by printing a newline. Helps to ensure any</span>
+        <span class="c"># following print()s aren&#39;t on the same line as a trailing line prefix</span>
+        <span class="c"># or similar. However, don&#39;t add an extra newline if we&#39;ve already</span>
+        <span class="c"># ended up with one, as that adds a entire blank line instead.</span>
+        <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">running</span> \
+            <span class="ow">and</span> <span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">stdout</span> <span class="ow">and</span> <span class="n">stdout</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">stdout</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">))</span> \
+            <span class="ow">or</span> <span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">stderr</span> <span class="ow">and</span> <span class="n">stderr</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">stderr</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)):</span>
+            <span class="k">print</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="p">,</span> <span class="n">status</span>
+
+
+<span class="nd">@needs_host</span>
+<div class="viewcode-block" id="open_shell"><a class="viewcode-back" href="../../build/fabric/docs/api/core/operations.html#fabric.operations.open_shell">[docs]</a><span class="k">def</span> <span class="nf">open_shell</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Invoke a fully interactive shell on the remote end.</span>
+
+<span class="sd">    If ``command`` is given, it will be sent down the pipe before handing</span>
+<span class="sd">    control over to the invoking user.</span>
+
+<span class="sd">    This function is most useful for when you need to interact with a heavily</span>
+<span class="sd">    shell-based command or series of commands, such as when debugging or when</span>
+<span class="sd">    fully interactive recovery is required upon remote program failure.</span>
+
+<span class="sd">    It should be considered an easy way to work an interactive shell session</span>
+<span class="sd">    into the middle of a Fabric script and is *not* a drop-in replacement for</span>
+<span class="sd">    `~fabric.operations.run`, which is also capable of interacting with the</span>
+<span class="sd">    remote end (albeit only while its given command is executing) and has much</span>
+<span class="sd">    stronger programmatic abilities such as error handling and stdout/stderr</span>
+<span class="sd">    capture.</span>
+
+<span class="sd">    Specifically, `~fabric.operations.open_shell` provides a better interactive</span>
+<span class="sd">    experience than `~fabric.operations.run`, but use of a full remote shell</span>
+<span class="sd">    prevents Fabric from determining whether programs run within the shell have</span>
+<span class="sd">    failed, and pollutes the stdout/stderr stream with shell output such as</span>
+<span class="sd">    login banners, prompts and echoed stdin.</span>
+
+<span class="sd">    Thus, this function does not have a return value and will not trigger</span>
+<span class="sd">    Fabric&#39;s failure handling if any remote programs result in errors.</span>
+
+<span class="sd">    .. versionadded:: 1.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_execute</span><span class="p">(</span><span class="n">default_channel</span><span class="p">(),</span> <span class="n">command</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_run_command</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">pty</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">combine_stderr</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+    <span class="n">sudo</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Underpinnings of `run` and `sudo`. See their docstrings for more info.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Set up new var so original argument can be displayed verbatim later.</span>
+    <span class="n">given_command</span> <span class="o">=</span> <span class="n">command</span>
+    <span class="c"># Handle context manager modifications, and shell wrapping</span>
+    <span class="n">wrapped_command</span> <span class="o">=</span> <span class="n">_shell_wrap</span><span class="p">(</span>
+        <span class="n">_prefix_commands</span><span class="p">(</span><span class="n">_prefix_env_vars</span><span class="p">(</span><span class="n">command</span><span class="p">),</span> <span class="s">&#39;remote&#39;</span><span class="p">),</span>
+        <span class="n">shell</span><span class="p">,</span>
+        <span class="n">_sudo_prefix</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">if</span> <span class="n">sudo</span> <span class="k">else</span> <span class="bp">None</span>
+    <span class="p">)</span>
+    <span class="c"># Execute info line</span>
+    <span class="n">which</span> <span class="o">=</span> <span class="s">&#39;sudo&#39;</span> <span class="k">if</span> <span class="n">sudo</span> <span class="k">else</span> <span class="s">&#39;run&#39;</span>
+    <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;[</span><span class="si">%s</span><span class="s">] </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">host_string</span><span class="p">,</span> <span class="n">which</span><span class="p">,</span> <span class="n">wrapped_command</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">output</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;[</span><span class="si">%s</span><span class="s">] </span><span class="si">%s</span><span class="s">: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">host_string</span><span class="p">,</span> <span class="n">which</span><span class="p">,</span> <span class="n">given_command</span><span class="p">))</span>
+
+    <span class="c"># Actual execution, stdin/stdout/stderr handling, and termination</span>
+    <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="p">,</span> <span class="n">status</span> <span class="o">=</span> <span class="n">_execute</span><span class="p">(</span><span class="n">default_channel</span><span class="p">(),</span> <span class="n">wrapped_command</span><span class="p">,</span> <span class="n">pty</span><span class="p">,</span>
+        <span class="n">combine_stderr</span><span class="p">)</span>
+
+    <span class="c"># Assemble output string</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">_AttributeString</span><span class="p">(</span><span class="n">stdout</span><span class="p">)</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">_AttributeString</span><span class="p">(</span><span class="n">stderr</span><span class="p">)</span>
+
+    <span class="c"># Error handling</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">failed</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">failed</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;</span><span class="si">%s</span><span class="s">() encountered an error (return code </span><span class="si">%s</span><span class="s">) while executing &#39;</span><span class="si">%s</span><span class="s">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">which</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+        <span class="n">_handle_failure</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c"># Attach return code to output string so users who have set things to</span>
+    <span class="c"># warn only, can inspect the error code.</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">return_code</span> <span class="o">=</span> <span class="n">status</span>
+
+    <span class="c"># Convenience mirror of .failed</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">out</span><span class="o">.</span><span class="n">failed</span>
+
+    <span class="c"># Attach stderr for anyone interested in that.</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">err</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+
+
+<span class="nd">@needs_host</span>
+<div class="viewcode-block" id="run"><a class="viewcode-back" href="../../build/fabric/docs/api/core/operations.html#fabric.operations.run">[docs]</a><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">pty</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">combine_stderr</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a shell command on a remote host.</span>
+
+<span class="sd">    If ``shell`` is True (the default), `run` will execute the given command</span>
+<span class="sd">    string via a shell interpreter, the value of which may be controlled by</span>
+<span class="sd">    setting ``env.shell`` (defaulting to something similar to ``/bin/bash -l -c</span>
+<span class="sd">    &quot;&lt;command&gt;&quot;``.) Any double-quote (``&quot;``) or dollar-sign (``$``) characters</span>
+<span class="sd">    in ``command`` will be automatically escaped when ``shell`` is True.</span>
+
+<span class="sd">    `run` will return the result of the remote program&#39;s stdout as a single</span>
+<span class="sd">    (likely multiline) string. This string will exhibit ``failed`` and</span>
+<span class="sd">    ``succeeded`` boolean attributes specifying whether the command failed or</span>
+<span class="sd">    succeeded, and will also include the return code as the ``return_code``</span>
+<span class="sd">    attribute.</span>
+
+<span class="sd">    Any text entered in your local terminal will be forwarded to the remote</span>
+<span class="sd">    program as it runs, thus allowing you to interact with password or other</span>
+<span class="sd">    prompts naturally. For more on how this works, see</span>
+<span class="sd">    :doc:`/usage/interactivity`.</span>
+
+<span class="sd">    You may pass ``pty=False`` to forego creation of a pseudo-terminal on the</span>
+<span class="sd">    remote end in case the presence of one causes problems for the command in</span>
+<span class="sd">    question. However, this will force Fabric itself to echo any  and all input</span>
+<span class="sd">    you type while the command is running, including sensitive passwords. (With</span>
+<span class="sd">    ``pty=True``, the remote pseudo-terminal will echo for you, and will</span>
+<span class="sd">    intelligently handle password-style prompts.) See :ref:`pseudottys` for</span>
+<span class="sd">    details.</span>
+
+<span class="sd">    Similarly, if you need to programmatically examine the stderr stream of the</span>
+<span class="sd">    remote program (exhibited as the ``stderr`` attribute on this function&#39;s</span>
+<span class="sd">    return value), you may set ``combine_stderr=False``. Doing so has a high</span>
+<span class="sd">    chance of causing garbled output to appear on your terminal (though the</span>
+<span class="sd">    resulting strings returned by `~fabric.operations.run` will be properly</span>
+<span class="sd">    separated). For more info, please read :ref:`combine_streams`.</span>
+
+<span class="sd">    Examples::</span>
+
+<span class="sd">        run(&quot;ls /var/www/&quot;)</span>
+<span class="sd">        run(&quot;ls /home/myuser&quot;, shell=False)</span>
+<span class="sd">        output = run(&#39;ls /var/www/site1&#39;)</span>
+
+<span class="sd">    .. versionadded:: 1.0</span>
+<span class="sd">        The ``succeeded`` and ``stderr`` return value attributes, the</span>
+<span class="sd">        ``combine_stderr`` kwarg, and interactive behavior.</span>
+
+<span class="sd">    .. versionchanged:: 1.0</span>
+<span class="sd">        The default value of ``pty`` is now ``True``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_run_command</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">pty</span><span class="p">,</span> <span class="n">combine_stderr</span><span class="p">)</span>
+
+</div>
+<span class="nd">@needs_host</span>
+<div class="viewcode-block" id="sudo"><a class="viewcode-back" href="../../build/fabric/docs/api/core/operations.html#fabric.operations.sudo">[docs]</a><span class="k">def</span> <span class="nf">sudo</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">pty</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">combine_stderr</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a shell command on a remote host, with superuser privileges.</span>
+
+<span class="sd">    `sudo` is identical in every way to `run`, except that it will always wrap</span>
+<span class="sd">    the given ``command`` in a call to the ``sudo`` program to provide</span>
+<span class="sd">    superuser privileges.</span>
+
+<span class="sd">    `sudo` accepts an additional ``user`` argument, which is passed to ``sudo``</span>
+<span class="sd">    and allows you to run as some user other than root.  On most systems, the</span>
+<span class="sd">    ``sudo`` program can take a string username or an integer userid (uid);</span>
+<span class="sd">    ``user`` may likewise be a string or an int.</span>
+
+<span class="sd">    Examples::</span>
+
+<span class="sd">        sudo(&quot;~/install_script.py&quot;)</span>
+<span class="sd">        sudo(&quot;mkdir /var/www/new_docroot&quot;, user=&quot;www-data&quot;)</span>
+<span class="sd">        sudo(&quot;ls /home/jdoe&quot;, user=1001)</span>
+<span class="sd">        result = sudo(&quot;ls /tmp/&quot;)</span>
+
+<span class="sd">    .. versionchanged:: 1.0</span>
+<span class="sd">        See the changed and added notes for `~fabric.operations.run`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_run_command</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="p">,</span> <span class="n">pty</span><span class="p">,</span> <span class="n">combine_stderr</span><span class="p">,</span> <span class="n">sudo</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="local"><a class="viewcode-back" href="../../build/fabric/docs/api/core/operations.html#fabric.operations.local">[docs]</a><span class="k">def</span> <span class="nf">local</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">capture</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a command on the local system.</span>
+
+<span class="sd">    `local` is simply a convenience wrapper around the use of the builtin</span>
+<span class="sd">    Python ``subprocess`` module with ``shell=True`` activated. If you need to</span>
+<span class="sd">    do anything special, consider using the ``subprocess`` module directly.</span>
+
+<span class="sd">    `local` is not currently capable of simultaneously printing and</span>
+<span class="sd">    capturing output, as `~fabric.operations.run`/`~fabric.operations.sudo`</span>
+<span class="sd">    do. The ``capture`` kwarg allows you to switch between printing and</span>
+<span class="sd">    capturing as necessary, and defaults to ``False``.</span>
+
+<span class="sd">    When ``capture=False``, the local subprocess&#39; stdout and stderr streams are</span>
+<span class="sd">    hooked up directly to your terminal, though you may use the global</span>
+<span class="sd">    :doc:`output controls &lt;/usage/output_controls&gt;` ``output.stdout`` and</span>
+<span class="sd">    ``output.stderr`` to hide one or both if desired. In this mode,</span>
+<span class="sd">    `~fabric.operations.local` returns None.</span>
+
+<span class="sd">    When ``capture=True``, this function will return the contents of the</span>
+<span class="sd">    command&#39;s stdout as a string-like object; as with `~fabric.operations.run`</span>
+<span class="sd">    and `~fabric.operations.sudo`, this return value exhibits the</span>
+<span class="sd">    ``return_code``, ``stderr``, ``failed`` and ``succeeded`` attributes. See</span>
+<span class="sd">    `run` for details.</span>
+
+<span class="sd">    `~fabric.operations.local` will honor the `~fabric.context_managers.lcd`</span>
+<span class="sd">    context manager, allowing you to control its current working directory</span>
+<span class="sd">    independently of the remote end (which honors</span>
+<span class="sd">    `~fabric.context_managers.cd`).</span>
+
+<span class="sd">    .. versionchanged:: 1.0</span>
+<span class="sd">        Added the ``succeeded`` and ``stderr`` attributes.</span>
+<span class="sd">    .. versionchanged:: 1.0</span>
+<span class="sd">        Now honors the `~fabric.context_managers.lcd` context manager.</span>
+<span class="sd">    .. versionchanged:: 1.0</span>
+<span class="sd">        Changed the default value of ``capture`` from ``True`` to ``False``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">given_command</span> <span class="o">=</span> <span class="n">command</span>
+    <span class="c"># Apply cd(), path() etc</span>
+    <span class="n">wrapped_command</span> <span class="o">=</span> <span class="n">_prefix_commands</span><span class="p">(</span><span class="n">_prefix_env_vars</span><span class="p">(</span><span class="n">command</span><span class="p">),</span> <span class="s">&#39;local&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;[localhost] local: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">wrapped_command</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">output</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s">&quot;[localhost] local: &quot;</span> <span class="o">+</span> <span class="n">given_command</span><span class="p">)</span>
+    <span class="c"># Tie in to global output controls as best we can; our capture argument</span>
+    <span class="c"># takes precedence over the output settings.</span>
+    <span class="n">dev_null</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">capture</span><span class="p">:</span>
+        <span class="n">out_stream</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span>
+        <span class="n">err_stream</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dev_null</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">devnull</span><span class="p">,</span> <span class="s">&#39;w+&#39;</span><span class="p">)</span>
+        <span class="c"># Non-captured, hidden streams are discarded.</span>
+        <span class="n">out_stream</span> <span class="o">=</span> <span class="bp">None</span> <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">stdout</span> <span class="k">else</span> <span class="n">dev_null</span>
+        <span class="n">err_stream</span> <span class="o">=</span> <span class="bp">None</span> <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">stderr</span> <span class="k">else</span> <span class="n">dev_null</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">cmd_arg</span> <span class="o">=</span> <span class="p">[</span><span class="n">wrapped_command</span><span class="p">]</span> <span class="k">if</span> <span class="n">win32</span> <span class="k">else</span> <span class="n">wrapped_command</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd_arg</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">out_stream</span><span class="p">,</span>
+            <span class="n">stderr</span><span class="o">=</span><span class="n">err_stream</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="p">)</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dev_null</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">dev_null</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="c"># Handle error condition (deal with stdout being None, too)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">_AttributeString</span><span class="p">(</span><span class="n">stdout</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">stdout</span> <span class="k">else</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">err</span> <span class="o">=</span> <span class="n">_AttributeString</span><span class="p">(</span><span class="n">stderr</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="n">stderr</span> <span class="k">else</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">failed</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">return_code</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">stderr</span> <span class="o">=</span> <span class="n">err</span>
+    <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">returncode</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">failed</span> <span class="o">=</span> <span class="bp">True</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;local() encountered an error (return code </span><span class="si">%s</span><span class="s">) while executing &#39;</span><span class="si">%s</span><span class="s">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+        <span class="n">_handle_failure</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">msg</span><span class="p">)</span>
+    <span class="n">out</span><span class="o">.</span><span class="n">succeeded</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">out</span><span class="o">.</span><span class="n">failed</span>
+    <span class="c"># If we were capturing, this will be a string; otherwise it will be None.</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+</div>
+<span class="nd">@needs_host</span>
+<div class="viewcode-block" id="reboot"><a class="viewcode-back" href="../../build/fabric/docs/api/core/operations.html#fabric.operations.reboot">[docs]</a><span class="k">def</span> <span class="nf">reboot</span><span class="p">(</span><span class="n">wait</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reboot the remote system, disconnect, and wait for ``wait`` seconds.</span>
+
+<span class="sd">    After calling this operation, further execution of `run` or `sudo` will</span>
+<span class="sd">    result in a normal reconnection to the server, including any password</span>
+<span class="sd">    prompts.</span>
+
+<span class="sd">    .. versionadded:: 0.9.2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;reboot&#39;</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">connections</span><span class="p">[</span><span class="n">env</span><span class="o">.</span><span class="n">host_string</span><span class="p">]</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">host_string</span> <span class="ow">in</span> <span class="n">connections</span><span class="p">:</span>
+        <span class="k">del</span> <span class="n">connections</span><span class="p">[</span><span class="n">env</span><span class="o">.</span><span class="n">host_string</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+        <span class="n">puts</span><span class="p">(</span><span class="s">&quot;Waiting for reboot: &quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">per_tick</span> <span class="o">=</span> <span class="mi">5</span>
+        <span class="k">for</span> <span class="n">second</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">wait</span> <span class="o">/</span> <span class="n">per_tick</span><span class="p">)):</span>
+            <span class="n">puts</span><span class="p">(</span><span class="s">&quot;.&quot;</span><span class="p">,</span> <span class="n">show_prefix</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">per_tick</span><span class="p">)</span>
+        <span class="n">puts</span><span class="p">(</span><span class="s">&quot;done.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">show_prefix</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

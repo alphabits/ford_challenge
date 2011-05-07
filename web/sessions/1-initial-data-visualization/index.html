@@ -117,6 +117,7 @@
 
 <span class="c"># Load labels</span>
 <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s">&#39;data/labels.csv&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">L_clean</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">L</span> <span class="k">if</span> <span class="n">l</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;P8&#39;</span><span class="p">,</span><span class="s">&#39;V7&#39;</span><span class="p">,</span><span class="s">&#39;V9&#39;</span><span class="p">,</span><span class="s">&#39;ObsNum&#39;</span><span class="p">,</span><span class="s">&#39;TrialID&#39;</span><span class="p">]]</span>
 </pre></div>
 </div>
 <p>With the script to load data done, I can begin creating histograms for the data</p>
@@ -137,46 +138,46 @@
 </pre></div>
 </div>
 <p>The resulting histograms are</p>
-<img alt="../../_images/hist-TrialID17.png" src="../../_images/hist-TrialID17.png" style="width: 750px;" />
-<img alt="../../_images/hist-ObsNum17.png" src="../../_images/hist-ObsNum17.png" style="width: 750px;" />
-<img alt="../../_images/hist-IsAlert17.png" src="../../_images/hist-IsAlert17.png" style="width: 750px;" />
-<img alt="../../_images/hist-P117.png" src="../../_images/hist-P117.png" style="width: 750px;" />
-<img alt="../../_images/hist-P217.png" src="../../_images/hist-P217.png" style="width: 750px;" />
-<img alt="../../_images/hist-P317.png" src="../../_images/hist-P317.png" style="width: 750px;" />
-<img alt="../../_images/hist-P417.png" src="../../_images/hist-P417.png" style="width: 750px;" />
-<img alt="../../_images/hist-P517.png" src="../../_images/hist-P517.png" style="width: 750px;" />
-<img alt="../../_images/hist-P617.png" src="../../_images/hist-P617.png" style="width: 750px;" />
-<img alt="../../_images/hist-P717.png" src="../../_images/hist-P717.png" style="width: 750px;" />
-<img alt="../../_images/hist-P817.png" src="../../_images/hist-P817.png" style="width: 750px;" />
-<img alt="../../_images/hist-E129.png" src="../../_images/hist-E129.png" style="width: 750px;" />
-<img alt="../../_images/hist-E222.png" src="../../_images/hist-E222.png" style="width: 750px;" />
-<img alt="../../_images/hist-E317.png" src="../../_images/hist-E317.png" style="width: 750px;" />
-<img alt="../../_images/hist-E417.png" src="../../_images/hist-E417.png" style="width: 750px;" />
-<img alt="../../_images/hist-E517.png" src="../../_images/hist-E517.png" style="width: 750px;" />
-<img alt="../../_images/hist-E617.png" src="../../_images/hist-E617.png" style="width: 750px;" />
-<img alt="../../_images/hist-E717.png" src="../../_images/hist-E717.png" style="width: 750px;" />
-<img alt="../../_images/hist-E817.png" src="../../_images/hist-E817.png" style="width: 750px;" />
-<img alt="../../_images/hist-E917.png" src="../../_images/hist-E917.png" style="width: 750px;" />
-<img alt="../../_images/hist-E1017.png" src="../../_images/hist-E1017.png" style="width: 750px;" />
-<img alt="../../_images/hist-E1120.png" src="../../_images/hist-E1120.png" style="width: 750px;" />
-<img alt="../../_images/hist-V127.png" src="../../_images/hist-V127.png" style="width: 750px;" />
-<img alt="../../_images/hist-V217.png" src="../../_images/hist-V217.png" style="width: 750px;" />
-<img alt="../../_images/hist-V317.png" src="../../_images/hist-V317.png" style="width: 750px;" />
-<img alt="../../_images/hist-V417.png" src="../../_images/hist-V417.png" style="width: 750px;" />
-<img alt="../../_images/hist-V517.png" src="../../_images/hist-V517.png" style="width: 750px;" />
-<img alt="../../_images/hist-V617.png" src="../../_images/hist-V617.png" style="width: 750px;" />
-<img alt="../../_images/hist-V717.png" src="../../_images/hist-V717.png" style="width: 750px;" />
-<img alt="../../_images/hist-V817.png" src="../../_images/hist-V817.png" style="width: 750px;" />
-<img alt="../../_images/hist-V917.png" src="../../_images/hist-V917.png" style="width: 750px;" />
-<img alt="../../_images/hist-V1017.png" src="../../_images/hist-V1017.png" style="width: 750px;" />
-<img alt="../../_images/hist-V1117.png" src="../../_images/hist-V1117.png" style="width: 750px;" />
+<img alt="../../_images/hist-TrialID18.png" src="../../_images/hist-TrialID18.png" style="width: 750px;" />
+<img alt="../../_images/hist-ObsNum18.png" src="../../_images/hist-ObsNum18.png" style="width: 750px;" />
+<img alt="../../_images/hist-IsAlert18.png" src="../../_images/hist-IsAlert18.png" style="width: 750px;" />
+<img alt="../../_images/hist-P118.png" src="../../_images/hist-P118.png" style="width: 750px;" />
+<img alt="../../_images/hist-P218.png" src="../../_images/hist-P218.png" style="width: 750px;" />
+<img alt="../../_images/hist-P318.png" src="../../_images/hist-P318.png" style="width: 750px;" />
+<img alt="../../_images/hist-P418.png" src="../../_images/hist-P418.png" style="width: 750px;" />
+<img alt="../../_images/hist-P518.png" src="../../_images/hist-P518.png" style="width: 750px;" />
+<img alt="../../_images/hist-P618.png" src="../../_images/hist-P618.png" style="width: 750px;" />
+<img alt="../../_images/hist-P718.png" src="../../_images/hist-P718.png" style="width: 750px;" />
+<img alt="../../_images/hist-P818.png" src="../../_images/hist-P818.png" style="width: 750px;" />
+<img alt="../../_images/hist-E130.png" src="../../_images/hist-E130.png" style="width: 750px;" />
+<img alt="../../_images/hist-E223.png" src="../../_images/hist-E223.png" style="width: 750px;" />
+<img alt="../../_images/hist-E318.png" src="../../_images/hist-E318.png" style="width: 750px;" />
+<img alt="../../_images/hist-E418.png" src="../../_images/hist-E418.png" style="width: 750px;" />
+<img alt="../../_images/hist-E518.png" src="../../_images/hist-E518.png" style="width: 750px;" />
+<img alt="../../_images/hist-E618.png" src="../../_images/hist-E618.png" style="width: 750px;" />
+<img alt="../../_images/hist-E718.png" src="../../_images/hist-E718.png" style="width: 750px;" />
+<img alt="../../_images/hist-E818.png" src="../../_images/hist-E818.png" style="width: 750px;" />
+<img alt="../../_images/hist-E918.png" src="../../_images/hist-E918.png" style="width: 750px;" />
+<img alt="../../_images/hist-E1018.png" src="../../_images/hist-E1018.png" style="width: 750px;" />
+<img alt="../../_images/hist-E1121.png" src="../../_images/hist-E1121.png" style="width: 750px;" />
+<img alt="../../_images/hist-V128.png" src="../../_images/hist-V128.png" style="width: 750px;" />
+<img alt="../../_images/hist-V218.png" src="../../_images/hist-V218.png" style="width: 750px;" />
+<img alt="../../_images/hist-V318.png" src="../../_images/hist-V318.png" style="width: 750px;" />
+<img alt="../../_images/hist-V418.png" src="../../_images/hist-V418.png" style="width: 750px;" />
+<img alt="../../_images/hist-V518.png" src="../../_images/hist-V518.png" style="width: 750px;" />
+<img alt="../../_images/hist-V618.png" src="../../_images/hist-V618.png" style="width: 750px;" />
+<img alt="../../_images/hist-V718.png" src="../../_images/hist-V718.png" style="width: 750px;" />
+<img alt="../../_images/hist-V818.png" src="../../_images/hist-V818.png" style="width: 750px;" />
+<img alt="../../_images/hist-V918.png" src="../../_images/hist-V918.png" style="width: 750px;" />
+<img alt="../../_images/hist-V1018.png" src="../../_images/hist-V1018.png" style="width: 750px;" />
+<img alt="../../_images/hist-V1118.png" src="../../_images/hist-V1118.png" style="width: 750px;" />
 <p>A couple of comments on the histograms...</p>
 <ul class="simple">
 <li>The feature E6 is zero for all data points and can be neglected</li>
 <li>The feature E5 is zero for almost all data points and could probably be neglected too</li>
 </ul>
 <p>Ok a lesson learned. Of course I can&#8217;t claim that E5 is zero for almost all data points, based on the histogram above. What i can say, is that most values of E5 is in the first bin, in the above histogram. If i change the range of the histogram I get another picture</p>
-<img alt="../../_images/hist-P5-manual13.png" src="../../_images/hist-P5-manual13.png" style="width: 750px;" />
+<img alt="../../_images/hist-P5-manual14.png" src="../../_images/hist-P5-manual14.png" style="width: 750px;" />
 <p>The code to create the above histogram is:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">A</span><span class="p">[:,</span><span class="mi">7</span><span class="p">],</span> <span class="nb">range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">),</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>

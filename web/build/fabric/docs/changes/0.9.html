@@ -1,0 +1,488 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Changes in version 0.9 &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Changes in version 0.9</a><ul>
+<li><a class="reference internal" href="#major-changes">Major changes</a><ul>
+<li><a class="reference internal" href="#imports">Imports</a></li>
+<li><a class="reference internal" href="#python-version">Python version</a></li>
+<li><a class="reference internal" href="#environment-config-variables">Environment/config variables</a></li>
+<li><a class="reference internal" href="#execution-mode">Execution mode</a></li>
+<li><a class="reference internal" href="#lazy-string-interpolation">&#8220;Lazy&#8221; string interpolation</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#other-backwards-incompatible-changes">Other backwards-incompatible changes</a></li>
+<li><a class="reference internal" href="#changes-from-alpha-1-to-alpha-2">Changes from alpha 1 to alpha 2</a></li>
+<li><a class="reference internal" href="#changes-from-alpha-2-to-alpha-3">Changes from alpha 2 to alpha 3</a></li>
+<li><a class="reference internal" href="#changes-from-alpha-3-to-beta-1">Changes from alpha 3 to beta 1</a></li>
+<li><a class="reference internal" href="#changes-from-beta-1-to-release-candidate-1">Changes from beta 1 to release candidate 1</a></li>
+<li><a class="reference internal" href="#changes-from-release-candidate-1-to-final-release">Changes from release candidate 1 to final release</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../../_sources/build/fabric/docs/changes/0.9.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="changes-in-version-0-9">
+<h1>Changes in version 0.9<a class="headerlink" href="#changes-in-version-0-9" title="Permalink to this headline">¶</a></h1>
+<p>This document details the various backwards-incompatible changes made during
+Fabric&#8217;s rewrite between versions 0.1 and 0.9. The codebase has been almost
+completely rewritten and reorganized and an attempt has been made to remove
+&#8220;magical&#8221; behavior and make things more simple and Pythonic; the <tt class="docutils literal"><span class="pre">fab</span></tt>
+command-line component has also been redone to behave more like a typical Unix
+program.</p>
+<div class="section" id="major-changes">
+<h2>Major changes<a class="headerlink" href="#major-changes" title="Permalink to this headline">¶</a></h2>
+<p>You&#8217;ll want to at least skim the entire document, but the primary changes that
+will need to be made to one&#8217;s fabfiles are as follows:</p>
+<div class="section" id="imports">
+<h3>Imports<a class="headerlink" href="#imports" title="Permalink to this headline">¶</a></h3>
+<p>You will need to <strong>explicitly import any and all methods or decorators used</strong>,
+at the top of your fabfile; they are no longer magically available. Here&#8217;s a
+sample fabfile that worked with 0.1 and earlier:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nd">@hosts</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_task</span><span class="p">():</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;ls /var/www&#39;</span><span class="p">)</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;mkdir /var/www/newsite&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The above fabfile uses <cite>hosts</cite>, <cite>run</cite> and <cite>sudo</cite>, and so in Fabric 0.9 one
+simply needs to import those objects from the new API module <tt class="docutils literal"><span class="pre">fabric.api</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">fabric.api</span> <span class="kn">import</span> <span class="n">hosts</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">sudo</span>
+
+<span class="nd">@hosts</span><span class="p">(</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_task</span><span class="p">():</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;ls /var/www&#39;</span><span class="p">)</span>
+    <span class="n">sudo</span><span class="p">(</span><span class="s">&#39;mkdir /var/www/newsite&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>You may, if you wish, use <tt class="docutils literal"><span class="pre">from</span> <span class="pre">fabric.api</span> <span class="pre">import</span> <span class="pre">*</span></tt>, though this is
+technically not Python best practices; or you may import directly from the
+Fabric submodules (e.g. <tt class="docutils literal"><span class="pre">from</span> <span class="pre">fabric.decorators</span> <span class="pre">import</span> <span class="pre">hosts</span></tt>.)
+See <a class="reference internal" href="../usage/fabfiles.html"><em>Fabfile construction and use</em></a> for more information.</p>
+</div>
+<div class="section" id="python-version">
+<h3>Python version<a class="headerlink" href="#python-version" title="Permalink to this headline">¶</a></h3>
+<p>Fabric started out Python 2.5-only, but became largely 2.4 compatible at one
+point during its lifetime. Fabric is once again <strong>only compatible with Python
+2.5 or newer</strong>, in order to take advantage of the various new features and
+functions available in that version.</p>
+<p>With this change we&#8217;re setting an official policy to support the two most
+recent stable releases of the Python 2.x line, which at time of writing is 2.5
+and 2.6. We feel this is a decent compromise between new features and the
+reality of operating system packaging concerns. Given that most users use
+Fabric from their workstations, which are typically more up-to-date than
+servers, we&#8217;re hoping this doesn&#8217;t cut out too many folks.</p>
+<p>Finally, note that while we will not officially support a 2.4-compatible
+version or fork, we may provide a link to such a project if one arises.</p>
+</div>
+<div class="section" id="environment-config-variables">
+<h3>Environment/config variables<a class="headerlink" href="#environment-config-variables" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">config</span></tt> object previously used to access and set internal state
+(including Fabric config options) <strong>has been renamed</strong> to <tt class="xref py py-data docutils literal"><span class="pre">env</span></tt>, but
+otherwise remains mostly the same (it allows both dictionary and
+object-attribute style access to its data.) <tt class="xref py py-data docutils literal"><span class="pre">env</span></tt> resides in the
+<tt class="xref py py-mod docutils literal"><span class="pre">state</span></tt> submodule and is importable via <tt class="docutils literal"><span class="pre">fabric.api</span></tt>, so where before
+one might have seen fabfiles like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">my_task</span><span class="p">():</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="s">&#39;bar&#39;</span>
+</pre></div>
+</div>
+<p>one will now be explicitly importing the object like so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">fabric.api</span> <span class="kn">import</span> <span class="n">env</span>
+
+<span class="k">def</span> <span class="nf">my_task</span><span class="p">():</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">foo</span> <span class="o">=</span> <span class="s">&#39;bar&#39;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="execution-mode">
+<h3>Execution mode<a class="headerlink" href="#execution-mode" title="Permalink to this headline">¶</a></h3>
+<p>Fabric&#8217;s default mode of use, in prior versions, was what we called &#8220;broad
+mode&#8221;: your tasks, as Python code, ran only once, and any calls to functions
+that made connections (such as <cite>run</cite> or <cite>sudo</cite>) would run once per host in the
+current host list. We also offered &#8220;deep mode&#8221;, in which your entire task
+function would run once per host.</p>
+<p>In Fabric 0.9, this dichotomy has been removed, and <strong>&#8220;deep mode&#8221; is the
+method Fabric uses to perform all operations</strong>. This allows you to treat your
+Fabfiles much more like regular Python code, including the use of <tt class="docutils literal"><span class="pre">if</span></tt>
+statements and so forth, and allows operations like <cite>run</cite> to unambiguously
+return the output from the server.</p>
+<p>Other modes of execution such as the old &#8220;broad mode&#8221; may return as Fabric&#8217;s
+internals are refactored and expanded, but for now we&#8217;ve simplified things, and
+deep mode made the most sense as the primary mode of use.</p>
+</div>
+<div class="section" id="lazy-string-interpolation">
+<h3>&#8220;Lazy&#8221; string interpolation<a class="headerlink" href="#lazy-string-interpolation" title="Permalink to this headline">¶</a></h3>
+<p>Because of how Fabric used to run in &#8220;broad mode&#8221; (see previous section) a
+special string formatting technique &#8211; the use of a bash-like dollar sign
+notation, e.g. <tt class="docutils literal"><span class="pre">&quot;hostname:</span> <span class="pre">$(fab_host)&quot;</span></tt> &#8211; had to be used to allow the
+current state of execution to be represented in one&#8217;s operations. <strong>This is no
+longer necessary and has been removed</strong>. Because your tasks are executed once
+per host, you may build strings normally (e.g. with the <tt class="docutils literal"><span class="pre">%</span></tt> operator) and
+refer to <tt class="docutils literal"><span class="pre">env.host_string</span></tt>, <tt class="docutils literal"><span class="pre">env.user</span></tt> and so forth.</p>
+<p>For example, Fabric 0.1 had to insert the current username like so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="s">&quot;Your current username is $(fab_user)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Fabric 0.9 and up simply reference <tt class="docutils literal"><span class="pre">env</span></tt> variables as normal:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="s">&quot;Your current username is </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">env</span><span class="o">.</span><span class="n">user</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As with the execution modes, a special string interpolation function or method
+that automatically makes use of <tt class="docutils literal"><span class="pre">env</span></tt> values may find its way back into
+Fabric at some point if a need becomes apparent.</p>
+</div>
+</div>
+<div class="section" id="other-backwards-incompatible-changes">
+<h2>Other backwards-incompatible changes<a class="headerlink" href="#other-backwards-incompatible-changes" title="Permalink to this headline">¶</a></h2>
+<p>In no particular order:</p>
+<ul>
+<li><p class="first">The Fabric config file location used to be <tt class="docutils literal"><span class="pre">~/.fabric</span></tt>; in the interests
+of honoring Unix filename conventions, it&#8217;s now <tt class="docutils literal"><span class="pre">~/.fabricrc</span></tt>.</p>
+</li>
+<li><p class="first">The old <tt class="docutils literal"><span class="pre">config</span></tt> object (now <tt class="xref py py-data docutils literal"><span class="pre">env</span></tt>) had a <tt class="docutils literal"><span class="pre">getAny</span></tt> method which
+took one or more key strings as arguments, and returned the value attached
+to the first valid key. This method still exists but has been renamed to
+<cite>first</cite>.</p>
+</li>
+<li><p class="first">Environment variables such as <tt class="docutils literal"><span class="pre">fab_host</span></tt> have been renamed to simply e.g.
+<tt class="docutils literal"><span class="pre">host</span></tt>. This looks cleaner and feels more natural, and requires less
+typing. Users will naturally need to be careful not to override these
+variables, but the same holds true for e.g. Python&#8217;s builtin methods and
+types already, so we felt it was worth the tradeoff.</p>
+</li>
+<li><p class="first">Fabric&#8217;s version header is no longer printed every time the program runs;
+you should now use the standard <tt class="docutils literal"><span class="pre">--version</span></tt>/<tt class="docutils literal"><span class="pre">-V</span></tt> command-line options to
+print version and exit.</p>
+</li>
+<li><p class="first">The old <tt class="docutils literal"><span class="pre">about</span></tt> command has been removed; other Unix programs don&#8217;t
+typically offer this. Users can always view the license and warranty info in
+their respective text files distributed with the software.</p>
+</li>
+<li><p class="first">The old <tt class="docutils literal"><span class="pre">help</span></tt> command is now the typical Unix options <tt class="docutils literal"><span class="pre">-h</span></tt>/<tt class="docutils literal"><span class="pre">--help</span></tt>.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Furthermore, there is no longer a listing of Fabric&#8217;s programming API
+available through the command line &#8211; those topics impact fabfile
+authors, not fab users (even though the former is a subset of the
+latter) and should stay in the documentation only.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><cite>prompt</cite>&#8216;s primary function is now to return a value to the caller, although
+it may still optionally store the entered value in <cite>env</cite> as well.</p>
+</li>
+<li><p class="first"><cite>prompt</cite> now considers the empty string to be valid input; this allows other
+functions to wrap <cite>prompt</cite> and handle &#8220;empty&#8221; input on their own terms.</p>
+</li>
+<li><p class="first">In addition to the above changes, <cite>prompt</cite> has been updated to behave more
+obviously, as its previous behavior was confusing in a few ways:</p>
+<blockquote>
+<div><ul class="simple">
+<li>It will now overwrite pre-existing values in the environment dict, but
+will print a warning to the user if it does so.</li>
+<li>Additionally, (and this appeared to be undocumented) the <tt class="docutils literal"><span class="pre">default</span></tt>
+argument could take a callable as well as a string, and would simply set
+the default message to the return value if a callable was given. This
+seemed to add unnecessary complexity (given that users may call e.g.
+<tt class="docutils literal"><span class="pre">prompt(blah,</span> <span class="pre">msg,</span> <span class="pre">default=my_callable()</span></tt>) so it has been removed.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">When connecting, Fabric used to use the undocumented <tt class="docutils literal"><span class="pre">fab_pkey</span></tt> env
+variable as a method of passing in a Paramiko <tt class="docutils literal"><span class="pre">PKey</span></tt> object to the SSH
+client&#8217;s <tt class="docutils literal"><span class="pre">connect</span></tt> method. This has been removed in favor of an
+<tt class="docutils literal"><span class="pre">ssh</span></tt>-like <tt class="docutils literal"><span class="pre">-i</span></tt> option, which allows one to specify a private key file
+to use; that should generally be enough for most users.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">download</span></tt> is now <cite>get</cite> in order to match up with <cite>put</cite> (the name mismatch
+was due to <cite>get</cite> being the old method of getting env vars.)</p>
+</li>
+<li><p class="first">The <tt class="docutils literal"><span class="pre">noshell</span></tt> argument to <cite>sudo</cite> (added late in its life to previous
+Fabric versions) has been renamed to <tt class="docutils literal"><span class="pre">shell</span></tt> (defaults to True, so the
+effective behavior remains the same) and has also been extended to the <cite>run</cite>
+operation.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Additionally, the global <tt class="docutils literal"><span class="pre">sudo_noshell</span></tt> option has been renamed to
+<tt class="docutils literal"><span class="pre">use_shell</span></tt> and also applies to both <cite>run</cite> and <cite>sudo</cite>.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">local_per_host</span></tt> has been removed, as it only applied to the now-removed
+&#8220;broad mode&#8221;.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">load</span></tt> has been removed; Fabric is now &#8220;just Python&#8221;, so use Python&#8217;s
+import mechanisms in order to stitch multiple fabfiles together.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">abort</span></tt> is no longer an &#8220;operation&#8221; <em>per se</em> and has been moved to
+<a class="reference internal" href="../api/core/utils.html#module-fabric.utils" title="fabric.utils"><tt class="xref py py-mod docutils literal"><span class="pre">fabric.utils</span></tt></a>. It is otherwise the same as before, taking a single
+string message, printing it to the user and then calling <tt class="docutils literal"><span class="pre">sys.exit(1)</span></tt>.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">rsyncproject</span></tt> and <tt class="docutils literal"><span class="pre">upload_project</span></tt> have been moved into
+<tt class="xref py py-mod docutils literal"><span class="pre">fabric.contrib</span></tt> (specifically, <a class="reference internal" href="../api/contrib/project.html#module-fabric.contrib.project" title="fabric.contrib.project"><tt class="xref py py-mod docutils literal"><span class="pre">fabric.contrib.project</span></tt></a>), which
+is intended to be a new tree of submodules for housing &#8220;extra&#8221; code which
+may build on top of the core Fabric operations.</p>
+</li>
+<li><p class="first"><tt class="docutils literal"><span class="pre">invoke</span></tt> has been turned on its head, and is now the <cite>runs_once</cite> decorator
+(living in <a class="reference internal" href="../api/core/decorators.html#module-fabric.decorators" title="fabric.decorators"><tt class="xref py py-mod docutils literal"><span class="pre">fabric.decorators</span></tt></a>). When used to decorate a function, that
+function will only execute one time during the lifetime of a <tt class="docutils literal"><span class="pre">fab</span></tt> run.
+Thus, where you might have used <tt class="docutils literal"><span class="pre">invoke</span></tt> multiple times to ensure a given
+command only runs once, you may now use <cite>runs_once</cite> to decorate the function
+and then call it multiple times in a normal fashion.</p>
+</li>
+<li><p class="first">It looks like the regex behavior of the <tt class="docutils literal"><span class="pre">validate</span></tt> argument to <cite>prompt</cite>
+was never actually implemented. It now works as advertised.</p>
+</li>
+<li><p class="first">Couldn&#8217;t think of a good reason for <cite>require</cite> to be a decorator <em>and</em> a
+function, and the function is more versatile in terms of where it may be
+used, so the decorator has been removed.</p>
+</li>
+<li><p class="first">As things currently stand with the execution model, the <tt class="docutils literal"><span class="pre">depends</span></tt>
+decorator doesn&#8217;t make a lot of sense: instead, it&#8217;s safest/best to simply
+make &#8220;meta&#8221; commands that just call whatever chain of &#8220;real&#8221; commands you
+need performed for a given overarching task.</p>
+<p>For example, instead of having command A say
+that it &#8220;depends on&#8221; command B, create a command C which calls A and B in the
+right order, e.g.:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">build</span><span class="p">():</span>
+    <span class="n">local</span><span class="p">(</span><span class="s">&#39;make clean all&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">upload</span><span class="p">():</span>
+    <span class="n">put</span><span class="p">(</span><span class="s">&#39;app.tgz&#39;</span><span class="p">,</span> <span class="s">&#39;/tmp/app.tgz&#39;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;tar xzf /tmp/app.tgz&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">symlink</span><span class="p">():</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&#39;ln -s /srv/media/photos /var/www/app/photos&#39;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">deploy</span><span class="p">():</span>
+    <span class="n">build</span><span class="p">()</span>
+    <span class="n">upload</span><span class="p">()</span>
+    <span class="n">symlink</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The execution model is still subject to change as Fabric evolves. Please
+don&#8217;t hesitate to email the list or the developers if you have a use case
+that needs something Fabric doesn&#8217;t provide right now!</p>
+</div>
+</li>
+<li><p class="first">Removed the old <tt class="docutils literal"><span class="pre">fab</span> <span class="pre">shell</span></tt> functionality, since the move to &#8220;just Python&#8221;
+should make vanilla <tt class="docutils literal"><span class="pre">python</span></tt>/<tt class="docutils literal"><span class="pre">ipython</span></tt> usage of Fabric much easier.</p>
+<blockquote>
+<div><ul class="simple">
+<li>We may add it back in later as a convenient shortcut to what basically
+amounts to running <tt class="docutils literal"><span class="pre">ipython</span></tt> and performing a handful of <tt class="docutils literal"><span class="pre">from</span>
+<span class="pre">fabric.foo</span> <span class="pre">import</span> <span class="pre">bar</span></tt> calls.</li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">The undocumented <cite>fab_quiet</cite> option has been replaced by a much more granular
+set of output controls. For more info, see <a class="reference internal" href="../usage/output_controls.html"><em>Managing output</em></a>.</p>
+</li>
+</ul>
+</div>
+<div class="section" id="changes-from-alpha-1-to-alpha-2">
+<h2>Changes from alpha 1 to alpha 2<a class="headerlink" href="#changes-from-alpha-1-to-alpha-2" title="Permalink to this headline">¶</a></h2>
+<p>The below list was generated by running <tt class="docutils literal"><span class="pre">git</span> <span class="pre">shortlog</span> <span class="pre">0.9a1..0.9a2</span></tt> and then
+manually sifting through and editing the resulting commit messages. This will
+probably occur for the rest of the alphas and betas; we hope to use
+Sphinx-specific methods of documenting changes once the final release is out
+the door.</p>
+<ul class="simple">
+<li>Various minor tweaks to the (still in-progress) documentation, including one
+thanks to Curt Micol.</li>
+<li>Added a number of TODO items based on user feedback (thanks!)</li>
+<li>Host information now available in granular form (user, host, port) in the
+env dict, alongside the full <tt class="docutils literal"><span class="pre">user&#64;host:port</span></tt> host string.</li>
+<li>Parsing of host strings is now more lenient when examining the username
+(e.g. hyphens.)</li>
+<li>User/host info no longer cleared out between commands.</li>
+<li>Tweaked <tt class="docutils literal"><span class="pre">setup.py</span></tt> to use <tt class="docutils literal"><span class="pre">find_packages</span></tt>. Thanks to Pat McNerthney.</li>
+<li>Added &#8216;capture&#8217; argument to <cite>~fabric.operations.local</cite> to allow local
+interactive tasks.</li>
+<li>Reversed default value of <cite>~fabric.operations.local</cite>&#8216;s <tt class="docutils literal"><span class="pre">show_stderr</span></tt>
+kwarg; local stderr now prints by default instead of being hidden by
+default.</li>
+<li>Various internal fabfile tweaks.</li>
+</ul>
+</div>
+<div class="section" id="changes-from-alpha-2-to-alpha-3">
+<h2>Changes from alpha 2 to alpha 3<a class="headerlink" href="#changes-from-alpha-2-to-alpha-3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Lots of updates to the documentation and TODO</li>
+<li>Added contrib.files with a handful of file-centric subroutines</li>
+<li>Added contrib.console for console UI stuff (so far, just <cite>confirm</cite>)</li>
+<li>Reworked config file mechanisms a bit, added CLI flag for setting it.</li>
+<li>Output controls (including CLI args, documentation) have been added</li>
+<li>Test coverage tweaked and grown a small amount (thanks in part to Peter
+Ellis)</li>
+<li>Roles overhauled/fixed (more like hosts now)</li>
+<li>Changed <tt class="docutils literal"><span class="pre">--list</span></tt> linewrap behavior to truncate instead.</li>
+<li>Make private key passphrase prompting more obvious to users.</li>
+<li>Add <tt class="docutils literal"><span class="pre">pty</span></tt> option to <cite>sudo</cite>. Thanks to José Muanis for the tip-off re: get_pty()</li>
+<li>Add CLI argument for setting the shell used in commands (thanks to Steve Steiner)</li>
+<li>Only load host keys when <tt class="docutils literal"><span class="pre">env.reject_unknown_keys</span></tt> is True. Thanks to Pat
+McNerthney.</li>
+<li>And many, many additional bugfixes and behavioral tweaks too small to merit
+cluttering up this list! Thanks as always to everyone who contributed
+bugfixes, feedback and/or patches.</li>
+</ul>
+</div>
+<div class="section" id="changes-from-alpha-3-to-beta-1">
+<h2>Changes from alpha 3 to beta 1<a class="headerlink" href="#changes-from-alpha-3-to-beta-1" title="Permalink to this headline">¶</a></h2>
+<p>This is closer to being a straight dump of the Git changelog than the previous
+sections; apologies for the overall change in tense.</p>
+<ul class="simple">
+<li>Add autodocs for fabric.contrib.console.</li>
+<li>Minor cleanup to package init and setup.py.</li>
+<li>Handle exceptions with strerror attributes that are None instead of strings.</li>
+<li>contrib.files.append may now take a list of strings if desired.</li>
+<li>Straighten out how prompt() deals with trailing whitespace</li>
+<li>Add &#8216;cd&#8217; context manager.</li>
+<li>Update upload_template to correctly handle backing up target directories.</li>
+<li>upload_template() can now use Jinja2 if it&#8217;s installed and user asks for it.</li>
+<li>Handle case where remote host SSH key doesn&#8217;t match known_hosts.</li>
+<li>Fix race condition in run/sudo.</li>
+<li>Start fledgling FAQ; extended pty option to run(); related doc tweaks.</li>
+<li>Bring local() in line with run()/sudo() in terms of .failed attribute.</li>
+<li>Add dollar-sign backslash escaping to run/sudo.</li>
+<li>Add FAQ question re: backgrounding processes.</li>
+<li>Extend some of put()&#8217;s niceties to get(), plus docstring/comment updates</li>
+<li>Add debug output of chosen fabfile for troubleshooting fabfile discovery.</li>
+<li>Fix Python path bug which sometimes caused Fabric&#8217;s internal fabfile to
+pre-empt user&#8217;s fabfile during load phase.</li>
+<li>Gracefully handle &#8220;display&#8221; for tasks with no docstring.</li>
+<li>Fix edge case that comes up during some auth/prompt situations.</li>
+<li>Handle carriage returns in output_thread correctly. Thanks to Brian Rosner.</li>
+</ul>
+</div>
+<div class="section" id="changes-from-beta-1-to-release-candidate-1">
+<h2>Changes from beta 1 to release candidate 1<a class="headerlink" href="#changes-from-beta-1-to-release-candidate-1" title="Permalink to this headline">¶</a></h2>
+<p>As with the previous changelog, this is also mostly a dump of the Git log. We
+promise that future changelogs will be more verbose :)</p>
+<ul class="simple">
+<li>Near-total overhaul and expansion of documentation (this is the big one!)
+Other mentions of documentation in this list are items deserving their own
+mention, e.g. FAQ updates.</li>
+<li>Add FAQ question re: passphrase/password prompt</li>
+<li>Vendorized Paramiko: it is now included in our distribution and is no longer
+an external dependency, at least until upstream fixes a nasty 1.7.5 bug.</li>
+<li>Fix #34: switch upload_template to use mkstemp (also removes Python 2.5.2+
+dependency &#8211; now works on 2.5.0 and up)</li>
+<li>Fix #62 by escaping backticks.</li>
+<li>Replace &#8220;ls&#8221; with &#8220;test&#8221; in exists()</li>
+<li>Fixes #50. Thanks to Alex Koshelev for the patch.</li>
+<li><tt class="docutils literal"><span class="pre">local</span></tt>&#8216;s return value now exhibits <tt class="docutils literal"><span class="pre">.return_code</span></tt>.</li>
+<li>Abort on bad role names instead of blowing up.</li>
+<li>Turn off DeprecationWarning when importing paramiko.</li>
+<li>Attempted fix re #32 (dropped output)</li>
+<li>Update role/host initialization logic (was missing some edge cases)</li>
+<li>Add note to install docs re: PyCrypto on win32.</li>
+<li>Add FAQ item re: changing env.shell.</li>
+<li>Rest of TODO migrated to tickets.</li>
+<li><tt class="docutils literal"><span class="pre">fab</span> <span class="pre">test</span></tt> (when in source tree) now uses doctests.</li>
+<li>Add note to compatibility page re: fab_quiet.</li>
+<li>Update local() to honor context_managers.cd()</li>
+</ul>
+</div>
+<div class="section" id="changes-from-release-candidate-1-to-final-release">
+<h2>Changes from release candidate 1 to final release<a class="headerlink" href="#changes-from-release-candidate-1-to-final-release" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Fixed the <cite>~fabric.contrib.files.sed</cite> docstring to accurately reflect which
+<tt class="docutils literal"><span class="pre">sed</span></tt> options it uses.</li>
+<li>Various changes to internal fabfile, version mechanisms, and other
+non-user-facing things.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,417 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>fabric.context_managers &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for fabric.context_managers</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Context managers for use with the ``with`` statement.</span>
+
+<span class="sd">.. note:: When using Python 2.5, you will need to start your fabfile</span>
+<span class="sd">    with ``from __future__ import with_statement`` in order to make use of</span>
+<span class="sd">    the ``with`` statement (which is a regular, non ``__future__`` feature of</span>
+<span class="sd">    Python 2.6+.)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span><span class="p">,</span> <span class="n">nested</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">fabric.state</span> <span class="kn">import</span> <span class="n">env</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">win32</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">win32</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">termios</span>
+    <span class="kn">import</span> <span class="nn">tty</span>
+
+
+<span class="k">def</span> <span class="nf">_set_output</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="n">which</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Refactored subroutine used by ``hide`` and ``show``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Preserve original values, pull in new given value to use</span>
+    <span class="n">previous</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">output</span><span class="o">.</span><span class="n">expand_aliases</span><span class="p">(</span><span class="n">groups</span><span class="p">):</span>
+        <span class="n">previous</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="n">output</span><span class="p">[</span><span class="n">group</span><span class="p">]</span>
+        <span class="n">output</span><span class="p">[</span><span class="n">group</span><span class="p">]</span> <span class="o">=</span> <span class="n">which</span>
+    <span class="c"># Yield control</span>
+    <span class="k">yield</span>
+    <span class="c"># Restore original values</span>
+    <span class="n">output</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">previous</span><span class="p">)</span>
+
+
+<span class="nd">@contextmanager</span>
+<div class="viewcode-block" id="show"><a class="viewcode-back" href="../../build/fabric/docs/api/core/context_managers.html#fabric.context_managers.show">[docs]</a><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="o">*</span><span class="n">groups</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Context manager for setting the given output ``groups`` to True.</span>
+
+<span class="sd">    ``groups`` must be one or more strings naming the output groups defined in</span>
+<span class="sd">    `~fabric.state.output`. The given groups will be set to True for the</span>
+<span class="sd">    duration of the enclosed block, and restored to their previous value</span>
+<span class="sd">    afterwards.</span>
+
+<span class="sd">    For example, to turn on debug output (which is typically off by default)::</span>
+
+<span class="sd">        def my_task():</span>
+<span class="sd">            with show(&#39;debug&#39;):</span>
+<span class="sd">                run(&#39;ls /var/www&#39;)</span>
+
+<span class="sd">    As almost all output groups are displayed by default, `show` is most useful</span>
+<span class="sd">    for turning on the normally-hidden ``debug`` group, or when you know or</span>
+<span class="sd">    suspect that code calling your own code is trying to hide output with</span>
+<span class="sd">    `hide`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_set_output</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="bp">True</span><span class="p">)</span>
+
+</div>
+<span class="nd">@contextmanager</span>
+<div class="viewcode-block" id="hide"><a class="viewcode-back" href="../../build/fabric/docs/api/core/context_managers.html#fabric.context_managers.hide">[docs]</a><span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="o">*</span><span class="n">groups</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Context manager for setting the given output ``groups`` to False.</span>
+
+<span class="sd">    ``groups`` must be one or more strings naming the output groups defined in</span>
+<span class="sd">    `~fabric.state.output`. The given groups will be set to False for the</span>
+<span class="sd">    duration of the enclosed block, and restored to their previous value</span>
+<span class="sd">    afterwards.</span>
+
+<span class="sd">    For example, to hide the &quot;[hostname] run:&quot; status lines, as well as</span>
+<span class="sd">    preventing printout of stdout and stderr, one might use `hide` as follows::</span>
+
+<span class="sd">        def my_task():</span>
+<span class="sd">            with hide(&#39;running&#39;, &#39;stdout&#39;, &#39;stderr&#39;):</span>
+<span class="sd">                run(&#39;ls /var/www&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_set_output</span><span class="p">(</span><span class="n">groups</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+</div>
+<span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">_setenv</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Context manager temporarily overriding ``env`` with given key/value pairs.</span>
+
+<span class="sd">    This context manager is used internally by `settings` and is not intended</span>
+<span class="sd">    to be used directly.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">previous</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">env</span><span class="p">:</span>
+            <span class="n">previous</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">env</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">previous</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="settings"><a class="viewcode-back" href="../../build/fabric/docs/api/core/context_managers.html#fabric.context_managers.settings">[docs]</a><span class="k">def</span> <span class="nf">settings</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Nest context managers and/or override ``env`` variables.</span>
+
+<span class="sd">    `settings` serves two purposes:</span>
+
+<span class="sd">    * Most usefully, it allows temporary overriding/updating of ``env`` with</span>
+<span class="sd">      any provided keyword arguments, e.g. ``with settings(user=&#39;foo&#39;):``.</span>
+<span class="sd">      Original values, if any, will be restored once the ``with`` block closes.</span>
+<span class="sd">    * In addition, it will use `contextlib.nested`_ to nest any given</span>
+<span class="sd">      non-keyword arguments, which should be other context managers, e.g.</span>
+<span class="sd">      ``with settings(hide(&#39;stderr&#39;), show(&#39;stdout&#39;)):``.</span>
+
+<span class="sd">    .. _contextlib.nested: http://docs.python.org/library/contextlib.html#contextlib.nested</span>
+
+<span class="sd">    These behaviors may be specified at the same time if desired. An example</span>
+<span class="sd">    will hopefully illustrate why this is considered useful::</span>
+
+<span class="sd">        def my_task():</span>
+<span class="sd">            with settings(</span>
+<span class="sd">                hide(&#39;warnings&#39;, &#39;running&#39;, &#39;stdout&#39;, &#39;stderr&#39;),</span>
+<span class="sd">                warn_only=True</span>
+<span class="sd">            ):</span>
+<span class="sd">                if run(&#39;ls /etc/lsb-release&#39;):</span>
+<span class="sd">                    return &#39;Ubuntu&#39;</span>
+<span class="sd">                elif run(&#39;ls /etc/redhat-release&#39;):</span>
+<span class="sd">                    return &#39;RedHat&#39;</span>
+
+<span class="sd">    The above task executes a `run` statement, but will warn instead of</span>
+<span class="sd">    aborting if the ``ls`` fails, and all output -- including the warning</span>
+<span class="sd">    itself -- is prevented from printing to the user. The end result, in this</span>
+<span class="sd">    scenario, is a completely silent task that allows the caller to figure out</span>
+<span class="sd">    what type of system the remote host is, without incurring the handful of</span>
+<span class="sd">    output that would normally occur.</span>
+
+<span class="sd">    Thus, `settings` may be used to set any combination of environment</span>
+<span class="sd">    variables in tandem with hiding (or showing) specific levels of output, or</span>
+<span class="sd">    in tandem with any other piece of Fabric functionality implemented as a</span>
+<span class="sd">    context manager.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">managers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+        <span class="n">managers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_setenv</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">nested</span><span class="p">(</span><span class="o">*</span><span class="n">managers</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="cd"><a class="viewcode-back" href="../../build/fabric/docs/api/core/context_managers.html#fabric.context_managers.cd">[docs]</a><span class="k">def</span> <span class="nf">cd</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Context manager that keeps directory state when calling operations.</span>
+
+<span class="sd">    Any calls to `run`, `sudo`, `get`, or `put` within the wrapped block will</span>
+<span class="sd">    implicitly have a string similar to ``&quot;cd &lt;path&gt; &amp;&amp; &quot;`` prefixed in order</span>
+<span class="sd">    to give the sense that there is actually statefulness involved.  `cd` only</span>
+<span class="sd">    affects the remote paths for `get` and `put` -- local paths are untouched.</span>
+
+<span class="sd">    Because use of `cd` affects all such invocations, any code making use of</span>
+<span class="sd">    those operations, such as much of the ``contrib`` section, will also be</span>
+<span class="sd">    affected by use of `cd`.</span>
+
+<span class="sd">    Like the actual &#39;cd&#39; shell builtin, `cd` may be called with relative paths</span>
+<span class="sd">    (keep in mind that your default starting directory is your remote user&#39;s</span>
+<span class="sd">    ``$HOME``) and may be nested as well.</span>
+
+<span class="sd">    Below is a &quot;normal&quot; attempt at using the shell &#39;cd&#39;, which doesn&#39;t work due</span>
+<span class="sd">    to how shell-less SSH connections are implemented -- state is **not** kept</span>
+<span class="sd">    between invocations of `run` or `sudo`::</span>
+
+<span class="sd">        run(&#39;cd /var/www&#39;)</span>
+<span class="sd">        run(&#39;ls&#39;)</span>
+
+<span class="sd">    The above snippet will list the contents of the remote user&#39;s ``$HOME``</span>
+<span class="sd">    instead of ``/var/www``. With `cd`, however, it will work as expected::</span>
+
+<span class="sd">        with cd(&#39;/var/www&#39;):</span>
+<span class="sd">            run(&#39;ls&#39;) # Turns into &quot;cd /var/www &amp;&amp; ls&quot;</span>
+
+<span class="sd">    Finally, a demonstration (see inline comments) of nesting::</span>
+
+<span class="sd">        with cd(&#39;/var/www&#39;):</span>
+<span class="sd">            run(&#39;ls&#39;) # cd /var/www &amp;&amp; ls</span>
+<span class="sd">            with cd(&#39;website1&#39;):</span>
+<span class="sd">                run(&#39;ls&#39;) # cd /var/www/website1 &amp;&amp; ls</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        This context manager is currently implemented by appending to (and, as</span>
+<span class="sd">        always, restoring afterwards) the current value of an environment</span>
+<span class="sd">        variable, ``env.cwd``. However, this implementation may change in the</span>
+<span class="sd">        future, so we do not recommend manually altering ``env.cwd`` -- only</span>
+<span class="sd">        the *behavior* of `cd` will have any guarantee of backwards</span>
+<span class="sd">        compatibility.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        Space characters will be escaped automatically to make dealing with</span>
+<span class="sd">        such directory names easier.</span>
+
+<span class="sd">    .. versionchanged:: 1.0</span>
+<span class="sd">        Applies to `get` and `put` in addition to the command-running</span>
+<span class="sd">        operations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_change_cwd</span><span class="p">(</span><span class="s">&#39;cwd&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="lcd"><a class="viewcode-back" href="../../build/fabric/docs/api/core/context_managers.html#fabric.context_managers.lcd">[docs]</a><span class="k">def</span> <span class="nf">lcd</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Context manager for updating local current working directory.</span>
+
+<span class="sd">    This context manager is identical to `~fabric.context_managers.cd`, except</span>
+<span class="sd">    that it changes a different env var (`lcwd`, instead of `cwd`) and thus</span>
+<span class="sd">    only affects the invocation of `~fabric.operations.local` and the local</span>
+<span class="sd">    arguments to `~fabric.operations.get`/`~fabric.operations.put`.</span>
+
+<span class="sd">    .. versionadded:: 1.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_change_cwd</span><span class="p">(</span><span class="s">&#39;lcwd&#39;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+</div>
+<span class="k">def</span> <span class="nf">_change_cwd</span><span class="p">(</span><span class="n">which</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">,</span> <span class="s">&#39;\ &#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">which</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s">&#39;/&#39;</span><span class="p">):</span>
+        <span class="n">new_cwd</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">which</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span> <span class="o">+</span> <span class="n">path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new_cwd</span> <span class="o">=</span> <span class="n">path</span>
+    <span class="k">return</span> <span class="n">_setenv</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">which</span><span class="p">:</span> <span class="n">new_cwd</span><span class="p">})</span>
+
+
+<div class="viewcode-block" id="path"><a class="viewcode-back" href="../../build/fabric/docs/api/core/context_managers.html#fabric.context_managers.path">[docs]</a><span class="k">def</span> <span class="nf">path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">behavior</span><span class="o">=</span><span class="s">&#39;append&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Append the given ``path`` to the PATH used to execute any wrapped commands.</span>
+
+<span class="sd">    Any calls to `run` or `sudo` within the wrapped block will implicitly have</span>
+<span class="sd">    a string similar to ``&quot;PATH=$PATH:&lt;path&gt; &quot;`` prepended before the given</span>
+<span class="sd">    command.</span>
+
+<span class="sd">    You may customize the behavior of `path` by specifying the optional</span>
+<span class="sd">    ``behavior`` keyword argument, as follows:</span>
+
+<span class="sd">    * ``&#39;append&#39;``: append given path to the current ``$PATH``, e.g.</span>
+<span class="sd">      ``PATH=$PATH:&lt;path&gt;``. This is the default behavior.</span>
+<span class="sd">    * ``&#39;prepend&#39;``: prepend given path to the current ``$PATH``, e.g.</span>
+<span class="sd">      ``PATH=&lt;path&gt;:$PATH``.</span>
+<span class="sd">    * ``&#39;replace&#39;``: ignore previous value of ``$PATH`` altogether, e.g.</span>
+<span class="sd">      ``PATH=&lt;path&gt;``.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        This context manager is currently implemented by modifying (and, as</span>
+<span class="sd">        always, restoring afterwards) the current value of environment</span>
+<span class="sd">        variables, ``env.path`` and ``env.path_behavior``. However, this</span>
+<span class="sd">        implementation may change in the future, so we do not recommend</span>
+<span class="sd">        manually altering them directly.</span>
+
+<span class="sd">    .. versionadded:: 1.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_setenv</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">path_behavior</span><span class="o">=</span><span class="n">behavior</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="prefix"><a class="viewcode-back" href="../../build/fabric/docs/api/core/context_managers.html#fabric.context_managers.prefix">[docs]</a><span class="k">def</span> <span class="nf">prefix</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Prefix all wrapped `run`/`sudo` commands with given command plus ``&amp;&amp;``.</span>
+
+<span class="sd">    This is nearly identical to `~fabric.operations.cd`, except that nested</span>
+<span class="sd">    invocations append to a list of command strings instead of modifying a</span>
+<span class="sd">    single string.</span>
+
+<span class="sd">    Most of the time, you&#39;ll want to be using this alongside a shell script</span>
+<span class="sd">    which alters shell state, such as ones which export or alter shell</span>
+<span class="sd">    environment variables.</span>
+
+<span class="sd">    For example, one of the most common uses of this tool is with the</span>
+<span class="sd">    ``workon`` command from `virtualenvwrapper</span>
+<span class="sd">    &lt;http://www.doughellmann.com/projects/virtualenvwrapper/&gt;`_::</span>
+
+<span class="sd">        with prefix(&#39;workon myvenv&#39;):</span>
+<span class="sd">            run(&#39;./manage.py syncdb&#39;)</span>
+
+<span class="sd">    In the above snippet, the actual shell command run would be this::</span>
+
+<span class="sd">        $ workon myvenv &amp;&amp; ./manage.py syncdb</span>
+
+<span class="sd">    This context manager is compatible with `~fabric.context_managers.cd`, so</span>
+<span class="sd">    if your virtualenv doesn&#39;t ``cd`` in its ``postactivate`` script, you could</span>
+<span class="sd">    do the following::</span>
+
+<span class="sd">        with cd(&#39;/path/to/app&#39;):</span>
+<span class="sd">            with prefix(&#39;workon myvenv&#39;):</span>
+<span class="sd">                run(&#39;./manage.py syncdb&#39;)</span>
+<span class="sd">                run(&#39;./manage.py loaddata myfixture&#39;)</span>
+
+<span class="sd">    Which would result in executions like so::</span>
+
+<span class="sd">        $ cd /path/to/app &amp;&amp; workon myvenv &amp;&amp; ./manage.py syncdb</span>
+<span class="sd">        $ cd /path/to/app &amp;&amp; workon myvenv &amp;&amp; ./manage.py loaddata myfixture</span>
+
+<span class="sd">    Finally, as alluded to near the beginning,</span>
+<span class="sd">    `~fabric.context_managers.prefix` may be nested if desired, e.g.::</span>
+
+<span class="sd">        with prefix(&#39;workon myenv&#39;):</span>
+<span class="sd">            run(&#39;ls&#39;)</span>
+<span class="sd">            with prefix(&#39;source /some/script&#39;):</span>
+<span class="sd">                run(&#39;touch a_file&#39;)</span>
+
+<span class="sd">    The result::</span>
+
+<span class="sd">        $ workon myenv &amp;&amp; ls</span>
+<span class="sd">        $ workon myenv &amp;&amp; source /some/script &amp;&amp; touch a_file</span>
+
+<span class="sd">    Contrived, but hopefully illustrative.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">_setenv</span><span class="p">(</span><span class="n">command_prefixes</span><span class="o">=</span><span class="n">env</span><span class="o">.</span><span class="n">command_prefixes</span> <span class="o">+</span> <span class="p">[</span><span class="n">command</span><span class="p">])</span>
+
+</div>
+<span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">char_buffered</span><span class="p">(</span><span class="n">pipe</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Force local terminal ``pipe`` be character, not line, buffered.</span>
+
+<span class="sd">    Only applies on Unix-based systems; on Windows this is a no-op.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">win32</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">isatty</span><span class="p">():</span>
+        <span class="k">yield</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">old_settings</span> <span class="o">=</span> <span class="n">termios</span><span class="o">.</span><span class="n">tcgetattr</span><span class="p">(</span><span class="n">pipe</span><span class="p">)</span>
+        <span class="n">tty</span><span class="o">.</span><span class="n">setcbreak</span><span class="p">(</span><span class="n">pipe</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">termios</span><span class="o">.</span><span class="n">tcsetattr</span><span class="p">(</span><span class="n">pipe</span><span class="p">,</span> <span class="n">termios</span><span class="o">.</span><span class="n">TCSADRAIN</span><span class="p">,</span> <span class="n">old_settings</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

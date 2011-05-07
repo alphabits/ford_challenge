@@ -1,0 +1,1171 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Python Cryptography Toolkit &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Python Cryptography Toolkit</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li><a class="reference internal" href="#design-goals">Design Goals</a></li>
+<li><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#crypto-hash-hash-functions">Crypto.Hash: Hash Functions</a><ul>
+<li><a class="reference internal" href="#security-notes">Security Notes</a></li>
+<li><a class="reference internal" href="#credits">Credits</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#crypto-cipher-encryption-algorithms">Crypto.Cipher: Encryption Algorithms</a><ul>
+<li><a class="reference internal" href="#algorithm-specific-notes-for-encryption-algorithms">Algorithm-specific Notes for Encryption Algorithms</a></li>
+<li><a class="reference internal" href="#id1">Security Notes</a></li>
+<li><a class="reference internal" href="#id2">Credits</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#crypto-protocol-various-protocols">Crypto.Protocol: Various Protocols</a><ul>
+<li><a class="reference internal" href="#crypto-protocol-allornothing">Crypto.Protocol.AllOrNothing</a></li>
+<li><a class="reference internal" href="#crypto-protocol-chaffing">Crypto.Protocol.Chaffing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#crypto-publickey-public-key-algorithms">Crypto.PublicKey: Public-Key Algorithms</a><ul>
+<li><a class="reference internal" href="#the-elgamal-and-dsa-algorithms">The ElGamal and DSA algorithms</a></li>
+<li><a class="reference internal" href="#security-notes-for-public-key-algorithms">Security Notes for Public-key Algorithms</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#crypto-util-odds-and-ends">Crypto.Util: Odds and Ends</a><ul>
+<li><a class="reference internal" href="#crypto-util-number">Crypto.Util.number</a></li>
+<li><a class="reference internal" href="#crypto-random">Crypto.Random</a></li>
+<li><a class="reference internal" href="#crypto-util-rfc1751">Crypto.Util.RFC1751</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#extending-the-toolkit">Extending the Toolkit</a><ul>
+<li><a class="reference internal" href="#adding-hash-algorithms">Adding Hash Algorithms</a></li>
+<li><a class="reference internal" href="#adding-block-encryption-algorithms">Adding Block Encryption Algorithms</a></li>
+<li><a class="reference internal" href="#adding-stream-encryption-algorithms">Adding Stream Encryption Algorithms</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../_sources/build/pycrypto/Doc/pycrypt.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="python-cryptography-toolkit">
+<h1><a class="toc-backref" href="#id3">Python Cryptography Toolkit</a><a class="headerlink" href="#python-cryptography-toolkit" title="Permalink to this headline">¶</a></h1>
+<p><strong>Version 2.3</strong></p>
+<p>The Python Cryptography Toolkit describes a package containing various
+cryptographic modules for the Python programming language.  This
+documentation assumes you have some basic knowledge about the Python
+language, but not necessarily about cryptography.</p>
+<div class="contents topic" id="contents">
+<p class="topic-title first">Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#python-cryptography-toolkit" id="id3">Python Cryptography Toolkit</a><ul>
+<li><a class="reference internal" href="#introduction" id="id4">Introduction</a><ul>
+<li><a class="reference internal" href="#design-goals" id="id5">Design Goals</a></li>
+<li><a class="reference internal" href="#acknowledgements" id="id6">Acknowledgements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#crypto-hash-hash-functions" id="id7">Crypto.Hash: Hash Functions</a><ul>
+<li><a class="reference internal" href="#security-notes" id="id8">Security Notes</a></li>
+<li><a class="reference internal" href="#credits" id="id9">Credits</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#crypto-cipher-encryption-algorithms" id="id10">Crypto.Cipher: Encryption Algorithms</a><ul>
+<li><a class="reference internal" href="#algorithm-specific-notes-for-encryption-algorithms" id="id11">Algorithm-specific Notes for Encryption Algorithms</a></li>
+<li><a class="reference internal" href="#id1" id="id12">Security Notes</a></li>
+<li><a class="reference internal" href="#id2" id="id13">Credits</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#crypto-protocol-various-protocols" id="id14">Crypto.Protocol: Various Protocols</a><ul>
+<li><a class="reference internal" href="#crypto-protocol-allornothing" id="id15">Crypto.Protocol.AllOrNothing</a></li>
+<li><a class="reference internal" href="#crypto-protocol-chaffing" id="id16">Crypto.Protocol.Chaffing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#crypto-publickey-public-key-algorithms" id="id17">Crypto.PublicKey: Public-Key Algorithms</a><ul>
+<li><a class="reference internal" href="#the-elgamal-and-dsa-algorithms" id="id18">The ElGamal and DSA algorithms</a></li>
+<li><a class="reference internal" href="#security-notes-for-public-key-algorithms" id="id19">Security Notes for Public-key Algorithms</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#crypto-util-odds-and-ends" id="id20">Crypto.Util: Odds and Ends</a><ul>
+<li><a class="reference internal" href="#crypto-util-number" id="id21">Crypto.Util.number</a></li>
+<li><a class="reference internal" href="#crypto-random" id="id22">Crypto.Random</a></li>
+<li><a class="reference internal" href="#crypto-util-rfc1751" id="id23">Crypto.Util.RFC1751</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#extending-the-toolkit" id="id24">Extending the Toolkit</a><ul>
+<li><a class="reference internal" href="#adding-hash-algorithms" id="id25">Adding Hash Algorithms</a></li>
+<li><a class="reference internal" href="#adding-block-encryption-algorithms" id="id26">Adding Block Encryption Algorithms</a></li>
+<li><a class="reference internal" href="#adding-stream-encryption-algorithms" id="id27">Adding Stream Encryption Algorithms</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="introduction">
+<h2><a class="toc-backref" href="#id4">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="design-goals">
+<h3><a class="toc-backref" href="#id5">Design Goals</a><a class="headerlink" href="#design-goals" title="Permalink to this headline">¶</a></h3>
+<p>The Python cryptography toolkit is intended to provide a reliable and
+stable base for writing Python programs that require cryptographic
+functions.</p>
+<p>A central goal has been to provide a simple, consistent interface for
+similar classes of algorithms.  For example, all block cipher objects
+have the same methods and return values, and support the same feedback
+modes.  Hash functions have a different interface, but it too is
+consistent over all the hash functions available.  Some of these
+interfaces have been codified as Python Enhancement Proposal
+documents, as PEP 247, &#8220;API for Cryptographic Hash Functions&#8221;, and
+PEP 272, &#8220;API for Block Encryption Algorithms&#8221;.</p>
+<p>This is intended to make it easy to replace old algorithms with newer,
+more secure ones.  If you&#8217;re given a bit of portably-written Python
+code that uses the DES encryption algorithm, you should be able to use
+AES instead by simply changing <tt class="docutils literal"><span class="pre">from</span> <span class="pre">Crypto.Cipher</span> <span class="pre">import</span> <span class="pre">DES</span></tt> to
+<tt class="docutils literal"><span class="pre">from</span> <span class="pre">Crypto.Cipher</span> <span class="pre">import</span> <span class="pre">AES</span></tt>, and changing all references to
+<tt class="docutils literal"><span class="pre">DES.new()</span></tt> to <tt class="docutils literal"><span class="pre">AES.new()</span></tt>.  It&#8217;s also fairly simple to
+write your own modules that mimic this interface, thus letting you use
+combinations or permutations of algorithms.</p>
+<p>Some modules are implemented in C for performance; others are written
+in Python for ease of modification.  Generally, low-level functions
+like ciphers and hash functions are written in C, while less
+speed-critical functions have been written in Python.  This division
+may change in future releases.  When speeds are quoted in this
+document, they were measured on a 500 MHz Pentium II running Linux.
+The exact speeds will obviously vary with different machines,
+different compilers, and the phase of the moon, but they provide a
+crude basis for comparison.  Currently the cryptographic
+implementations are acceptably fast, but not spectacularly good.  I
+welcome any suggestions or patches for faster code.</p>
+<p>I have placed the code under no restrictions; you can redistribute the
+code freely or commercially, in its original form or with any
+modifications you make, subject to whatever local laws may apply in your
+jurisdiction.  Note that you still have to come to some agreement with
+the holders of any patented algorithms you&#8217;re using.  If you&#8217;re
+intensively using these modules, please tell me about it; there&#8217;s little
+incentive for me to work on this package if I don&#8217;t know of anyone using
+it.</p>
+<p>I also make no guarantees as to the usefulness, correctness, or legality
+of these modules, nor does their inclusion constitute an endorsement of
+their effectiveness.  Many cryptographic algorithms are patented;
+inclusion in this package does not necessarily mean you are allowed to
+incorporate them in a product and sell it.  Some of these algorithms may
+have been cryptanalyzed, and may no longer be secure.  While I will
+include commentary on the relative security of the algorithms in the
+sections entitled &#8220;Security Notes&#8221;, there may be more recent analyses
+I&#8217;m not aware of.  (Or maybe I&#8217;m just clueless.)  If you&#8217;re implementing
+an important system, don&#8217;t just grab things out of a toolbox and put
+them together; do some research first.  On the other hand, if you&#8217;re
+just interested in keeping your co-workers or your relatives out of your
+files, any of the components here could be used.</p>
+<p>This document is very much a work in progress.  If you have any
+questions, comments, complaints, or suggestions, please send them to me.</p>
+</div>
+<div class="section" id="acknowledgements">
+<h3><a class="toc-backref" href="#id6">Acknowledgements</a><a class="headerlink" href="#acknowledgements" title="Permalink to this headline">¶</a></h3>
+<p>Much of the code that actually implements the various cryptographic
+algorithms was not written by me.  I&#8217;d like to thank all the people who
+implemented them, and released their work under terms which allowed me
+to use their code.  These individuals are credited in the relevant
+chapters of this documentation.  Bruce Schneier&#8217;s book
+<cite>Applied Cryptography</cite> was also very useful in writing this toolkit; I highly
+recommend it if you&#8217;re interested in learning more about cryptography.</p>
+<p>Good luck with your cryptography hacking!</p>
+</div>
+</div>
+<div class="section" id="crypto-hash-hash-functions">
+<h2><a class="toc-backref" href="#id7">Crypto.Hash: Hash Functions</a><a class="headerlink" href="#crypto-hash-hash-functions" title="Permalink to this headline">¶</a></h2>
+<p>Hash functions take arbitrary strings as input, and produce an output
+of fixed size that is dependent on the input; it should never be
+possible to derive the input data given only the hash function&#8217;s
+output.  One simple hash function consists of simply adding together
+all the bytes of the input, and taking the result modulo 256.  For a
+hash function to be cryptographically secure, it must be very
+difficult to find two messages with the same hash value, or to find a
+message with a given hash value.  The simple additive hash function
+fails this criterion miserably and the hash functions described below
+meet this criterion (as far as we know).  Examples of
+cryptographically secure hash functions include MD2, MD5, and SHA1.</p>
+<p>Hash functions can be used simply as a checksum, or, in association with a
+public-key algorithm, can be used to implement digital signatures.</p>
+<p>The hashing algorithms currently implemented are:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Hash function</th>
+<th class="head">Digest length</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>MD2</td>
+<td>128 bits</td>
+</tr>
+<tr><td>MD4</td>
+<td>128 bits</td>
+</tr>
+<tr><td>MD5</td>
+<td>128 bits</td>
+</tr>
+<tr><td>RIPEMD</td>
+<td>160 bits</td>
+</tr>
+<tr><td>SHA1</td>
+<td>160 bits</td>
+</tr>
+<tr><td>SHA256</td>
+<td>256 bits</td>
+</tr>
+</tbody>
+</table>
+<p>All hashing modules share the same interface.  After importing a given
+hashing module, call the <tt class="docutils literal"><span class="pre">new()</span></tt> function to create a new
+hashing object. You can now feed arbitrary strings into the object
+with the <tt class="docutils literal"><span class="pre">update()</span></tt> method, and can ask for the hash value at
+any time by calling the <tt class="docutils literal"><span class="pre">digest()</span></tt> or <tt class="docutils literal"><span class="pre">hexdigest()</span></tt>
+methods.  The <tt class="docutils literal"><span class="pre">new()</span></tt> function can also be passed an optional
+string parameter that will be immediately hashed into the object&#8217;s
+state.</p>
+<p>Hash function modules define one variable:</p>
+<p><strong>digest_size</strong>:
+An integer value; the size of the digest
+produced by the hashing objects.  You could also obtain this value by
+creating a sample object, and taking the length of the digest string
+it returns, but using <tt class="docutils literal"><span class="pre">digest_size</span></tt> is faster.</p>
+<p>The methods for hashing objects are always the following:</p>
+<p><strong>copy()</strong>:
+Return a separate copy of this hashing object.  An <tt class="docutils literal"><span class="pre">update</span></tt> to
+this copy won&#8217;t affect the original object.</p>
+<p><strong>digest()</strong>:
+Return the hash value of this hashing object, as a string containing
+8-bit data.  The object is not altered in any way by this function;
+you can continue updating the object after calling this function.</p>
+<p><strong>hexdigest()</strong>:
+Return the hash value of this hashing object, as a string containing
+the digest data as hexadecimal digits.  The resulting string will be
+twice as long as that returned by <tt class="docutils literal"><span class="pre">digest()</span></tt>.  The object is not
+altered in any way by this function; you can continue updating the
+object after calling this function.</p>
+<p><strong>update(arg)</strong>:
+Update this hashing object with the string <tt class="docutils literal"><span class="pre">arg</span></tt>.</p>
+<p>Here&#8217;s an example, using the MD5 algorithm:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">Crypto.Hash</span> <span class="kn">import</span> <span class="n">MD5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">MD5</span><span class="o">.</span><span class="n">new</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="s">&#39;abc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+<span class="go">&#39;\x90\x01P\x98&lt;\xd2O\xb0\xd6\x96?}(\xe1\x7fr&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">m</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+<span class="go">&#39;900150983cd24fb0d6963f7d28e17f72&#39;</span>
+</pre></div>
+</div>
+<div class="section" id="security-notes">
+<h3><a class="toc-backref" href="#id8">Security Notes</a><a class="headerlink" href="#security-notes" title="Permalink to this headline">¶</a></h3>
+<p>Hashing algorithms are broken by developing an algorithm to compute a
+string that produces a given hash value, or to find two messages that
+produce the same hash value. Consider an example where Alice and Bob
+are using digital signatures to sign a contract.  Alice computes the
+hash value of the text of the contract and signs the hash value with
+her private key.  Bob could then compute a different contract that has
+the same hash value, and it would appear that Alice signed that bogus
+contract; she&#8217;d have no way to prove otherwise.  Finding such a
+message by brute force takes <tt class="docutils literal"><span class="pre">pow(2,</span> <span class="pre">b-1)</span></tt> operations, where the
+hash function produces <em>b</em>-bit hashes.</p>
+<p>If Bob can only find two messages with the same hash value but can&#8217;t
+choose the resulting hash value, he can look for two messages with
+different meanings, such as &#8220;I will mow Bob&#8217;s lawn for $10&#8221; and &#8220;I owe
+Bob $1,000,000&#8221;, and ask Alice to sign the first, innocuous contract.
+This attack is easier for Bob, since finding two such messages by brute
+force will take <tt class="docutils literal"><span class="pre">pow(2,</span> <span class="pre">b/2)</span></tt> operations on average.  However,
+Alice can protect herself by changing the protocol; she can simply
+append a random string to the contract before hashing and signing it;
+the random string can then be kept with the signature.</p>
+<p>None of the algorithms implemented here have been completely broken.
+There are no attacks on MD2, but it&#8217;s rather slow at 1250 K/sec.  MD4
+is faster at 44,500 K/sec but there have been some partial attacks on
+it.  MD4 makes three iterations of a basic mixing operation; two of
+the three rounds have been cryptanalyzed, but the attack can&#8217;t be
+extended to the full algorithm.  MD5 is a strengthened version of MD4
+with four rounds; beginning in 2004, a series of attacks were
+discovered and it&#8217;s now possible to create pairs of files that result
+in the same MD5 hash.  It&#8217;s still supported for compatibility with
+existing protocols, but implementors should use SHA1 in new software
+because there are no known attacks against SHA1.  The MD5
+implementation is moderately well-optimized and thus faster on x86
+processors, running at 35,500 K/sec.  MD5 may even be faster than MD4,
+depending on the processor and compiler you use.</p>
+<p>All the MD* algorithms produce 128-bit hashes; SHA1 produces a
+larger 160-bit hash, and there are no known attacks against it.  The
+first version of SHA had a weakness which was later corrected; the
+code used here implements the second, corrected, version.  It operates
+at 21,000 K/sec.  SHA256 is about as half as fast as SHA1.  RIPEMD has
+a 160-bit output, the same output size as SHA1, and operates at 17,600
+K/sec.</p>
+</div>
+<div class="section" id="credits">
+<h3><a class="toc-backref" href="#id9">Credits</a><a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h3>
+<p>The MD2 and MD4 implementations were written by A.M. Kuchling, and the MD5
+code was implemented by Colin Plumb.  The SHA1 code was originally written by
+Peter Gutmann.  The RIPEMD160 code as of version 2.1.0 was written by Dwayne
+Litzenberger.  The SHA256 code was written by Tom St. Denis and is part of the
+LibTomCrypt library (<a class="reference external" href="http://www.libtomcrypt.org/">http://www.libtomcrypt.org/</a>); it was adapted for the
+toolkit by Jeethu Rao and Taylor Boon.</p>
+</div>
+</div>
+<div class="section" id="crypto-cipher-encryption-algorithms">
+<h2><a class="toc-backref" href="#id10">Crypto.Cipher: Encryption Algorithms</a><a class="headerlink" href="#crypto-cipher-encryption-algorithms" title="Permalink to this headline">¶</a></h2>
+<p>Encryption algorithms transform their input data, or <strong>plaintext</strong>,
+in some way that is dependent on a variable <strong>key</strong>, producing
+<strong>ciphertext</strong>. This transformation can easily be reversed, if (and,
+hopefully, only if) one knows the key.  The key can be varied by the
+user or application and chosen from some very large space of possible
+keys.</p>
+<p>For a secure encryption algorithm, it should be very difficult to
+determine the original plaintext without knowing the key; usually, no
+clever attacks on the algorithm are known, so the only way of breaking
+the algorithm is to try all possible keys. Since the number of possible
+keys is usually of the order of 2 to the power of 56 or 128, this is not
+a serious threat, although 2 to the power of 56 is now considered
+insecure in the face of custom-built parallel computers and distributed
+key guessing efforts.</p>
+<p><strong>Block ciphers</strong> take multibyte inputs of a fixed size
+(frequently 8 or 16 bytes long) and encrypt them.  Block ciphers can
+be operated in various modes.  The simplest is Electronic Code Book
+(or ECB) mode.  In this mode, each block of plaintext is simply
+encrypted to produce the ciphertext.  This mode can be dangerous,
+because many files will contain patterns greater than the block size;
+for example, the comments in a C program may contain long strings of
+asterisks intended to form a box.  All these identical blocks will
+encrypt to identical ciphertext; an adversary may be able to use this
+structure to obtain some information about the text.</p>
+<p>To eliminate this weakness, there are various feedback modes in which
+the plaintext is combined with the previous ciphertext before
+encrypting; this eliminates any repetitive structure in the
+ciphertext.</p>
+<p>One mode is Cipher Block Chaining (CBC mode); another is Cipher
+FeedBack (CFB mode).  CBC mode still encrypts in blocks, and thus is
+only slightly slower than ECB mode.  CFB mode encrypts on a
+byte-by-byte basis, and is much slower than either of the other two
+modes.  The chaining feedback modes require an initialization value to
+start off the encryption; this is a string of the same length as the
+ciphering algorithm&#8217;s block size, and is passed to the <tt class="docutils literal"><span class="pre">new()</span></tt>
+function.  There is also a special PGP mode, which is an oddball
+variant of CFB used by the PGP program.  While you can use it in
+non-PGP programs, it&#8217;s quite non-standard.</p>
+<p>The currently available block ciphers are listed in the following table,
+and are in the <tt class="docutils literal"><span class="pre">Crypto.Cipher</span></tt> package:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Cipher</th>
+<th class="head">Key Size/Block Size</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>AES</td>
+<td>16, 24, or 32 bytes/16 bytes</td>
+</tr>
+<tr><td>ARC2</td>
+<td>Variable/8 bytes</td>
+</tr>
+<tr><td>Blowfish</td>
+<td>Variable/8 bytes</td>
+</tr>
+<tr><td>CAST</td>
+<td>Variable/8 bytes</td>
+</tr>
+<tr><td>DES</td>
+<td>8 bytes/8 bytes</td>
+</tr>
+<tr><td>DES3 (Triple DES)</td>
+<td>16 bytes/8 bytes</td>
+</tr>
+<tr><td>IDEA</td>
+<td>16 bytes/8 bytes</td>
+</tr>
+<tr><td>RC5</td>
+<td>Variable/8 bytes</td>
+</tr>
+</tbody>
+</table>
+<p>In a strict formal sense, <strong>stream ciphers</strong> encrypt data bit-by-bit;
+practically, stream ciphers work on a character-by-character basis.
+Stream ciphers use exactly the
+same interface as block ciphers, with a block length that will always
+be 1; this is how block and stream ciphers can be distinguished.
+The only feedback mode available for stream ciphers is ECB mode.</p>
+<p>The currently available stream ciphers are listed in the following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="44%" />
+<col width="56%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Cipher</th>
+<th class="head">Key Size</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>ARC4</td>
+<td>Variable</td>
+</tr>
+<tr><td>XOR</td>
+<td>Variable</td>
+</tr>
+</tbody>
+</table>
+<p>ARC4 is short for &#8220;Alleged RC4&#8221;.  In September of 1994, someone posted
+C code to both the Cypherpunks mailing list and to the Usenet
+newsgroup <tt class="docutils literal"><span class="pre">sci.crypt</span></tt>, claiming that it implemented the RC4
+algorithm.  This claim turned out to be correct.  Note that there&#8217;s a
+damaging class of weak RC4 keys; this module won&#8217;t warn you about such keys.</p>
+<p>A similar anonymous posting was made for Alleged RC2 in January, 1996.</p>
+<p>An example usage of the DES module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">Crypto.Cipher</span> <span class="kn">import</span> <span class="n">DES</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">=</span><span class="n">DES</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s">&#39;abcdefgh&#39;</span><span class="p">,</span> <span class="n">DES</span><span class="o">.</span><span class="n">MODE_ECB</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plain</span><span class="o">=</span><span class="s">&quot;Guido van Rossum is a space alien.&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">plain</span><span class="p">)</span>
+<span class="go">34</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">plain</span><span class="p">)</span>
+<span class="go">Traceback (innermost last):</span>
+<span class="go">  File &quot;&lt;stdin&gt;&quot;, line 1, in ?</span>
+<span class="go">ValueError: Strings for DES must be a multiple of 8 in length</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ciph</span><span class="o">=</span><span class="n">obj</span><span class="o">.</span><span class="n">encrypt</span><span class="p">(</span><span class="n">plain</span><span class="o">+</span><span class="s">&#39;XXXXXX&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ciph</span>
+<span class="go">&#39;\021,\343Nq\214DY\337T\342pA\372\255\311s\210\363,\300j\330\250\312\347\342I\3215w\03561\303dgb/\006&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span><span class="o">.</span><span class="n">decrypt</span><span class="p">(</span><span class="n">ciph</span><span class="p">)</span>
+<span class="go">&#39;Guido van Rossum is a space alien.XXXXXX&#39;</span>
+</pre></div>
+</div>
+<p>All cipher algorithms share a common interface.  After importing a
+given module, there is exactly one function and two variables
+available.</p>
+<p><strong>new(key, mode[, IV])</strong>:
+Returns a ciphering object, using <tt class="docutils literal"><span class="pre">key</span></tt> and feedback mode
+<tt class="docutils literal"><span class="pre">mode</span></tt>.  If <tt class="docutils literal"><span class="pre">mode</span></tt> is <tt class="docutils literal"><span class="pre">MODE_CBC</span></tt> or <tt class="docutils literal"><span class="pre">MODE_CFB</span></tt>, <tt class="docutils literal"><span class="pre">IV</span></tt> must be provided,
+and must be a string of the same length as the block size.  Some
+algorithms support additional keyword arguments to this function; see
+the &#8220;Algorithm-specific Notes for Encryption Algorithms&#8221; section below for the details.</p>
+<p><strong>block_size</strong>:
+An integer value; the size of the blocks encrypted by this module.
+Strings passed to the <tt class="docutils literal"><span class="pre">encrypt</span></tt> and <tt class="docutils literal"><span class="pre">decrypt</span></tt> functions
+must be a multiple of this length.  For stream ciphers,
+<tt class="docutils literal"><span class="pre">block_size</span></tt> will be 1.</p>
+<p><strong>key_size</strong>:
+An integer value; the size of the keys required by this module.  If
+<tt class="docutils literal"><span class="pre">key_size</span></tt> is zero, then the algorithm accepts arbitrary-length
+keys.  You cannot pass a key of length 0 (that is, the null string
+<tt class="docutils literal"><span class="pre">&quot;&quot;</span></tt> as such a variable-length key.</p>
+<p>All cipher objects have at least three attributes:</p>
+<p><strong>block_size</strong>:
+An integer value equal to the size of the blocks encrypted by this object.
+Identical to the module variable of the same name.</p>
+<p><strong>IV</strong>:
+Contains the initial value which will be used to start a cipher
+feedback mode.  After encrypting or decrypting a string, this value
+will reflect the modified feedback text; it will always be one block
+in length.  It is read-only, and cannot be assigned a new value.</p>
+<p><strong>key_size</strong>:
+An integer value equal to the size of the keys used by this object.  If
+<tt class="docutils literal"><span class="pre">key_size</span></tt> is zero, then the algorithm accepts arbitrary-length
+keys.  For algorithms that support variable length keys, this will be 0.
+Identical to the module variable of the same name.</p>
+<p>All ciphering objects have the following methods:</p>
+<p><strong>decrypt(string)</strong>:
+Decrypts <tt class="docutils literal"><span class="pre">string</span></tt>, using the key-dependent data in the object, and
+with the appropriate feedback mode.  The string&#8217;s length must be an exact
+multiple of the algorithm&#8217;s block size.  Returns a string containing
+the plaintext.</p>
+<p><strong>encrypt(string)</strong>:
+Encrypts a non-null <tt class="docutils literal"><span class="pre">string</span></tt>, using the key-dependent data in the
+object, and with the appropriate feedback mode.  The string&#8217;s length
+must be an exact multiple of the algorithm&#8217;s block size; for stream
+ciphers, the string can be of any length.  Returns a string containing
+the ciphertext.</p>
+<div class="section" id="algorithm-specific-notes-for-encryption-algorithms">
+<h3><a class="toc-backref" href="#id11">Algorithm-specific Notes for Encryption Algorithms</a><a class="headerlink" href="#algorithm-specific-notes-for-encryption-algorithms" title="Permalink to this headline">¶</a></h3>
+<p>RC5 has a bunch of parameters; see Ronald Rivest&#8217;s paper at
+&lt;<a class="reference external" href="http://theory.lcs.mit.edu/~rivest/rc5rev.ps">http://theory.lcs.mit.edu/~rivest/rc5rev.ps</a>&gt; for the
+implementation details.  The keyword parameters are:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">version</span></tt>: The version of the RC5 algorithm to use; currently
+the only legal value is <tt class="docutils literal"><span class="pre">0x10</span></tt> for RC5 1.0.</li>
+<li><tt class="docutils literal"><span class="pre">wordsize</span></tt>: The word size to use; 16 or 32 are the only legal
+values.  (A larger word size is better, so usually 32 will be used.
+16-bit RC5 is probably only of academic interest.)</li>
+<li><tt class="docutils literal"><span class="pre">rounds</span></tt>: The number of rounds to apply, the larger the more
+secure: this can be any value from 0 to 255, so you will have to
+choose a value balanced between speed and security.</li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h3><a class="toc-backref" href="#id12">Security Notes</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Encryption algorithms can be broken in several ways.  If you have some
+ciphertext and know (or can guess) the corresponding plaintext, you can
+simply try every possible key in a <strong>known-plaintext</strong> attack.  Or, it
+might be possible to encrypt text of your choice using an unknown key;
+for example, you might mail someone a message intending it to be
+encrypted and forwarded to someone else.  This is a
+<strong>chosen-plaintext</strong> attack, which is particularly effective if it&#8217;s
+possible to choose plaintexts that reveal something about the key when
+encrypted.</p>
+<p>DES (5100 K/sec) has a 56-bit key; this is starting to become too small
+for safety.  It has been estimated that it would only cost $1,000,000 to
+build a custom DES-cracking machine that could find a key in 3 hours.  A
+chosen-ciphertext attack using the technique of
+<strong>linear cryptanalysis</strong> can break DES in <tt class="docutils literal"><span class="pre">pow(2,</span> <span class="pre">43)</span></tt> steps.  However,
+unless you&#8217;re encrypting data that you want to be safe from major
+governments, DES will be fine. DES3 (1830 K/sec) uses three DES
+encryptions for greater security and a 112-bit or 168-bit key, but is
+correspondingly slower.</p>
+<p>There are no publicly known attacks against IDEA (3050 K/sec), and
+it&#8217;s been around long enough to have been examined.  There are no
+known attacks against ARC2 (2160 K/sec), ARC4 (8830 K/sec), Blowfish
+(9250 K/sec), CAST (2960 K/sec), or RC5 (2060 K/sec), but they&#8217;re all
+relatively new algorithms and there hasn&#8217;t been time for much analysis
+to be performed; use them for serious applications only after careful
+research.</p>
+<p>AES, the Advanced Encryption Standard, was chosen by the US National
+Institute of Standards and Technology from among 6 competitors, and is
+probably your best choice.  It runs at 7060 K/sec, so it&#8217;s among the
+faster algorithms around.</p>
+</div>
+<div class="section" id="id2">
+<h3><a class="toc-backref" href="#id13">Credits</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>The code for Blowfish was written by Bryan Olson, partially based on a
+previous implementation by Bruce Schneier, who also invented the
+algorithm; the Blowfish algorithm has been placed in the public domain
+and can be used freely.  (See <a class="reference external" href="http://www.counterpane.com">http://www.counterpane.com</a> for more
+information about Blowfish.)  The CAST implementation was written by
+Wim Lewis.  The DES implementation was written by Eric Young, and the
+IDEA implementation by Colin Plumb. The RC5 implementation
+was written by A.M. Kuchling.</p>
+<p>The Alleged RC4 code was posted to the <tt class="docutils literal"><span class="pre">sci.crypt</span></tt> newsgroup by an
+unknown party, and re-implemented by A.M. Kuchling.</p>
+</div>
+</div>
+<div class="section" id="crypto-protocol-various-protocols">
+<h2><a class="toc-backref" href="#id14">Crypto.Protocol: Various Protocols</a><a class="headerlink" href="#crypto-protocol-various-protocols" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="crypto-protocol-allornothing">
+<h3><a class="toc-backref" href="#id15">Crypto.Protocol.AllOrNothing</a><a class="headerlink" href="#crypto-protocol-allornothing" title="Permalink to this headline">¶</a></h3>
+<p>This module implements all-or-nothing package transformations.
+An all-or-nothing package transformation is one in which some text is
+transformed into message blocks, such that all blocks must be obtained before
+the reverse transformation can be applied.  Thus, if any blocks are corrupted
+or lost, the original message cannot be reproduced.</p>
+<p>An all-or-nothing package transformation is not encryption, although a block
+cipher algorithm is used.  The encryption key is randomly generated and is
+extractable from the message blocks.</p>
+<p><strong>AllOrNothing(ciphermodule, mode=None, IV=None)</strong>:
+Class implementing the All-or-Nothing package transform.</p>
+<p><tt class="docutils literal"><span class="pre">ciphermodule</span></tt> is a module implementing the cipher algorithm to
+use.  Optional arguments <tt class="docutils literal"><span class="pre">mode</span></tt> and <tt class="docutils literal"><span class="pre">IV</span></tt> are passed directly
+through to the <tt class="docutils literal"><span class="pre">ciphermodule.new()</span></tt> method; they are the
+feedback mode and initialization vector to use.  All three arguments
+must be the same for the object used to create the digest, and to
+undigest&#8217;ify the message blocks.</p>
+<p>The module passed as <tt class="docutils literal"><span class="pre">ciphermodule</span></tt> must provide the PEP 272
+interface.  An encryption key is randomly generated automatically when
+needed.</p>
+<p>The methods of the <tt class="docutils literal"><span class="pre">AllOrNothing</span></tt> class are:</p>
+<p><strong>digest(text)</strong>:
+Perform the All-or-Nothing package transform on the
+string <tt class="docutils literal"><span class="pre">text</span></tt>.  Output is a list of message blocks describing the
+transformed text, where each block is a string of bit length equal
+to the cipher module&#8217;s block_size.</p>
+<p><strong>undigest(mblocks)</strong>:
+Perform the reverse package transformation on a list of message
+blocks.  Note that the cipher module used for both transformations
+must be the same.  <tt class="docutils literal"><span class="pre">mblocks</span></tt> is a list of strings of bit length
+equal to <tt class="docutils literal"><span class="pre">ciphermodule</span></tt>&#8216;s block_size.  The output is a string object.</p>
+</div>
+<div class="section" id="crypto-protocol-chaffing">
+<h3><a class="toc-backref" href="#id16">Crypto.Protocol.Chaffing</a><a class="headerlink" href="#crypto-protocol-chaffing" title="Permalink to this headline">¶</a></h3>
+<p>Winnowing and chaffing is a technique for enhancing privacy without requiring
+strong encryption.  In short, the technique takes a set of authenticated
+message blocks (the wheat) and adds a number of chaff blocks which have
+randomly chosen data and MAC fields.  This means that to an adversary, the
+chaff blocks look as valid as the wheat blocks, and so the authentication
+would have to be performed on every block.  By tailoring the number of chaff
+blocks added to the message, the sender can make breaking the message
+computationally infeasible.  There are many other interesting properties of
+the winnow/chaff technique.</p>
+<p>For example, say Alice is sending a message to Bob.  She packetizes the
+message and performs an all-or-nothing transformation on the packets.  Then
+she authenticates each packet with a message authentication code (MAC).  The
+MAC is a hash of the data packet, and there is a secret key which she must
+share with Bob (key distribution is an exercise left to the reader).  She then
+adds a serial number to each packet, and sends the packets to Bob.</p>
+<p>Bob receives the packets, and using the shared secret authentication key,
+authenticates the MACs for each packet.  Those packets that have bad MACs are
+simply discarded.  The remainder are sorted by serial number, and passed
+through the reverse all-or-nothing transform.  The transform means that an
+eavesdropper (say Eve) must acquire all the packets before any of the data can
+be read.  If even one packet is missing, the data is useless.</p>
+<p>There&#8217;s one twist: by adding chaff packets, Alice and Bob can make Eve&#8217;s job
+much harder, since Eve now has to break the shared secret key, or try every
+combination of wheat and chaff packet to read any of the message.  The cool
+thing is that Bob doesn&#8217;t need to add any additional code; the chaff packets
+are already filtered out because their MACs don&#8217;t match (in all likelihood &#8211;
+since the data and MACs for the chaff packets are randomly chosen it is
+possible, but very unlikely that a chaff MAC will match the chaff data).  And
+Alice need not even be the party adding the chaff!  She could be completely
+unaware that a third party, say Charles, is adding chaff packets to her
+messages as they are transmitted.</p>
+<p><strong>Chaff(factor=1.0, blocksper=1)</strong>:
+Class implementing the chaff adding algorithm.
+<tt class="docutils literal"><span class="pre">factor</span></tt> is the number of message blocks
+to add chaff to, expressed as a percentage between 0.0 and 1.0; the default value is 1.0.
+<tt class="docutils literal"><span class="pre">blocksper</span></tt> is the number of chaff blocks to include for each block
+being chaffed, and defaults to 1.  The default settings
+add one chaff block to every
+message block.  By changing the defaults, you can adjust how
+computationally difficult it could be for an adversary to
+brute-force crack the message.  The difficulty is expressed as:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="nb">pow</span><span class="p">(</span><span class="n">blocksper</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">factor</span> <span class="o">*</span> <span class="n">number</span><span class="o">-</span><span class="n">of</span><span class="o">-</span><span class="n">blocks</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>For ease of implementation, when <tt class="docutils literal"><span class="pre">factor</span></tt> &lt; 1.0, only the first
+<tt class="docutils literal"><span class="pre">int(factor*number-of-blocks)</span></tt> message blocks are chaffed.</p>
+<p><tt class="docutils literal"><span class="pre">Chaff</span></tt> instances have the following methods:</p>
+<p><strong>chaff(blocks)</strong>:
+Add chaff to message blocks.  <tt class="docutils literal"><span class="pre">blocks</span></tt> is a list of 3-tuples of the
+form <tt class="docutils literal"><span class="pre">(serial-number,</span> <span class="pre">data,</span> <span class="pre">MAC)</span></tt>.</p>
+<p>Chaff is created by choosing a random number of the same
+byte-length as <tt class="docutils literal"><span class="pre">data</span></tt>, and another random number of the same
+byte-length as <tt class="docutils literal"><span class="pre">MAC</span></tt>.  The message block&#8217;s serial number is placed
+on the chaff block and all the packet&#8217;s chaff blocks are randomly
+interspersed with the single wheat block.  This method then
+returns a list of 3-tuples of the same form.  Chaffed blocks will
+contain multiple instances of 3-tuples with the same serial
+number, but the only way to figure out which blocks are wheat and
+which are chaff is to perform the MAC hash and compare values.</p>
+</div>
+</div>
+<div class="section" id="crypto-publickey-public-key-algorithms">
+<h2><a class="toc-backref" href="#id17">Crypto.PublicKey: Public-Key Algorithms</a><a class="headerlink" href="#crypto-publickey-public-key-algorithms" title="Permalink to this headline">¶</a></h2>
+<p>So far, the encryption algorithms described have all been <em>private key</em>
+ciphers.  The same key is used for both encryption and decryption
+so all correspondents must know it.  This poses a problem: you may
+want encryption to communicate sensitive data over an insecure
+channel, but how can you tell your correspondent what the key is?  You
+can&#8217;t just e-mail it to her because the channel is insecure.  One
+solution is to arrange the key via some other way: over the phone or
+by meeting in person.</p>
+<p>Another solution is to use <strong>public-key</strong> cryptography.  In a public
+key system, there are two different keys: one for encryption and one for
+decryption.  The encryption key can be made public by listing it in a
+directory or mailing it to your correspondent, while you keep the
+decryption key secret.  Your correspondent then sends you data encrypted
+with your public key, and you use the private key to decrypt it.  While
+the two keys are related, it&#8217;s very difficult to derive the private key
+given only the public key; however, deriving the private key is always
+possible given enough time and computing power.  This makes it very
+important to pick keys of the right size: large enough to be secure, but
+small enough to be applied fairly quickly.</p>
+<p>Many public-key algorithms can also be used to sign messages; simply
+run the message to be signed through a decryption with your private
+key key.  Anyone receiving the message can encrypt it with your
+publicly available key and read the message.  Some algorithms do only
+one thing, others can both encrypt and authenticate.</p>
+<p>The currently available public-key algorithms are listed in the
+following table:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="76%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Algorithm</th>
+<th class="head">Capabilities</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td>RSA</td>
+<td>Encryption, authentication/signatures</td>
+</tr>
+<tr><td>ElGamal</td>
+<td>Encryption, authentication/signatures</td>
+</tr>
+<tr><td>DSA</td>
+<td>Authentication/signatures</td>
+</tr>
+<tr><td>qNEW</td>
+<td>Authentication/signatures</td>
+</tr>
+</tbody>
+</table>
+<p>Many of these algorithms are patented.  Before using any of them in a
+commercial product, consult a patent attorney; you may have to arrange
+a license with the patent holder.</p>
+<p>An example of using the RSA module to sign a message:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">Crypto.Hash</span> <span class="kn">import</span> <span class="n">MD5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">Crypto.PublicKey</span> <span class="kn">import</span> <span class="n">RSA</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">Crypto</span> <span class="kn">import</span> <span class="n">Random</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rng</span> <span class="o">=</span> <span class="n">Random</span><span class="o">.</span><span class="n">new</span><span class="p">()</span><span class="o">.</span><span class="n">read</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">RSAkey</span> <span class="o">=</span> <span class="n">RSA</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="mi">384</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>   <span class="c"># This will take a while...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">hash</span> <span class="o">=</span> <span class="n">MD5</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">plaintext</span><span class="p">)</span><span class="o">.</span><span class="n">digest</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signature</span> <span class="o">=</span> <span class="n">RSAkey</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="nb">hash</span><span class="p">,</span> <span class="n">rng</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">signature</span>   <span class="c"># Print what an RSA sig looks like--you don&#39;t really care.</span>
+<span class="go">(&#39;\021\317\313\336\264\315&#39; ...,)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">RSAkey</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="nb">hash</span><span class="p">,</span> <span class="n">signature</span><span class="p">)</span>     <span class="c"># This sig will check out</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">RSAkey</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="nb">hash</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">signature</span><span class="p">)</span><span class="c"># This sig will fail</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<p>Public-key modules make the following functions available:</p>
+<p><strong>construct(tuple)</strong>:
+Constructs a key object from a tuple of data.  This is
+algorithm-specific; look at the source code for the details.  (To be
+documented later.)</p>
+<p><strong>generate(size, randfunc, progress_func=None)</strong>:
+Generate a fresh public/private key pair.  <tt class="docutils literal"><span class="pre">size</span></tt> is a
+algorithm-dependent size parameter, usually measured in bits; the
+larger it is, the more difficult it will be to break the key.  Safe
+key sizes vary from algorithm to algorithm; you&#8217;ll have to research
+the question and decide on a suitable key size for your application.
+An N-bit keys can encrypt messages up to N-1 bits long.</p>
+<p><tt class="docutils literal"><span class="pre">randfunc</span></tt> is a random number generation function; it should
+accept a single integer <tt class="docutils literal"><span class="pre">N</span></tt> and return a string of random data
+<tt class="docutils literal"><span class="pre">N</span></tt> bytes long.  You should always use a cryptographically secure
+random number generator, such as the one defined in the
+<tt class="docutils literal"><span class="pre">Crypto.Random</span></tt> module; <strong>don&#8217;t</strong> just use the
+current time and the <tt class="docutils literal"><span class="pre">random</span></tt> module.</p>
+<p><tt class="docutils literal"><span class="pre">progress_func</span></tt> is an optional function that will be called with a short
+string containing the key parameter currently being generated; it&#8217;s
+useful for interactive applications where a user is waiting for a key
+to be generated.</p>
+<p>If you want to interface with some other program, you will have to know
+the details of the algorithm being used; this isn&#8217;t a big loss.  If you
+don&#8217;t care about working with non-Python software, simply use the
+<tt class="docutils literal"><span class="pre">pickle</span></tt> module when you need to write a key or a signature to a
+file.  It&#8217;s portable across all the architectures that Python supports,
+and it&#8217;s simple to use.</p>
+<p>Public-key objects always support the following methods.  Some of them
+may raise exceptions if their functionality is not supported by the
+algorithm.</p>
+<p><strong>can_blind()</strong>:
+Returns true if the algorithm is capable of blinding data;
+returns false otherwise.</p>
+<p><strong>can_encrypt()</strong>:
+Returns true if the algorithm is capable of encrypting and decrypting
+data; returns false otherwise.  To test if a given key object can encrypt
+data, use <tt class="docutils literal"><span class="pre">key.can_encrypt()</span> <span class="pre">and</span> <span class="pre">key.has_private()</span></tt>.</p>
+<p><strong>can_sign()</strong>:
+Returns true if the algorithm is capable of signing data; returns false
+otherwise.  To test if a given key object can sign data, use
+<tt class="docutils literal"><span class="pre">key.can_sign()</span> <span class="pre">and</span> <span class="pre">key.has_private()</span></tt>.</p>
+<p><strong>decrypt(tuple)</strong>:
+Decrypts <tt class="docutils literal"><span class="pre">tuple</span></tt> with the private key, returning another string.
+This requires the private key to be present, and will raise an exception
+if it isn&#8217;t present.  It will also raise an exception if <tt class="docutils literal"><span class="pre">string</span></tt> is
+too long.</p>
+<p><strong>encrypt(string, K)</strong>:
+Encrypts <tt class="docutils literal"><span class="pre">string</span></tt> with the private key, returning a tuple of
+strings; the length of the tuple varies from algorithm to algorithm.
+<tt class="docutils literal"><span class="pre">K</span></tt> should be a string of random data that is as long as
+possible.  Encryption does not require the private key to be present
+inside the key object.  It will raise an exception if <tt class="docutils literal"><span class="pre">string</span></tt> is
+too long.  For ElGamal objects, the value of <tt class="docutils literal"><span class="pre">K</span></tt> expressed as a
+big-endian integer must be relatively prime to <tt class="docutils literal"><span class="pre">self.p-1</span></tt>; an
+exception is raised if it is not.</p>
+<p><strong>has_private()</strong>:
+Returns true if the key object contains the private key data, which
+will allow decrypting data and generating signatures.
+Otherwise this returns false.</p>
+<p><strong>publickey()</strong>:
+Returns a new public key object that doesn&#8217;t contain the private key
+data.</p>
+<p><strong>sign(string, K)</strong>:
+Sign <tt class="docutils literal"><span class="pre">string</span></tt>, returning a signature, which is just a tuple; in
+theory the signature may be made up of any Python objects at all; in
+practice they&#8217;ll be either strings or numbers.  <tt class="docutils literal"><span class="pre">K</span></tt> should be a
+string of random data that is as long as possible.  Different algorithms
+will return tuples of different sizes.  <tt class="docutils literal"><span class="pre">sign()</span></tt> raises an
+exception if <tt class="docutils literal"><span class="pre">string</span></tt> is too long.  For ElGamal objects, the value
+of <tt class="docutils literal"><span class="pre">K</span></tt> expressed as a big-endian integer must be relatively prime to
+<tt class="docutils literal"><span class="pre">self.p-1</span></tt>; an exception is raised if it is not.</p>
+<p><strong>size()</strong>:
+Returns the maximum size of a string that can be encrypted or signed,
+measured in bits.  String data is treated in big-endian format; the most
+significant byte comes first.  (This seems to be a <strong>de facto</strong> standard
+for cryptographical software.)  If the size is not a multiple of 8, then
+some of the high order bits of the first byte must be zero.  Usually
+it&#8217;s simplest to just divide the size by 8 and round down.</p>
+<p><strong>verify(string, signature)</strong>:
+Returns true if the signature is valid, and false otherwise.
+<tt class="docutils literal"><span class="pre">string</span></tt> is not processed in any way; <tt class="docutils literal"><span class="pre">verify</span></tt> does
+not run a hash function over the data, but you can easily do that yourself.</p>
+<div class="section" id="the-elgamal-and-dsa-algorithms">
+<h3><a class="toc-backref" href="#id18">The ElGamal and DSA algorithms</a><a class="headerlink" href="#the-elgamal-and-dsa-algorithms" title="Permalink to this headline">¶</a></h3>
+<p>For RSA, the <tt class="docutils literal"><span class="pre">K</span></tt> parameters are unused; if you like, you can just
+pass empty strings.  The ElGamal and DSA algorithms require a real
+<tt class="docutils literal"><span class="pre">K</span></tt> value for technical reasons; see Schneier&#8217;s book for a detailed
+explanation of the respective algorithms.  This presents a possible
+hazard that can
+inadvertently reveal the private key.  Without going into the
+mathematical details, the danger is as follows. <tt class="docutils literal"><span class="pre">K</span></tt> is never derived
+or needed by others; theoretically, it can be thrown away once the
+encryption or signing operation is performed.  However, revealing
+<tt class="docutils literal"><span class="pre">K</span></tt> for a given message would enable others to derive the secret key
+data; worse, reusing the same value of <tt class="docutils literal"><span class="pre">K</span></tt> for two different
+messages would also enable someone to derive the secret key data.  An
+adversary could intercept and store every message, and then try deriving
+the secret key from each pair of messages.</p>
+<p>This places implementors on the horns of a dilemma.  On the one hand,
+you want to store the <tt class="docutils literal"><span class="pre">K</span></tt> values to avoid reusing one; on the other
+hand, storing them means they could fall into the hands of an adversary.
+One can randomly generate <tt class="docutils literal"><span class="pre">K</span></tt> values of a suitable length such as
+128 or 144 bits, and then trust that the random number generator
+probably won&#8217;t produce a duplicate anytime soon.  This is an
+implementation decision that depends on the desired level of security
+and the expected usage lifetime of a private key.  I can&#8217;t choose and
+enforce one policy for this, so I&#8217;ve added the <tt class="docutils literal"><span class="pre">K</span></tt> parameter to the
+<tt class="docutils literal"><span class="pre">encrypt</span></tt> and <tt class="docutils literal"><span class="pre">sign</span></tt> methods.  You must choose <tt class="docutils literal"><span class="pre">K</span></tt> by
+generating a string of random data; for ElGamal, when interpreted as a
+big-endian number (with the most significant byte being the first byte
+of the string), <tt class="docutils literal"><span class="pre">K</span></tt> must be relatively prime to <tt class="docutils literal"><span class="pre">self.p-1</span></tt>; any
+size will do, but brute force searches would probably start with small
+primes, so it&#8217;s probably good to choose fairly large numbers.  It might be
+simplest to generate a prime number of a suitable length using the
+<tt class="docutils literal"><span class="pre">Crypto.Util.number</span></tt> module.</p>
+</div>
+<div class="section" id="security-notes-for-public-key-algorithms">
+<h3><a class="toc-backref" href="#id19">Security Notes for Public-key Algorithms</a><a class="headerlink" href="#security-notes-for-public-key-algorithms" title="Permalink to this headline">¶</a></h3>
+<p>Any of these algorithms can be trivially broken; for example, RSA can be
+broken by factoring the modulus <em>n</em> into its two prime factors.
+This is easily done by the following code:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">n</span><span class="o">%</span><span class="n">i</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">i</span><span class="p">,</span> <span class="s">&#39;is a factor&#39;</span>
+        <span class="k">break</span>
+</pre></div>
+</div>
+<p>However, <tt class="docutils literal"><span class="pre">n</span></tt> is usually a few hundred bits long, so this simple
+program wouldn&#8217;t find a solution before the universe comes to an end.
+Smarter algorithms can factor numbers more quickly, but it&#8217;s still
+possible to choose keys so large that they can&#8217;t be broken in a
+reasonable amount of time.  For ElGamal and DSA, discrete logarithms are
+used instead of factoring, but the principle is the same.</p>
+<p>Safe key sizes depend on the current state of number theory and
+computer technology.  At the moment, one can roughly define three
+levels of security: low-security commercial, high-security commercial,
+and military-grade.  For RSA, these three levels correspond roughly to
+768, 1024, and 2048-bit keys.</p>
+</div>
+</div>
+<div class="section" id="crypto-util-odds-and-ends">
+<h2><a class="toc-backref" href="#id20">Crypto.Util: Odds and Ends</a><a class="headerlink" href="#crypto-util-odds-and-ends" title="Permalink to this headline">¶</a></h2>
+<p>This chapter contains all the modules that don&#8217;t fit into any of the
+other chapters.</p>
+<div class="section" id="crypto-util-number">
+<h3><a class="toc-backref" href="#id21">Crypto.Util.number</a><a class="headerlink" href="#crypto-util-number" title="Permalink to this headline">¶</a></h3>
+<p>This module contains various number-theoretic functions.</p>
+<p><strong>GCD(x,y)</strong>:
+Return the greatest common divisor of <tt class="docutils literal"><span class="pre">x</span></tt> and <tt class="docutils literal"><span class="pre">y</span></tt>.</p>
+<p><strong>getPrime(N, randfunc)</strong>:
+Return an <tt class="docutils literal"><span class="pre">N</span></tt>-bit random prime number, using random data obtained
+from the function <tt class="docutils literal"><span class="pre">randfunc</span></tt>.  <tt class="docutils literal"><span class="pre">randfunc</span></tt> must take a single
+integer argument, and return a string of random data of the
+corresponding length; the <tt class="docutils literal"><span class="pre">get_bytes()</span></tt> method of a
+<tt class="docutils literal"><span class="pre">RandomPool</span></tt> object will serve the purpose nicely, as will the
+<tt class="docutils literal"><span class="pre">read()</span></tt> method of an opened file such as <tt class="docutils literal"><span class="pre">/dev/random</span></tt>.</p>
+<p><strong>getStrongPrime(N, e=0, false_positive_prob=1e-6, randfunc=None)</strong>:
+Return a random strong <tt class="docutils literal"><span class="pre">N</span></tt>-bit prime number.
+In this context p is a strong prime if p-1 and p+1 have at
+least one large prime factor.
+<tt class="docutils literal"><span class="pre">N</span></tt> should be a multiple of 128 and &gt; 512.</p>
+<p>If <tt class="docutils literal"><span class="pre">e</span></tt> is provided the returned prime p-1 will be coprime to <tt class="docutils literal"><span class="pre">e</span></tt>
+and thus suitable for RSA where e is the public exponent.</p>
+<p>The optional <tt class="docutils literal"><span class="pre">false_positive_prob</span></tt> is the statistical probability
+that true is returned even though it is not (pseudo-prime).
+It defaults to 1e-6 (less than 1:1000000).
+Note that the real probability of a false-positive is far less. This is
+just the mathematically provable limit.</p>
+<p><tt class="docutils literal"><span class="pre">randfunc</span></tt> should take a single int parameter and return that
+many random bytes as a string.
+If randfunc is omitted, then <tt class="docutils literal"><span class="pre">Random.new().read</span></tt> is used.</p>
+<p><strong>getRandomNBitInteger(N, randfunc)</strong>:
+Return an <tt class="docutils literal"><span class="pre">N</span></tt>-bit random number, using random data obtained from the
+function <tt class="docutils literal"><span class="pre">randfunc</span></tt>.  As usual, <tt class="docutils literal"><span class="pre">randfunc</span></tt> must take a single
+integer argument and return a string of random data of the
+corresponding length.</p>
+<p><strong>getRandomNBitInteger(N, randfunc)</strong>:
+Return an <tt class="docutils literal"><span class="pre">N</span></tt>-bit random number, using random data obtained from the
+function <tt class="docutils literal"><span class="pre">randfunc</span></tt>.  As usual, <tt class="docutils literal"><span class="pre">randfunc</span></tt> must take a single
+integer argument and return a string of random data of the
+corresponding length.</p>
+<p><strong>inverse(u, v)</strong>:
+Return the inverse of <tt class="docutils literal"><span class="pre">u</span></tt> modulo <tt class="docutils literal"><span class="pre">v</span></tt>.</p>
+<p><strong>isPrime(N)</strong>:
+Returns true if the number <tt class="docutils literal"><span class="pre">N</span></tt> is prime, as determined by a
+Rabin-Miller test.</p>
+</div>
+<div class="section" id="crypto-random">
+<h3><a class="toc-backref" href="#id22">Crypto.Random</a><a class="headerlink" href="#crypto-random" title="Permalink to this headline">¶</a></h3>
+<p>For cryptographic purposes, ordinary random number generators are
+frequently insufficient, because if some of their output is known, it
+is frequently possible to derive the generator&#8217;s future (or past)
+output.  Given the generator&#8217;s state at some point in time, someone
+could try to derive any keys generated using it.  The solution is to
+use strong encryption or hashing algorithms to generate successive
+data; this makes breaking the generator as difficult as breaking the
+algorithms used.</p>
+<p>Understanding the concept of <strong>entropy</strong> is important for using the
+random number generator properly.  In the sense we&#8217;ll be using it,
+entropy measures the amount of randomness; the usual unit is in bits.
+So, a single random bit has an entropy of 1 bit; a random byte has an
+entropy of 8 bits.  Now consider a one-byte field in a database containing a
+person&#8217;s sex, represented as a single character <tt class="docutils literal"><span class="pre">'M'</span></tt> or <tt class="docutils literal"><span class="pre">'F'</span></tt>.
+What&#8217;s the entropy of this field?  Since there are only two possible
+values, it&#8217;s not 8 bits, but one; if you were trying to guess the value,
+you wouldn&#8217;t have to bother trying <tt class="docutils literal"><span class="pre">'Q'</span></tt> or <tt class="docutils literal"><span class="pre">'&#64;'</span></tt>.</p>
+<p>Now imagine running that single byte field through a hash function that
+produces 128 bits of output.  Is the entropy of the resulting hash value
+128 bits?  No, it&#8217;s still just 1 bit.  The entropy is a measure of how many
+possible states of the data exist.  For English
+text, the entropy of a five-character string is not 40 bits; it&#8217;s
+somewhat less, because not all combinations would be seen.  <tt class="docutils literal"><span class="pre">'Guido'</span></tt>
+is a possible string, as is <tt class="docutils literal"><span class="pre">'In</span> <span class="pre">th'</span></tt>; <tt class="docutils literal"><span class="pre">'zJwvb'</span></tt> is not.</p>
+<p>The relevance to random number generation?  We want enough bits of
+entropy to avoid making an attack on our generator possible.  An
+example: One computer system had a mechanism which generated nonsense
+passwords for its users.  This is a good idea, since it would prevent
+people from choosing their own name or some other easily guessed string.
+Unfortunately, the random number generator used only had 65536 states,
+which meant only 65536 different passwords would ever be generated, and
+it was easy to compute all the possible passwords and try them.  The
+entropy of the random passwords was far too low.  By the same token, if
+you generate an RSA key with only 32 bits of entropy available, there
+are only about 4.2 billion keys you could have generated, and an
+adversary could compute them all to find your private key.  See
+RFC 1750,
+&#8220;Randomness Recommendations for Security&#8221;, for an interesting discussion
+of the issues related to random number generation.</p>
+<p>The <tt class="docutils literal"><span class="pre">Random</span></tt> module builds strong random number generators that look
+like generic files a user can read data from. The internal state consists
+of entropy accumulators based on the best randomness sources the underlying
+operating is capable to provide.</p>
+<p>The <tt class="docutils literal"><span class="pre">Random</span></tt> module defines the following methods:</p>
+<p><strong>new()</strong>:
+Builds a file-like object that outputs cryptographically random bytes.</p>
+<p><strong>atfork()</strong>:
+This methods has to be called whenever os.fork() is invoked. Forking
+undermines the security of any random generator based on the operating
+system, as it duplicates all structures a program has. In order to
+thwart possible attacks, this method shoud be called soon after forking,
+and before any cryptographic operation.</p>
+<p><strong>get_random_bytes(num)</strong>:
+Returns a string containing <tt class="docutils literal"><span class="pre">num</span></tt> bytes of random data.</p>
+<p>Objects created by the <tt class="docutils literal"><span class="pre">Random</span></tt> module define the following variables and methods:</p>
+<p><strong>read(num)</strong>:
+Returns a string containing <tt class="docutils literal"><span class="pre">num</span></tt> bytes of random data.</p>
+<p><strong>close()</strong>:
+<strong>flush()</strong>:
+Do nothing. Provided for consistency.</p>
+</div>
+<div class="section" id="crypto-util-rfc1751">
+<h3><a class="toc-backref" href="#id23">Crypto.Util.RFC1751</a><a class="headerlink" href="#crypto-util-rfc1751" title="Permalink to this headline">¶</a></h3>
+<p>The keys for private-key algorithms should be arbitrary binary data.
+Many systems err by asking the user to enter a password, and then
+using the password as the key.  This limits the space of possible
+keys, as each key byte is constrained within the range of possible
+ASCII characters, 32-127, instead of the whole 0-255 range possible
+with ASCII.  Unfortunately, it&#8217;s difficult for humans to remember 16
+or 32 hex digits.</p>
+<p>One solution is to request a lengthy passphrase from the user, and
+then run it through a hash function such as SHA or MD5.  Another
+solution is discussed in RFC 1751, &#8220;A Convention for Human-Readable
+128-bit Keys&#8221;, by Daniel L. McDonald.  Binary keys are transformed
+into a list of short English words that should be easier to remember.
+For example, the hex key EB33F77EE73D4053 is transformed to &#8220;TIDE ITCH
+SLOW REIN RULE MOT&#8221;.</p>
+<p><strong>key_to_english(key)</strong>:
+Accepts a string of arbitrary data <tt class="docutils literal"><span class="pre">key</span></tt>, and returns a string
+containing uppercase English words separated by spaces.  <tt class="docutils literal"><span class="pre">key</span></tt>&#8216;s
+length must be a multiple of 8.</p>
+<p><strong>english_to_key(string)</strong>:
+Accepts <tt class="docutils literal"><span class="pre">string</span></tt> containing English words, and returns a string of
+binary data representing the key.  Words must be separated by
+whitespace, and can be any mixture of uppercase and lowercase
+characters.  6 words are required for 8 bytes of key data, so
+the number of words in <tt class="docutils literal"><span class="pre">string</span></tt> must be a multiple of 6.</p>
+</div>
+</div>
+<div class="section" id="extending-the-toolkit">
+<h2><a class="toc-backref" href="#id24">Extending the Toolkit</a><a class="headerlink" href="#extending-the-toolkit" title="Permalink to this headline">¶</a></h2>
+<p>Preserving a common interface for cryptographic routines is a good
+idea.  This chapter explains how to write new modules for the Toolkit.</p>
+<p>The basic process is as follows:</p>
+<p>1. Add a new <tt class="docutils literal"><span class="pre">.c</span></tt> file containing an implementation of the new
+algorithm.
+This file must define 3 or 4 standard functions,
+a few constants, and a C <tt class="docutils literal"><span class="pre">struct</span></tt> encapsulating the state
+variables required by the algorithm.</p>
+<ol class="arabic simple" start="2">
+<li>Add the new algorithm to <tt class="docutils literal"><span class="pre">setup.py</span></tt>.</li>
+</ol>
+<p>3.  Send a copy of the code to me, if you like; code for new
+algorithms will be gratefully accepted.</p>
+<div class="section" id="adding-hash-algorithms">
+<h3><a class="toc-backref" href="#id25">Adding Hash Algorithms</a><a class="headerlink" href="#adding-hash-algorithms" title="Permalink to this headline">¶</a></h3>
+<p>The required constant definitions are as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#define MODULE_NAME MD2             /* Name of algorithm */</span>
+<span class="c">#define DIGEST_SIZE 16          /* Size of resulting digest in bytes */</span>
+</pre></div>
+</div>
+<p>The C structure must be named <tt class="docutils literal"><span class="pre">hash_state</span></tt>:</p>
+<div class="highlight-python"><pre>typedef struct {
+     ... whatever state variables you need ...
+} hash_state;</pre>
+</div>
+<p>There are four functions that need to be written: to initialize the
+algorithm&#8217;s state, to hash a string into the algorithm&#8217;s state, to get
+a digest from the current state, and to copy a state.</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">void</span> <span class="pre">hash_init(hash_state</span> <span class="pre">*self);</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">void</span> <span class="pre">hash_update(hash_state</span> <span class="pre">*self,</span> <span class="pre">unsigned</span> <span class="pre">char</span> <span class="pre">*buffer,</span> <span class="pre">int</span> <span class="pre">length);</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">PyObject</span> <span class="pre">*hash_digest(hash_state</span> <span class="pre">*self);</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">void</span> <span class="pre">hash_copy(hash_state</span> <span class="pre">*source,</span> <span class="pre">hash_state</span> <span class="pre">*dest);</span></tt></li>
+</ul>
+<p>Put <tt class="docutils literal"><span class="pre">#include</span> <span class="pre">&quot;hash_template.c&quot;</span></tt> at the end of the file to
+include the actual implementation of the module.</p>
+</div>
+<div class="section" id="adding-block-encryption-algorithms">
+<h3><a class="toc-backref" href="#id26">Adding Block Encryption Algorithms</a><a class="headerlink" href="#adding-block-encryption-algorithms" title="Permalink to this headline">¶</a></h3>
+<p>The required constant definitions are as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#define MODULE_NAME AES        /* Name of algorithm */</span>
+<span class="c">#define BLOCK_SIZE 16          /* Size of encryption block */</span>
+<span class="c">#define KEY_SIZE 0             /* Size of key in bytes (0 if not fixed size) */</span>
+</pre></div>
+</div>
+<p>The C structure must be named <tt class="docutils literal"><span class="pre">block_state</span></tt>:</p>
+<div class="highlight-python"><pre>typedef struct {
+     ... whatever state variables you need ...
+} block_state;</pre>
+</div>
+<p>There are three functions that need to be written: to initialize the
+algorithm&#8217;s state, and to encrypt and decrypt a single block.</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">void</span> <span class="pre">block_init(block_state</span> <span class="pre">*self,</span> <span class="pre">unsigned</span> <span class="pre">char</span> <span class="pre">*key,</span> <span class="pre">int</span> <span class="pre">keylen);</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">void</span> <span class="pre">block_encrypt(block_state</span> <span class="pre">*self,</span> <span class="pre">unsigned</span> <span class="pre">char</span> <span class="pre">*in,</span> <span class="pre">unsigned</span> <span class="pre">char</span> <span class="pre">*out);</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">void</span> <span class="pre">block_decrypt(block_state</span> <span class="pre">*self,</span> <span class="pre">unsigned</span> <span class="pre">char</span> <span class="pre">*in,</span> <span class="pre">unsigned</span> <span class="pre">char</span> <span class="pre">*out);</span></tt></li>
+</ul>
+<p>Put <tt class="docutils literal"><span class="pre">#include</span> <span class="pre">&quot;block_template.c&quot;</span></tt> at the end of the file to
+include the actual implementation of the module.</p>
+</div>
+<div class="section" id="adding-stream-encryption-algorithms">
+<h3><a class="toc-backref" href="#id27">Adding Stream Encryption Algorithms</a><a class="headerlink" href="#adding-stream-encryption-algorithms" title="Permalink to this headline">¶</a></h3>
+<p>The required constant definitions are as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#define MODULE_NAME ARC4       /* Name of algorithm */</span>
+<span class="c">#define BLOCK_SIZE 1           /* Will always be 1 for a stream cipher */</span>
+<span class="c">#define KEY_SIZE 0             /* Size of key in bytes (0 if not fixed size) */</span>
+</pre></div>
+</div>
+<p>The C structure must be named <tt class="docutils literal"><span class="pre">stream_state</span></tt>:</p>
+<div class="highlight-python"><pre>typedef struct {
+     ... whatever state variables you need ...
+} stream_state;</pre>
+</div>
+<p>There are three functions that need to be written: to initialize the
+algorithm&#8217;s state, and to encrypt and decrypt a single block.</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">void</span> <span class="pre">stream_init(stream_state</span> <span class="pre">*self,</span> <span class="pre">unsigned</span> <span class="pre">char</span> <span class="pre">*key,</span> <span class="pre">int</span> <span class="pre">keylen);</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">void</span> <span class="pre">stream_encrypt(stream_state</span> <span class="pre">*self,</span> <span class="pre">unsigned</span> <span class="pre">char</span> <span class="pre">*block,</span> <span class="pre">int</span> <span class="pre">length);</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">void</span> <span class="pre">stream_decrypt(stream_state</span> <span class="pre">*self,</span> <span class="pre">unsigned</span> <span class="pre">char</span> <span class="pre">*block,</span> <span class="pre">int</span> <span class="pre">length);</span></tt></li>
+</ul>
+<p>Put <tt class="docutils literal"><span class="pre">#include</span> <span class="pre">&quot;stream_template.c&quot;</span></tt> at the end of the file to
+include the actual implementation of the module.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

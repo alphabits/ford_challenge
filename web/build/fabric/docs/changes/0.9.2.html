@@ -1,0 +1,188 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Changes in version 0.9.2 &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Changes in version 0.9.2</a><ul>
+<li><a class="reference internal" href="#feature-additions">Feature additions</a></li>
+<li><a class="reference internal" href="#bugfixes">Bugfixes</a></li>
+<li><a class="reference internal" href="#documentation-updates">Documentation updates</a></li>
+<li><a class="reference internal" href="#packaging-updates">Packaging updates</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../../_sources/build/fabric/docs/changes/0.9.2.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="changes-in-version-0-9-2">
+<h1>Changes in version 0.9.2<a class="headerlink" href="#changes-in-version-0-9-2" title="Permalink to this headline">¶</a></h1>
+<p>The following changes were implemented in Fabric 0.9.2:</p>
+<div class="section" id="feature-additions">
+<h2>Feature additions<a class="headerlink" href="#feature-additions" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>The <cite>~fabric.operations.reboot</cite> operation has been added, providing a way for
+Fabric to issue a reboot command and then reconnect after the system has
+restarted.</li>
+<li><tt class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">test</span></tt> now runs Fabric&#8217;s test suite (provided you have all
+the prerequisites from the <tt class="docutils literal"><span class="pre">requirements.txt</span></tt> installed). Thanks to Eric
+Holscher for the patch.</li>
+<li>Added functionality for loading fabfiles which are Python packages
+(directories) instead of just modules (single files.) See
+<a class="reference internal" href="../usage/fabfiles.html#fabfile-discovery"><em>Fabfile discovery</em></a>.</li>
+<li>Added output lines informing the user of which tasks are being executed (e.g.
+<tt class="docutils literal"><span class="pre">[myserver]</span> <span class="pre">Executing</span> <span class="pre">task</span> <span class="pre">'foo'</span></tt>.)</li>
+<li>Added support for lazy (callable) role definition values in <tt class="docutils literal"><span class="pre">env.roledefs</span></tt>.</li>
+<li>Added <cite>contrib.django &lt;fabric.contrib.django&gt;</cite> module with basic Django
+integration.</li>
+<li><a class="reference internal" href="../usage/env.html#local-user"><em>env.local_user</em></a> was added, providing easy and permanent
+access to the local system username, even if an alternate remote username has
+been specified.</li>
+<li><a href="#id1"><span class="problematic" id="id2">:issue:`29`</span></a>: Added support for arbitrary command-line-driven anonymous tasks
+via <tt class="docutils literal"><span class="pre">fab</span> <span class="pre">[options]</span> <span class="pre">--</span> <span class="pre">[shell</span> <span class="pre">command]</span></tt>. See <a class="reference internal" href="../usage/fab.html#arbitrary-commands"><em>Arbitrary remote shell commands</em></a>.</li>
+<li><a href="#id3"><span class="problematic" id="id4">:issue:`52`</span></a>: Full tracebacks during aborts are now displayed if the user has
+opted to see debug-level output.</li>
+<li><a href="#id5"><span class="problematic" id="id6">:issue:`101`</span></a>: Added <cite>~fabric.colors</cite> module with basic color output support.
+(<a href="#id7"><span class="problematic" id="id8">:issue:`101`</span></a> is still open: we plan to leverage the new module in Fabric&#8217;s
+own output in the future.)</li>
+<li><a href="#id9"><span class="problematic" id="id10">:issue:`137`</span></a>: Commas used to separate per-task arguments may now be escaped
+with a backslash. Thanks to Erich Heine for the patch.</li>
+<li><a href="#id11"><span class="problematic" id="id12">:issue:`144`</span></a>: <cite>~fabric.decorators.hosts</cite> (and <cite>~fabric.decorators.roles</cite>)
+will now expand a single, iterable argument instead of requiring one to use
+e.g.  <tt class="docutils literal"><span class="pre">&#64;hosts(*iterable)</span></tt>.</li>
+<li><a href="#id13"><span class="problematic" id="id14">:issue:`151`</span></a>: Added a <cite>~fabric.utils.puts</cite> utility function, which allows
+greater control over fabfile-generated (as opposed to Fabric-generated)
+output. Also added <cite>~fabric.utils.fastprint</cite>, an alias to
+<cite>~fabric.utils.puts</cite> allowing for convenient unbuffered,
+non-newline-terminated printing.</li>
+<li><a href="#id15"><span class="problematic" id="id16">:issue:`208`</span></a>: Users rolling their own shell completion or who otherwise find
+themselves performing text manipulation on the output of <a class="reference internal" href="../usage/fab.html#cmdoption-l"><em class="xref std std-option">--list</em></a> may now use <a class="reference internal" href="../usage/fab.html#cmdoption--shortlist"><em class="xref std std-option">--shortlist</em></a> to get a plain, newline-separated
+list of task names.</li>
+</ul>
+</div>
+<div class="section" id="bugfixes">
+<h2>Bugfixes<a class="headerlink" href="#bugfixes" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>The interactive &#8220;what host to connect to?&#8221; prompt now correctly updates the
+appropriate environment variables (hostname, username, port) based on user
+input.</li>
+<li>Fixed a bug where Fabric&#8217;s own internal fabfile would pre-empt the user&#8217;s
+fabfile due to a PYTHONPATH order issue. User fabfiles are now always loaded
+at the front of the PYTHONPATH during import.</li>
+<li>Disabled some DeprecationWarnings thrown by Paramiko when that library is
+imported into Fabric under Python 2.6.</li>
+<li><a href="#id17"><span class="problematic" id="id18">:issue:`44`</span></a>, <a href="#id19"><span class="problematic" id="id20">:issue:`63`</span></a>: Modified <cite>~fabric.contrib.project.rsync_project</cite> to
+honor the SSH port and identity file settings. Thanks to Mitch Matuson
+and Morgan Goose.</li>
+<li><a href="#id21"><span class="problematic" id="id22">:issue:`123`</span></a>: Removed Cygwin from the &#8220;are we on Windows&#8221; test; now, only
+Python installs whose <tt class="docutils literal"><span class="pre">sys.platform</span></tt> says <tt class="docutils literal"><span class="pre">'win32'</span></tt> will use Windows-only
+code paths (e.g. importing of <tt class="docutils literal"><span class="pre">pywin32</span></tt>).</li>
+</ul>
+</div>
+<div class="section" id="documentation-updates">
+<h2>Documentation updates<a class="headerlink" href="#documentation-updates" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Added a few new items to the <tt class="xref doc docutils literal"><span class="pre">FAQ</span></tt>.</li>
+<li><a href="#id23"><span class="problematic" id="id24">:issue:`173`</span></a>: Simple but rather embarrassing typo fix in README. Thanks to
+Ted Nyman for the catch.</li>
+<li><a href="#id25"><span class="problematic" id="id26">:issue:`194`</span></a>: Added a note to <tt class="xref doc docutils literal"><span class="pre">the</span> <span class="pre">install</span> <span class="pre">docs</span></tt> about a
+possible edge case some Windows 64-bit Python users may encounter.</li>
+<li><a href="#id27"><span class="problematic" id="id28">:issue:`216`</span></a>: Overhauled the <a class="reference internal" href="../faq.html#faq-daemonize"><em>process backgrounding FAQ</em></a>
+to include additional techniques and be more holistic.</li>
+</ul>
+</div>
+<div class="section" id="packaging-updates">
+<h2>Packaging updates<a class="headerlink" href="#packaging-updates" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a href="#id29"><span class="problematic" id="id30">:issue:`86`</span></a>, <a href="#id31"><span class="problematic" id="id32">:issue:`158`</span></a>: Removed the bundled Paramiko 1.7.4 and updated the
+<tt class="docutils literal"><span class="pre">setup.py</span></tt> to require Paramiko &gt;=1.7.6. This lets us skip the known-buggy
+Paramiko 1.7.5 while getting some much needed bugfixes in Paramiko 1.7.6.</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

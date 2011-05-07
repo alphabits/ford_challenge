@@ -1,0 +1,478 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Operations &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../../../_sources/build/fabric/docs/api/core/operations.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-fabric.operations">
+<span id="operations"></span><h1>Operations<a class="headerlink" href="#module-fabric.operations" title="Permalink to this headline">¶</a></h1>
+<p>Functions to be used in fabfiles and other non-core code, such as run()/sudo().</p>
+<dl class="function">
+<dt id="fabric.operations.get">
+<tt class="descclassname">fabric.operations.</tt><tt class="descname">get</tt><big>(</big><em>remote_path</em>, <em>local_path=None</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/operations.html#get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.operations.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download one or more files from a remote host.</p>
+<p><cite>~fabric.operations.get</cite> returns an iterable containing the absolute paths
+to all local files downloaded, which will be empty if <tt class="docutils literal"><span class="pre">local_path</span></tt> was a
+StringIO object (see below for more on using StringIO). This object will
+also exhibit a <tt class="docutils literal"><span class="pre">.failed</span></tt> attribute containing any remote file paths which
+failed to download, and a <tt class="docutils literal"><span class="pre">.succeeded</span></tt> attribute equivalent to <tt class="docutils literal"><span class="pre">not</span>
+<span class="pre">.failed</span></tt>.</p>
+<p><tt class="docutils literal"><span class="pre">remote_path</span></tt> is the remote file or directory path to download, which may
+contain shell glob syntax, e.g. <tt class="docutils literal"><span class="pre">&quot;/var/log/apache2/*.log&quot;</span></tt>, and will have
+tildes replaced by the remote home directory. Relative paths will be
+considered relative to the remote user&#8217;s home directory, or the current
+remote working directory as manipulated by <cite>~fabric.context_managers.cd</cite>.
+If the remote path points to a directory, that directory will be downloaded
+recursively.</p>
+<p><tt class="docutils literal"><span class="pre">local_path</span></tt> is the local file path where the downloaded file or files
+will be stored. If relative, it will honor the local current working
+directory as manipulated by <cite>~fabric.context_managers.lcd</cite>. It may be
+interpolated, using standard Python dict-based interpolation, with the
+following variables:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">host</span></tt>: The value of <tt class="docutils literal"><span class="pre">env.host_string</span></tt>, eg <tt class="docutils literal"><span class="pre">myhostname</span></tt> or
+<tt class="docutils literal"><span class="pre">user&#64;myhostname-222</span></tt> (the colon between hostname and port is turned
+into a dash to maximize filesystem compatibility)</li>
+<li><tt class="docutils literal"><span class="pre">dirname</span></tt>: The directory part of the remote file path, e.g. the
+<tt class="docutils literal"><span class="pre">src/projectname</span></tt> in <tt class="docutils literal"><span class="pre">src/projectname/utils.py</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">basename</span></tt>: The filename part of the remote file path, e.g. the
+<tt class="docutils literal"><span class="pre">utils.py</span></tt> in <tt class="docutils literal"><span class="pre">src/projectname/utils.py</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">path</span></tt>: The full remote path, e.g. <tt class="docutils literal"><span class="pre">src/projectname/utils.py</span></tt>.</li>
+</ul>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>When <tt class="docutils literal"><span class="pre">remote_path</span></tt> is an absolute directory path, only the inner
+directories will be recreated locally and passed into the above
+variables. So for example, <tt class="docutils literal"><span class="pre">get('/var/log',</span> <span class="pre">'%(path)s')</span></tt> would start
+writing out files like <tt class="docutils literal"><span class="pre">apache2/access.log</span></tt>,
+<tt class="docutils literal"><span class="pre">postgresql/8.4/postgresql.log</span></tt>, etc, in the local working directory.
+It would <strong>not</strong> write out e.g.  <tt class="docutils literal"><span class="pre">var/log/apache2/access.log</span></tt>.</p>
+<p>Additionally, when downloading a single file, <tt class="docutils literal"><span class="pre">%(dirname)s</span></tt> and
+<tt class="docutils literal"><span class="pre">%(path)s</span></tt> do not make as much sense and will be empty and equivalent
+to <tt class="docutils literal"><span class="pre">%(basename)s</span></tt>, respectively. Thus a call like
+<tt class="docutils literal"><span class="pre">get('/var/log/apache2/access.log',</span> <span class="pre">'%(path)s')</span></tt> will save a local
+file named <tt class="docutils literal"><span class="pre">access.log</span></tt>, not <tt class="docutils literal"><span class="pre">var/log/apache2/access.log</span></tt>.</p>
+<p class="last">This behavior is intended to be consistent with the command-line
+<tt class="docutils literal"><span class="pre">scp</span></tt> program.</p>
+</div>
+<p>If left blank, <tt class="docutils literal"><span class="pre">local_path</span></tt> defaults to <tt class="docutils literal"><span class="pre">&quot;%(host)s/%(path)s&quot;</span></tt> in order
+to be safe for multi-host invocations.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">If your <tt class="docutils literal"><span class="pre">local_path</span></tt> argument does not contain <tt class="docutils literal"><span class="pre">%(host)s</span></tt> and your
+<cite>~fabric.operations.get</cite> call runs against multiple hosts, your local
+files will be overwritten on each successive run!</p>
+</div>
+<p>If <tt class="docutils literal"><span class="pre">local_path</span></tt> does not make use of the above variables (i.e. if it is a
+simple, explicit file path) it will act similar to <tt class="docutils literal"><span class="pre">scp</span></tt> or <tt class="docutils literal"><span class="pre">cp</span></tt>,
+overwriting pre-existing files if necessary, downloading into a directory
+if given (e.g. <tt class="docutils literal"><span class="pre">get('/path/to/remote_file.txt',</span> <span class="pre">'local_directory')</span></tt> will
+create <tt class="docutils literal"><span class="pre">local_directory/remote_file.txt</span></tt>) and so forth.</p>
+<p><tt class="docutils literal"><span class="pre">local_path</span></tt> may alternately be a file-like object, such as the result of
+<tt class="docutils literal"><span class="pre">open('path',</span> <span class="pre">'w')</span></tt> or a <tt class="docutils literal"><span class="pre">StringIO</span></tt> instance.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Attempting to <cite>get</cite> a directory into a file-like object is not valid
+and will result in an error.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This function will use <tt class="docutils literal"><span class="pre">seek</span></tt> and <tt class="docutils literal"><span class="pre">tell</span></tt> to overwrite the entire
+contents of the file-like object, in order to be consistent with the
+behavior of <cite>~fabric.operations.put</cite> (which also considers the entire
+file). However, unlike <cite>~fabric.operations.put</cite>, the file pointer will
+not be restored to its previous location, as that doesn&#8217;t make as much
+sense here and/or may not even be possible.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Due to how our SSH layer works, a temporary file will still be written
+to your hard disk even if you specify a file-like object such as a
+StringIO for the <tt class="docutils literal"><span class="pre">local_path</span></tt> argument. Cleanup is performed,
+however &#8211; we just note this for users expecting straight-to-memory
+transfers. (We hope to patch our SSH layer in the future to enable true
+straight-to-memory downloads.)</p>
+</div>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>Now honors the remote working directory as manipulated by
+<cite>~fabric.context_managers.cd</cite>, and the local working directory as
+manipulated by <cite>~fabric.context_managers.lcd</cite>.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>Now allows file-like objects in the <tt class="docutils literal"><span class="pre">local_path</span></tt> argument.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span><tt class="docutils literal"><span class="pre">local_path</span></tt> may now contain interpolated path- and host-related
+variables.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>Directories may be specified in the <tt class="docutils literal"><span class="pre">remote_path</span></tt> argument and will
+trigger recursive downloads.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>Return value is now an iterable of downloaded local file paths, which
+also exhibits the <tt class="docutils literal"><span class="pre">.failed</span></tt> and <tt class="docutils literal"><span class="pre">.succeeded</span></tt> attributes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.operations.open_shell">
+<tt class="descclassname">fabric.operations.</tt><tt class="descname">open_shell</tt><big>(</big><em>command=None</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/operations.html#open_shell"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.operations.open_shell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invoke a fully interactive shell on the remote end.</p>
+<p>If <tt class="docutils literal"><span class="pre">command</span></tt> is given, it will be sent down the pipe before handing
+control over to the invoking user.</p>
+<p>This function is most useful for when you need to interact with a heavily
+shell-based command or series of commands, such as when debugging or when
+fully interactive recovery is required upon remote program failure.</p>
+<p>It should be considered an easy way to work an interactive shell session
+into the middle of a Fabric script and is <em>not</em> a drop-in replacement for
+<cite>~fabric.operations.run</cite>, which is also capable of interacting with the
+remote end (albeit only while its given command is executing) and has much
+stronger programmatic abilities such as error handling and stdout/stderr
+capture.</p>
+<p>Specifically, <cite>~fabric.operations.open_shell</cite> provides a better interactive
+experience than <cite>~fabric.operations.run</cite>, but use of a full remote shell
+prevents Fabric from determining whether programs run within the shell have
+failed, and pollutes the stdout/stderr stream with shell output such as
+login banners, prompts and echoed stdin.</p>
+<p>Thus, this function does not have a return value and will not trigger
+Fabric&#8217;s failure handling if any remote programs result in errors.</p>
+<p class="versionadded">
+<span class="versionmodified">New in version 1.0.</span></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.operations.put">
+<tt class="descclassname">fabric.operations.</tt><tt class="descname">put</tt><big>(</big><em>local_path</em>, <em>remote_path</em>, <em>use_sudo=False</em>, <em>mirror_local_mode=False</em>, <em>mode=None</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/operations.html#put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.operations.put" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upload one or more files to a remote host.</p>
+<p><cite>~fabric.operations.put</cite> returns an iterable containing the absolute file
+paths of all remote files uploaded. This iterable also exhibits a
+<tt class="docutils literal"><span class="pre">.failed</span></tt> attribute containing any local file paths which failed to
+upload (and may thus be used as a boolean test.) You may also check
+<tt class="docutils literal"><span class="pre">.succeeded</span></tt> which is equivalent to <tt class="docutils literal"><span class="pre">not</span> <span class="pre">.failed</span></tt>.</p>
+<p><tt class="docutils literal"><span class="pre">local_path</span></tt> may be a relative or absolute local file or directory path,
+and may contain shell-style wildcards, as understood by the Python <tt class="docutils literal"><span class="pre">glob</span></tt>
+module.  Tilde expansion (as implemented by <tt class="docutils literal"><span class="pre">os.path.expanduser</span></tt>) is also
+performed.</p>
+<p><tt class="docutils literal"><span class="pre">local_path</span></tt> may alternately be a file-like object, such as the result of
+<tt class="docutils literal"><span class="pre">open('path')</span></tt> or a <tt class="docutils literal"><span class="pre">StringIO</span></tt> instance.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">In this case, <cite>~fabric.operations.put</cite> will attempt to read the entire
+contents of the file-like object by rewinding it using <tt class="docutils literal"><span class="pre">seek</span></tt> (and
+will use <tt class="docutils literal"><span class="pre">tell</span></tt> afterwards to preserve the previous file position).</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Use of a file-like object in <cite>~fabric.operations.put</cite>&#8216;s <tt class="docutils literal"><span class="pre">local_path</span></tt>
+argument will cause a temporary file to be utilized due to limitations
+in our SSH layer&#8217;s API.</p>
+</div>
+<p><tt class="docutils literal"><span class="pre">remote_path</span></tt> may also be a relative or absolute location, but applied to
+the remote host. Relative paths are relative to the remote user&#8217;s home
+directory, but tilde expansion (e.g. <tt class="docutils literal"><span class="pre">~/.ssh/</span></tt>) will also be performed if
+necessary.</p>
+<p>An empty string, in either path argument, will be replaced by the
+appropriate end&#8217;s current working directory.</p>
+<p>While the SFTP protocol (which <cite>put</cite> uses) has no direct ability to upload
+files to locations not owned by the connecting user, you may specify
+<tt class="docutils literal"><span class="pre">use_sudo=True</span></tt> to work around this. When set, this setting causes <cite>put</cite>
+to upload the local files to a temporary location on the remote end, and
+then use <cite>sudo</cite> to move them to <tt class="docutils literal"><span class="pre">remote_path</span></tt>.</p>
+<p>In some use cases, it is desirable to force a newly uploaded file to match
+the mode of its local counterpart (such as when uploading executable
+scripts). To do this, specify <tt class="docutils literal"><span class="pre">mirror_local_mode=True</span></tt>.</p>
+<p>Alternately, you may use the <tt class="docutils literal"><span class="pre">mode</span></tt> kwarg to specify an exact mode, in
+the same vein as <tt class="docutils literal"><span class="pre">os.chmod</span></tt> or the Unix <tt class="docutils literal"><span class="pre">chmod</span></tt> command.</p>
+<p><cite>~fabric.operations.put</cite> will honor <cite>~fabric.context_managers.cd</cite>, so
+relative values in <tt class="docutils literal"><span class="pre">remote_path</span></tt> will be prepended by the current remote
+working directory, if applicable. Thus, for example, the below snippet
+would attempt to upload to <tt class="docutils literal"><span class="pre">/tmp/files/test.txt</span></tt> instead of
+<tt class="docutils literal"><span class="pre">~/files/test.txt</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="n">cd</span><span class="p">(</span><span class="s">&#39;/tmp&#39;</span><span class="p">):</span>
+    <span class="n">put</span><span class="p">(</span><span class="s">&#39;/path/to/local/test.txt&#39;</span><span class="p">,</span> <span class="s">&#39;files&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Use of <cite>~fabric.context_managers.lcd</cite> will affect <tt class="docutils literal"><span class="pre">local_path</span></tt> in the
+same manner.</p>
+<p>Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">put</span><span class="p">(</span><span class="s">&#39;bin/project.zip&#39;</span><span class="p">,</span> <span class="s">&#39;/tmp/project.zip&#39;</span><span class="p">)</span>
+<span class="n">put</span><span class="p">(</span><span class="s">&#39;*.py&#39;</span><span class="p">,</span> <span class="s">&#39;cgi-bin/&#39;</span><span class="p">)</span>
+<span class="n">put</span><span class="p">(</span><span class="s">&#39;index.html&#39;</span><span class="p">,</span> <span class="s">&#39;index.html&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mo">0755</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>Now honors the remote working directory as manipulated by
+<cite>~fabric.context_managers.cd</cite>, and the local working directory as
+manipulated by <cite>~fabric.context_managers.lcd</cite>.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>Now allows file-like objects in the <tt class="docutils literal"><span class="pre">local_path</span></tt> argument.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>Directories may be specified in the <tt class="docutils literal"><span class="pre">local_path</span></tt> argument and will
+trigger recursive uploads.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>Return value is now an iterable of uploaded remote file paths which
+also exhibits the <tt class="docutils literal"><span class="pre">.failed</span></tt> and <tt class="docutils literal"><span class="pre">.succeeded</span></tt> attributes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.operations.reboot">
+<tt class="descclassname">fabric.operations.</tt><tt class="descname">reboot</tt><big>(</big><em>wait</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/operations.html#reboot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.operations.reboot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reboot the remote system, disconnect, and wait for <tt class="docutils literal"><span class="pre">wait</span></tt> seconds.</p>
+<p>After calling this operation, further execution of <cite>run</cite> or <cite>sudo</cite> will
+result in a normal reconnection to the server, including any password
+prompts.</p>
+<p class="versionadded">
+<span class="versionmodified">New in version 0.9.2.</span></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.operations.run">
+<tt class="descclassname">fabric.operations.</tt><tt class="descname">run</tt><big>(</big><em>command</em>, <em>shell=True</em>, <em>pty=True</em>, <em>combine_stderr=True</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/operations.html#run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.operations.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a shell command on a remote host.</p>
+<p>If <tt class="docutils literal"><span class="pre">shell</span></tt> is True (the default), <cite>run</cite> will execute the given command
+string via a shell interpreter, the value of which may be controlled by
+setting <tt class="docutils literal"><span class="pre">env.shell</span></tt> (defaulting to something similar to <tt class="docutils literal"><span class="pre">/bin/bash</span> <span class="pre">-l</span> <span class="pre">-c</span>
+<span class="pre">&quot;&lt;command&gt;&quot;</span></tt>.) Any double-quote (<tt class="docutils literal"><span class="pre">&quot;</span></tt>) or dollar-sign (<tt class="docutils literal"><span class="pre">$</span></tt>) characters
+in <tt class="docutils literal"><span class="pre">command</span></tt> will be automatically escaped when <tt class="docutils literal"><span class="pre">shell</span></tt> is True.</p>
+<p><cite>run</cite> will return the result of the remote program&#8217;s stdout as a single
+(likely multiline) string. This string will exhibit <tt class="docutils literal"><span class="pre">failed</span></tt> and
+<tt class="docutils literal"><span class="pre">succeeded</span></tt> boolean attributes specifying whether the command failed or
+succeeded, and will also include the return code as the <tt class="docutils literal"><span class="pre">return_code</span></tt>
+attribute.</p>
+<p>Any text entered in your local terminal will be forwarded to the remote
+program as it runs, thus allowing you to interact with password or other
+prompts naturally. For more on how this works, see
+<tt class="xref doc docutils literal"><span class="pre">/usage/interactivity</span></tt>.</p>
+<p>You may pass <tt class="docutils literal"><span class="pre">pty=False</span></tt> to forego creation of a pseudo-terminal on the
+remote end in case the presence of one causes problems for the command in
+question. However, this will force Fabric itself to echo any  and all input
+you type while the command is running, including sensitive passwords. (With
+<tt class="docutils literal"><span class="pre">pty=True</span></tt>, the remote pseudo-terminal will echo for you, and will
+intelligently handle password-style prompts.) See <a class="reference internal" href="../../usage/interactivity.html#pseudottys"><em>Pseudo-terminals</em></a> for
+details.</p>
+<p>Similarly, if you need to programmatically examine the stderr stream of the
+remote program (exhibited as the <tt class="docutils literal"><span class="pre">stderr</span></tt> attribute on this function&#8217;s
+return value), you may set <tt class="docutils literal"><span class="pre">combine_stderr=False</span></tt>. Doing so has a high
+chance of causing garbled output to appear on your terminal (though the
+resulting strings returned by <cite>~fabric.operations.run</cite> will be properly
+separated). For more info, please read <a class="reference internal" href="../../usage/interactivity.html#combine-streams"><em>Combining stdout and stderr</em></a>.</p>
+<p>Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">run</span><span class="p">(</span><span class="s">&quot;ls /var/www/&quot;</span><span class="p">)</span>
+<span class="n">run</span><span class="p">(</span><span class="s">&quot;ls /home/myuser&quot;</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">run</span><span class="p">(</span><span class="s">&#39;ls /var/www/site1&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 1.0: </span>The <tt class="docutils literal"><span class="pre">succeeded</span></tt> and <tt class="docutils literal"><span class="pre">stderr</span></tt> return value attributes, the
+<tt class="docutils literal"><span class="pre">combine_stderr</span></tt> kwarg, and interactive behavior.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>The default value of <tt class="docutils literal"><span class="pre">pty</span></tt> is now <tt class="xref docutils literal"><span class="pre">True</span></tt>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.operations.sudo">
+<tt class="descclassname">fabric.operations.</tt><tt class="descname">sudo</tt><big>(</big><em>command</em>, <em>shell=True</em>, <em>pty=True</em>, <em>combine_stderr=True</em>, <em>user=None</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/operations.html#sudo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.operations.sudo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a shell command on a remote host, with superuser privileges.</p>
+<p><cite>sudo</cite> is identical in every way to <cite>run</cite>, except that it will always wrap
+the given <tt class="docutils literal"><span class="pre">command</span></tt> in a call to the <tt class="docutils literal"><span class="pre">sudo</span></tt> program to provide
+superuser privileges.</p>
+<p><cite>sudo</cite> accepts an additional <tt class="docutils literal"><span class="pre">user</span></tt> argument, which is passed to <tt class="docutils literal"><span class="pre">sudo</span></tt>
+and allows you to run as some user other than root.  On most systems, the
+<tt class="docutils literal"><span class="pre">sudo</span></tt> program can take a string username or an integer userid (uid);
+<tt class="docutils literal"><span class="pre">user</span></tt> may likewise be a string or an int.</p>
+<p>Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sudo</span><span class="p">(</span><span class="s">&quot;~/install_script.py&quot;</span><span class="p">)</span>
+<span class="n">sudo</span><span class="p">(</span><span class="s">&quot;mkdir /var/www/new_docroot&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s">&quot;www-data&quot;</span><span class="p">)</span>
+<span class="n">sudo</span><span class="p">(</span><span class="s">&quot;ls /home/jdoe&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="mi">1001</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sudo</span><span class="p">(</span><span class="s">&quot;ls /tmp/&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>See the changed and added notes for <cite>~fabric.operations.run</cite>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.operations.local">
+<tt class="descclassname">fabric.operations.</tt><tt class="descname">local</tt><big>(</big><em>command</em>, <em>capture=False</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/operations.html#local"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.operations.local" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run a command on the local system.</p>
+<p><cite>local</cite> is simply a convenience wrapper around the use of the builtin
+Python <tt class="docutils literal"><span class="pre">subprocess</span></tt> module with <tt class="docutils literal"><span class="pre">shell=True</span></tt> activated. If you need to
+do anything special, consider using the <tt class="docutils literal"><span class="pre">subprocess</span></tt> module directly.</p>
+<p><cite>local</cite> is not currently capable of simultaneously printing and
+capturing output, as <cite>~fabric.operations.run</cite>/<cite>~fabric.operations.sudo</cite>
+do. The <tt class="docutils literal"><span class="pre">capture</span></tt> kwarg allows you to switch between printing and
+capturing as necessary, and defaults to <tt class="xref docutils literal"><span class="pre">False</span></tt>.</p>
+<p>When <tt class="docutils literal"><span class="pre">capture=False</span></tt>, the local subprocess&#8217; stdout and stderr streams are
+hooked up directly to your terminal, though you may use the global
+<tt class="xref doc docutils literal"><span class="pre">output</span> <span class="pre">controls</span></tt> <tt class="docutils literal"><span class="pre">output.stdout</span></tt> and
+<tt class="docutils literal"><span class="pre">output.stderr</span></tt> to hide one or both if desired. In this mode,
+<cite>~fabric.operations.local</cite> returns None.</p>
+<p>When <tt class="docutils literal"><span class="pre">capture=True</span></tt>, this function will return the contents of the
+command&#8217;s stdout as a string-like object; as with <cite>~fabric.operations.run</cite>
+and <cite>~fabric.operations.sudo</cite>, this return value exhibits the
+<tt class="docutils literal"><span class="pre">return_code</span></tt>, <tt class="docutils literal"><span class="pre">stderr</span></tt>, <tt class="docutils literal"><span class="pre">failed</span></tt> and <tt class="docutils literal"><span class="pre">succeeded</span></tt> attributes. See
+<cite>run</cite> for details.</p>
+<p><cite>~fabric.operations.local</cite> will honor the <cite>~fabric.context_managers.lcd</cite>
+context manager, allowing you to control its current working directory
+independently of the remote end (which honors
+<cite>~fabric.context_managers.cd</cite>).</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>Added the <tt class="docutils literal"><span class="pre">succeeded</span></tt> and <tt class="docutils literal"><span class="pre">stderr</span></tt> attributes.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>Now honors the <cite>~fabric.context_managers.lcd</cite> context manager.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 1.0: </span>Changed the default value of <tt class="docutils literal"><span class="pre">capture</span></tt> from <tt class="xref docutils literal"><span class="pre">True</span></tt> to <tt class="xref docutils literal"><span class="pre">False</span></tt>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.operations.prompt">
+<tt class="descclassname">fabric.operations.</tt><tt class="descname">prompt</tt><big>(</big><em>text</em>, <em>key=None</em>, <em>default=''</em>, <em>validate=None</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/operations.html#prompt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.operations.prompt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prompt user with <tt class="docutils literal"><span class="pre">text</span></tt> and return the input (like <tt class="docutils literal"><span class="pre">raw_input</span></tt>).</p>
+<p>A single space character will be appended for convenience, but nothing
+else. Thus, you may want to end your prompt text with a question mark or a
+colon, e.g. <tt class="docutils literal"><span class="pre">prompt(&quot;What</span> <span class="pre">hostname?&quot;)</span></tt>.</p>
+<p>If <tt class="docutils literal"><span class="pre">key</span></tt> is given, the user&#8217;s input will be stored as <tt class="docutils literal"><span class="pre">env.&lt;key&gt;</span></tt> in
+addition to being returned by <cite>prompt</cite>. If the key already existed in
+<tt class="docutils literal"><span class="pre">env</span></tt>, its value will be overwritten and a warning printed to the user.</p>
+<p>If <tt class="docutils literal"><span class="pre">default</span></tt> is given, it is displayed in square brackets and used if the
+user enters nothing (i.e. presses Enter without entering any text).
+<tt class="docutils literal"><span class="pre">default</span></tt> defaults to the empty string. If non-empty, a space will be
+appended, so that a call such as <tt class="docutils literal"><span class="pre">prompt(&quot;What</span> <span class="pre">hostname?&quot;,</span>
+<span class="pre">default=&quot;foo&quot;)</span></tt> would result in a prompt of <tt class="docutils literal"><span class="pre">What</span> <span class="pre">hostname?</span> <span class="pre">[foo]</span></tt> (with
+a trailing space after the <tt class="docutils literal"><span class="pre">[foo]</span></tt>.)</p>
+<p>The optional keyword argument <tt class="docutils literal"><span class="pre">validate</span></tt> may be a callable or a string:</p>
+<ul class="simple">
+<li>If a callable, it is called with the user&#8217;s input, and should return the
+value to be stored on success. On failure, it should raise an exception
+with an exception message, which will be printed to the user.</li>
+<li>If a string, the value passed to <tt class="docutils literal"><span class="pre">validate</span></tt> is used as a regular
+expression. It is thus recommended to use raw strings in this case. Note
+that the regular expression, if it is not fully matching (bounded by
+<tt class="docutils literal"><span class="pre">^</span></tt> and <tt class="docutils literal"><span class="pre">$</span></tt>) it will be made so. In other words, the input must fully
+match the regex.</li>
+</ul>
+<p>Either way, <cite>prompt</cite> will re-prompt until validation passes (or the user
+hits <tt class="docutils literal"><span class="pre">Ctrl-C</span></tt>).</p>
+<p>Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Simplest form:</span>
+<span class="n">environment</span> <span class="o">=</span> <span class="n">prompt</span><span class="p">(</span><span class="s">&#39;Please specify target environment: &#39;</span><span class="p">)</span>
+
+<span class="c"># With default, and storing as env.dish:</span>
+<span class="n">prompt</span><span class="p">(</span><span class="s">&#39;Specify favorite dish: &#39;</span><span class="p">,</span> <span class="s">&#39;dish&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s">&#39;spam &amp; eggs&#39;</span><span class="p">)</span>
+
+<span class="c"># With validation, i.e. requiring integer input:</span>
+<span class="n">prompt</span><span class="p">(</span><span class="s">&#39;Please specify process nice level: &#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="s">&#39;nice&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+<span class="c"># With validation against a regular expression:</span>
+<span class="n">release</span> <span class="o">=</span> <span class="n">prompt</span><span class="p">(</span><span class="s">&#39;Please supply a release name&#39;</span><span class="p">,</span>
+        <span class="n">validate</span><span class="o">=</span><span class="s">r&#39;^\w+-\d+(\.\d+)?$&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="fabric.operations.require">
+<tt class="descclassname">fabric.operations.</tt><tt class="descname">require</tt><big>(</big><em>*keys</em>, <em>**kwargs</em><big>)</big><a class="reference internal" href="../../../../../_modules/fabric/operations.html#require"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#fabric.operations.require" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check for given keys in the shared environment dict and abort if not found.</p>
+<p>Positional arguments should be strings signifying what env vars should be
+checked for. If any of the given arguments do not exist, Fabric will abort
+execution and print the names of the missing keys.</p>
+<p>The optional keyword argument <tt class="docutils literal"><span class="pre">used_for</span></tt> may be a string, which will be
+printed in the error output to inform users why this requirement is in
+place. <tt class="docutils literal"><span class="pre">used_for</span></tt> is printed as part of a string similar to:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="s">&quot;Th(is|ese) variable(s) (are|is) used for </span><span class="si">%s</span><span class="s">&quot;</span>
+</pre></div>
+</div>
+<p>so format it appropriately.</p>
+<p>The optional keyword argument <tt class="docutils literal"><span class="pre">provided_by</span></tt> may be a list of functions or
+function names which the user should be able to execute in order to set the
+key or keys; it will be included in the error output if requirements are
+not met.</p>
+<p>Note: it is assumed that the keyword arguments apply to all given keys as a
+group. If you feel the need to specify more than one <tt class="docutils literal"><span class="pre">used_for</span></tt>, for
+example, you should break your logic into multiple calls to <tt class="docutils literal"><span class="pre">require()</span></tt>.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

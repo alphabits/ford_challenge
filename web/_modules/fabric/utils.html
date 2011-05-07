@@ -1,0 +1,214 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>fabric.utils &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for fabric.utils</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Internal subroutines for e.g. aborting execution with an error message,</span>
+<span class="sd">or performing indenting on multiline output.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+
+<div class="viewcode-block" id="abort"><a class="viewcode-back" href="../../build/fabric/docs/api/core/utils.html#fabric.utils.abort">[docs]</a><span class="k">def</span> <span class="nf">abort</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Abort execution, print ``msg`` to stderr and exit with error status (1.)</span>
+
+<span class="sd">    This function currently makes use of `sys.exit`_, which raises </span>
+<span class="sd">    `SystemExit`_. Therefore, it&#39;s possible to detect and recover from inner</span>
+<span class="sd">    calls to `abort` by using ``except SystemExit`` or similar.</span>
+
+<span class="sd">    .. _sys.exit: http://docs.python.org/library/sys.html#sys.exit</span>
+<span class="sd">    .. _SystemExit: http://docs.python.org/library/exceptions.html#exceptions.SystemExit</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">fabric.state</span> <span class="kn">import</span> <span class="n">output</span>
+    <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">aborts</span><span class="p">:</span>
+        <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">Fatal error: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">Aborting.&quot;</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="warn"><a class="viewcode-back" href="../../build/fabric/docs/api/core/utils.html#fabric.utils.warn">[docs]</a><span class="k">def</span> <span class="nf">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print warning message, but do not abort execution.</span>
+
+<span class="sd">    This function honors Fabric&#39;s :doc:`output controls</span>
+<span class="sd">    &lt;../../usage/output_controls&gt;` and will print the given ``msg`` to stderr,</span>
+<span class="sd">    provided that the ``warnings`` output level (which is active by default) is</span>
+<span class="sd">    turned on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">fabric.state</span> <span class="kn">import</span> <span class="n">output</span>
+    <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">warnings</span><span class="p">:</span>
+        <span class="k">print</span> <span class="o">&gt;&gt;</span> <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">Warning: </span><span class="si">%s</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">msg</span>
+
+</div>
+<div class="viewcode-block" id="indent"><a class="viewcode-back" href="../../build/fabric/docs/api/core/utils.html#fabric.utils.indent">[docs]</a><span class="k">def</span> <span class="nf">indent</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">spaces</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">strip</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return ``text`` indented by the given number of spaces.</span>
+
+<span class="sd">    If text is not a string, it is assumed to be a list of lines and will be</span>
+<span class="sd">    joined by ``\\n`` prior to indenting.</span>
+
+<span class="sd">    When ``strip`` is ``True``, a minimum amount of whitespace is removed from</span>
+<span class="sd">    the left-hand side of the given string (so that relative indents are</span>
+<span class="sd">    preserved, but otherwise things are left-stripped). This allows you to</span>
+<span class="sd">    effectively &quot;normalize&quot; any previous indentation for some inputs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># Normalize list of strings into a string for dedenting. &quot;list&quot; here means</span>
+    <span class="c"># &quot;not a string&quot; meaning &quot;doesn&#39;t have splitlines&quot;. Meh.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="s">&#39;splitlines&#39;</span><span class="p">):</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="c"># Dedent if requested</span>
+    <span class="k">if</span> <span class="n">strip</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">dedent</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="s">&#39; &#39;</span> <span class="o">*</span> <span class="n">spaces</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">())</span>
+    <span class="c"># Strip out empty lines before/aft</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="c"># Reintroduce first indent (which just got stripped out)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="n">output</span>
+    <span class="k">return</span> <span class="n">output</span>
+
+</div>
+<div class="viewcode-block" id="puts"><a class="viewcode-back" href="../../build/fabric/docs/api/core/utils.html#fabric.utils.puts">[docs]</a><span class="k">def</span> <span class="nf">puts</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">show_prefix</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An alias for ``print`` whose output is managed by Fabric&#39;s output controls.</span>
+
+<span class="sd">    In other words, this function simply prints to ``sys.stdout``, but will</span>
+<span class="sd">    hide its output if the ``user`` :doc:`output level</span>
+<span class="sd">    &lt;/usage/output_controls&gt;` is set to ``False``.</span>
+
+<span class="sd">    If ``show_prefix=False``, `puts` will omit the leading ``[hostname]``</span>
+<span class="sd">    which it tacks on by default. (It will also omit this prefix if</span>
+<span class="sd">    ``env.host_string`` is empty.)</span>
+
+<span class="sd">    Newlines may be disabled by setting ``end`` to the empty string (``&#39;&#39;``).</span>
+<span class="sd">    (This intentionally mirrors Python 3&#39;s ``print`` syntax.)</span>
+
+<span class="sd">    You may force output flushing (e.g. to bypass output buffering) by setting</span>
+<span class="sd">    ``flush=True``.</span>
+
+<span class="sd">    .. versionadded:: 0.9.2</span>
+<span class="sd">    .. seealso:: `~fabric.utils.fastprint`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">fabric.state</span> <span class="kn">import</span> <span class="n">output</span><span class="p">,</span> <span class="n">env</span>
+    <span class="k">if</span> <span class="n">output</span><span class="o">.</span><span class="n">user</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">env</span><span class="o">.</span><span class="n">host_string</span> <span class="ow">and</span> <span class="n">show_prefix</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="s">&quot;[</span><span class="si">%s</span><span class="s">] &quot;</span> <span class="o">%</span> <span class="n">env</span><span class="o">.</span><span class="n">host_string</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">+</span> <span class="n">end</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">flush</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+</div>
+<div class="viewcode-block" id="fastprint"><a class="viewcode-back" href="../../build/fabric/docs/api/core/utils.html#fabric.utils.fastprint">[docs]</a><span class="k">def</span> <span class="nf">fastprint</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">show_prefix</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print ``text`` immediately, without any prefix or line ending.</span>
+
+<span class="sd">    This function is simply an alias of `~fabric.utils.puts` with different</span>
+<span class="sd">    default argument values, such that the ``text`` is printed without any</span>
+<span class="sd">    embellishment and immediately flushed.</span>
+
+<span class="sd">    It is useful for any situation where you wish to print text which might</span>
+<span class="sd">    otherwise get buffered by Python&#39;s output buffering (such as within a</span>
+<span class="sd">    processor intensive ``for`` loop). Since such use cases typically also</span>
+<span class="sd">    require a lack of line endings (such as printing a series of dots to</span>
+<span class="sd">    signify progress) it also omits the traditional newline by default.</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        Since `~fabric.utils.fastprint` calls `~fabric.utils.puts`, it is</span>
+<span class="sd">        likewise subject to the ``user`` :doc:`output level</span>
+<span class="sd">        &lt;/usage/output_controls&gt;`.</span>
+
+<span class="sd">    .. versionadded:: 0.9.2</span>
+<span class="sd">    .. seealso:: `~fabric.utils.puts`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">puts</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span> <span class="n">show_prefix</span><span class="o">=</span><span class="n">show_prefix</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="n">flush</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

@@ -14,4 +14,5 @@ Sessions
     8-meeting-with-morten/index
     9-data-exploration/index
     10-meeting-with-morten/index
+    11-boxplots-scatterplots/index
 

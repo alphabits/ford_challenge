@@ -1,0 +1,252 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Frequently Asked Questions (FAQ) &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Frequently Asked Questions (FAQ)</a><ul>
+<li><a class="reference internal" href="#my-cd-workon-export-etc-calls-don-t-seem-to-work">My (<tt class="docutils literal"><span class="pre">cd</span></tt>/<tt class="docutils literal"><span class="pre">workon</span></tt>/<tt class="docutils literal"><span class="pre">export</span></tt>/etc) calls don&#8217;t seem to work!</a></li>
+<li><a class="reference internal" href="#why-do-i-sometimes-see-err-stdin-is-not-a-tty">Why do I sometimes see <tt class="docutils literal"><span class="pre">err:</span> <span class="pre">stdin:</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">tty</span></tt>?</a></li>
+<li><a class="reference internal" href="#why-can-t-i-run-programs-in-the-background-with-it-makes-fabric-hang">Why can&#8217;t I run programs in the background with <tt class="docutils literal"><span class="pre">&amp;</span></tt>? It makes Fabric hang.</a></li>
+<li><a class="reference internal" href="#my-remote-system-doesn-t-have-bash-installed-by-default-do-i-need-to-install-bash">My remote system doesn&#8217;t have <tt class="docutils literal"><span class="pre">bash</span></tt> installed by default, do I need to install <tt class="docutils literal"><span class="pre">bash</span></tt>?</a></li>
+<li><a class="reference internal" href="#i-m-sometimes-incorrectly-asked-for-a-passphrase-instead-of-a-password">I&#8217;m sometimes incorrectly asked for a passphrase instead of a password.</a></li>
+<li><a class="reference internal" href="#is-fabric-thread-safe">Is Fabric thread-safe?</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../../_sources/build/fabric/docs/faq.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="frequently-asked-questions-faq">
+<h1>Frequently Asked Questions (FAQ)<a class="headerlink" href="#frequently-asked-questions-faq" title="Permalink to this headline">¶</a></h1>
+<p>These are some of the most commonly encountered problems or frequently asked
+questions which we receive from users. They aren&#8217;t intended as a substitute for
+reading the rest of the documentation, especially the <a class="reference internal" href="index.html#usage-docs"><em>usage docs</em></a>, so please make sure you check those out if your question is not
+answered here.</p>
+<div class="section" id="my-cd-workon-export-etc-calls-don-t-seem-to-work">
+<span id="one-shell-per-command"></span><h2>My (<tt class="docutils literal"><span class="pre">cd</span></tt>/<tt class="docutils literal"><span class="pre">workon</span></tt>/<tt class="docutils literal"><span class="pre">export</span></tt>/etc) calls don&#8217;t seem to work!<a class="headerlink" href="#my-cd-workon-export-etc-calls-don-t-seem-to-work" title="Permalink to this headline">¶</a></h2>
+<p>While Fabric can be used for many shell-script-like tasks, there&#8217;s a slightly
+unintuitive catch: each <cite>~fabric.operations.run</cite> or <cite>~fabric.operations.sudo</cite>
+call has its own distinct shell session. This is required in order for Fabric
+to reliably figure out, after your command has run, what its standard out/error
+and return codes were.</p>
+<p>Unfortunately, it means that code like the following doesn&#8217;t behave as you
+might assume:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">deploy</span><span class="p">():</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&quot;cd /path/to/application&quot;</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&quot;./update.sh&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If that were a shell script, the second <cite>~fabric.operations.run</cite> call would
+have executed with a current working directory of <tt class="docutils literal"><span class="pre">/path/to/application/</span></tt> &#8211;
+but because both commands are run in their own distinct session over SSH, it
+actually tries to execute <tt class="docutils literal"><span class="pre">$HOME/update.sh</span></tt> instead (since your remote home
+directory is the default working directory).</p>
+<p>A simple workaround is to make use of shell logic operations such as <tt class="docutils literal"><span class="pre">&amp;&amp;</span></tt>,
+which link multiple expressions together (provided the left hand side executed
+without error) like so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">deploy</span><span class="p">():</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&quot;cd /path/to/application &amp;&amp; ./update.sh&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Fabric provides a convenient shortcut for this specific use case, in fact:
+<cite>~fabric.context_managers.cd</cite>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>You might also get away with an absolute path and skip directory changing
+altogether:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">def</span> <span class="nf">deploy</span><span class="p">():</span>
+    <span class="n">run</span><span class="p">(</span><span class="s">&quot;/path/to/application/update.sh&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="last">However, this requires that the command in question makes no assumptions
+about your current working directory!</p>
+</div>
+</div>
+<div class="section" id="why-do-i-sometimes-see-err-stdin-is-not-a-tty">
+<h2>Why do I sometimes see <tt class="docutils literal"><span class="pre">err:</span> <span class="pre">stdin:</span> <span class="pre">is</span> <span class="pre">not</span> <span class="pre">a</span> <span class="pre">tty</span></tt>?<a class="headerlink" href="#why-do-i-sometimes-see-err-stdin-is-not-a-tty" title="Permalink to this headline">¶</a></h2>
+<p>This message is typically generated by programs such as <tt class="docutils literal"><span class="pre">biff</span></tt> or <tt class="docutils literal"><span class="pre">mesg</span></tt>
+lurking within your remote user&#8217;s <tt class="docutils literal"><span class="pre">.profile</span></tt> or <tt class="docutils literal"><span class="pre">.bashrc</span></tt> files (or any
+other such files, including system-wide ones.) Fabric&#8217;s default mode of
+operation involves executing the Bash shell in &#8220;login mode&#8221;, which causes these
+files to be executed.</p>
+<p>Because Fabric also doesn&#8217;t bother asking the remote end for a tty by default
+(as it&#8217;s not usually necessary) programs fired within your startup files, which
+expect a tty to be present, will complain &#8211; and thus, stderr output about
+&#8220;stdin is not a tty&#8221; or similar.</p>
+<p>There are multiple ways to deal with this problem:</p>
+<ul class="simple">
+<li>Find and remove or comment out the offending program call. If the program was
+not added by you on purpose and is simply a legacy of the operating system,
+this may be safe to do, and is the simplest approach.</li>
+<li>Override <tt class="docutils literal"><span class="pre">env.shell</span></tt> to remove the <tt class="docutils literal"><span class="pre">-l</span></tt> flag. This should tell Bash not
+to load your startup files. If you don&#8217;t depend on the contents of your
+startup files (such as aliases or whatnot) this may be a good solution.</li>
+<li>Pass <tt class="docutils literal"><span class="pre">pty=True</span></tt> to <cite>run</cite> or <cite>sudo</cite>, which will force allocation of a
+pseudo-tty on the remote end, and hopefully cause the offending program to be
+less cranky.</li>
+</ul>
+</div>
+<div class="section" id="why-can-t-i-run-programs-in-the-background-with-it-makes-fabric-hang">
+<span id="faq-daemonize"></span><h2>Why can&#8217;t I run programs in the background with <tt class="docutils literal"><span class="pre">&amp;</span></tt>? It makes Fabric hang.<a class="headerlink" href="#why-can-t-i-run-programs-in-the-background-with-it-makes-fabric-hang" title="Permalink to this headline">¶</a></h2>
+<p>Because Fabric executes a shell on the remote end for each invocation of
+<tt class="docutils literal"><span class="pre">run</span></tt> or <tt class="docutils literal"><span class="pre">sudo</span></tt> (<a class="reference internal" href="#one-shell-per-command"><em>see also</em></a>), backgrounding a
+process via the shell will not work as expected. Backgrounded processes may
+still prevent the calling shell from exiting until they stop running, and this
+in turn prevents Fabric from continuing on with its own execution.</p>
+<p>The key to fixing this is to ensure that your process&#8217; standard pipes are all
+disassociated from the calling shell, which may be done in a number of ways:</p>
+<ul>
+<li><p class="first">Use a pre-existing daemonization technique if one exists for the program at
+hand &#8211; for example, calling an init script instead of directly invoking a
+server binary.</p>
+</li>
+<li><p class="first">Run the program under <tt class="docutils literal"><span class="pre">nohup</span></tt> and redirect stdin, stdout and stderr to
+<tt class="docutils literal"><span class="pre">/dev/null</span></tt> (or to your file of choice, if you need the output later):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">run</span><span class="p">(</span><span class="s">&quot;nohup yes &gt;&amp; /dev/null &lt; /dev/null &amp;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>(<tt class="docutils literal"><span class="pre">yes</span></tt> is simply an example of a program that may run for a long time or
+forever; <tt class="docutils literal"><span class="pre">&gt;&amp;</span></tt>, <tt class="docutils literal"><span class="pre">&lt;</span></tt> and <tt class="docutils literal"><span class="pre">&amp;</span></tt> are Bash syntax for pipe redirection and
+backgrounding, respectively &#8211; see your shell&#8217;s man page for details.)</p>
+</li>
+<li><p class="first">Use <tt class="docutils literal"><span class="pre">tmux</span></tt>, <tt class="docutils literal"><span class="pre">screen</span></tt> or <tt class="docutils literal"><span class="pre">dtach</span></tt> to fully detach the process from the
+running shell; these tools have the benefit of allowing you to reattach to
+the process later on if needed (among many other such benefits).</p>
+</li>
+</ul>
+</div>
+<div class="section" id="my-remote-system-doesn-t-have-bash-installed-by-default-do-i-need-to-install-bash">
+<h2>My remote system doesn&#8217;t have <tt class="docutils literal"><span class="pre">bash</span></tt> installed by default, do I need to install <tt class="docutils literal"><span class="pre">bash</span></tt>?<a class="headerlink" href="#my-remote-system-doesn-t-have-bash-installed-by-default-do-i-need-to-install-bash" title="Permalink to this headline">¶</a></h2>
+<p>While Fabric is written with <tt class="docutils literal"><span class="pre">bash</span></tt> in mind, it&#8217;s not an absolute
+requirement.  Simply change <tt class="docutils literal"><span class="pre">env.shell</span></tt> to call your desired shell, and
+include an argument similar to <tt class="docutils literal"><span class="pre">bash</span></tt>&#8216;s <tt class="docutils literal"><span class="pre">-c</span></tt> argument, which allows us to
+build shell commands of the form:</p>
+<div class="highlight-python"><pre>/bin/bash -l -c "&lt;command string here&gt;"</pre>
+</div>
+<p>where <tt class="docutils literal"><span class="pre">/bin/bash</span> <span class="pre">-l</span> <span class="pre">-c</span></tt> is the default value of <tt class="docutils literal"><span class="pre">env.shell</span></tt>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <tt class="docutils literal"><span class="pre">-l</span></tt> argument specifies a login shell and is not absolutely
+required, merely convenient in many situations. Some shells lack the option
+entirely and it may be safely omitted in such cases.</p>
+</div>
+<p>A relatively safe baseline is to call <tt class="docutils literal"><span class="pre">/bin/sh</span></tt>, which may call the original
+<tt class="docutils literal"><span class="pre">sh</span></tt> binary, or (on some systems) <tt class="docutils literal"><span class="pre">csh</span></tt>, and give it the <tt class="docutils literal"><span class="pre">-c</span></tt>
+argument, like so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">fabric.api</span> <span class="kn">import</span> <span class="n">env</span>
+
+<span class="n">env</span><span class="o">.</span><span class="n">shell</span> <span class="o">=</span> <span class="s">&quot;/bin/sh -c&quot;</span>
+</pre></div>
+</div>
+<p>This has been shown to work on FreeBSD and may work on other systems as well.</p>
+</div>
+<div class="section" id="i-m-sometimes-incorrectly-asked-for-a-passphrase-instead-of-a-password">
+<h2>I&#8217;m sometimes incorrectly asked for a passphrase instead of a password.<a class="headerlink" href="#i-m-sometimes-incorrectly-asked-for-a-passphrase-instead-of-a-password" title="Permalink to this headline">¶</a></h2>
+<p>Due to a bug of sorts in our SSH layer (Paramiko), it&#8217;s not currently possible
+for Fabric to always accurately detect the type of authentication needed. We
+have to try and guess whether we&#8217;re being asked for a private key passphrase or
+a remote server password, and in some cases our guess ends up being wrong.</p>
+<p>The most common such situation is where you, the local user, appear to have an
+SSH keychain agent running, but the remote server is not able to honor your SSH
+key, e.g. you haven&#8217;t yet transferred the public key over or are using an
+incorrect username. In this situation, Fabric will prompt you with &#8220;Please
+enter passphrase for private key&#8221;, but the text you enter is actually being
+sent to the remote end&#8217;s password authentication.</p>
+<p>We hope to address this in future releases, either by doing heavier
+introspection of Paramiko or patching Paramiko itself.</p>
+</div>
+<div class="section" id="is-fabric-thread-safe">
+<h2>Is Fabric thread-safe?<a class="headerlink" href="#is-fabric-thread-safe" title="Permalink to this headline">¶</a></h2>
+<p>Currently, no, it&#8217;s not &#8211; the present version of Fabric relies heavily on
+shared state in order to keep the codebase simple. However, there are definite
+plans to update its internals so that Fabric may be either threaded or
+otherwise parallelized so your tasks can run on multiple servers concurrently.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

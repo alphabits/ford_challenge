@@ -5,7 +5,7 @@ from random import random
 import numpy as np
 import matplotlib.pyplot as plt
 
-from data import A, L, CD, TRD
+from data import A, L, L_clean, CD, TRD
 
 
 class Trial(object):
