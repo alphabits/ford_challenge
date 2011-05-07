@@ -15,4 +15,5 @@ Sessions
     9-data-exploration/index
     10-meeting-with-morten/index
     11-boxplots-scatterplots/index
+    12-principal-components-analysis/index
 

@@ -1,9 +1,14 @@
+from datetime import datetime
+
 from fabric.api import local
 
 
 
 def create_session(name):
     local('mkdir sessions/{0}'.format(name))
+    local('mkdir sessions/{0}/data'.format(name))
+    local('mkdir sessions/{0}/plots'.format(name))
+    local('mkdir sessions/{0}/scripts'.format(name))
 
     name_parts = name.split('-',1)
 
@@ -15,7 +20,10 @@ def create_session(name):
 
     index_path = 'sessions/{0}/index.rst'.format(name)
     index_file = open(index_path, 'w')
-    index_file.write('{0}\n{1}\n{0}'.format(header_marks, index_title))
+    now = datetime.now()
+    date_string = datetime.now().strftime('%d-%m-%Y %H:%M')
+    index_file.write('{0}\n{1}\n{0}\n\nStart time:\n    {2}\n\nEnd time:\n    {2}\n\n'.format(
+            header_marks, index_title, date_string))
     index_file.close()
 
 cs = create_session

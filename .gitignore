@@ -11,3 +11,4 @@
 build/fabric/*
 build/paramiko/*
 build/pycrypto/*
+build/scikits.learn/*

@@ -12,3 +12,6 @@ def get_trial(trial_id):
 
 def get_path(path):
     return os.path.abspath(os.path.dirname(path))
+
+def bool_to_color(bool):
+    return 'blue' if bool!=0 else 'red'

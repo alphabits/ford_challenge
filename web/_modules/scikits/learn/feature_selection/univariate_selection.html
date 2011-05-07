@@ -1,0 +1,487 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>scikits.learn.feature_selection.univariate_selection &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../../../index.html" />
+    <link rel="up" title="Module code" href="../../../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="../../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for scikits.learn.feature_selection.univariate_selection</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Univariate features selection.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c"># Authors: V. Michel, B. Thirion, G. Varoquaux, A. Gramfort, E. Duchesnay</span>
+<span class="c"># License: BSD 3 clause</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">TransformerMixin</span>
+
+<span class="c">######################################################################</span>
+<span class="c"># Scoring functions</span>
+<span class="c">######################################################################</span>
+
+<span class="c"># The following function is a rewriting of scipy.stats.f_oneway</span>
+<span class="c"># Contrary to the scipy.stats.f_oneway implementation it does not</span>
+<span class="c"># copy the data while keeping the inputs unchanged.</span>
+<span class="k">def</span> <span class="nf">f_oneway</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Performs a 1-way ANOVA.</span>
+
+<span class="sd">    The on-way ANOVA tests the null hypothesis that 2 or more groups have</span>
+<span class="sd">    the same population mean.  The test is applied to samples from two or</span>
+<span class="sd">    more groups, possibly with differing sizes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sample1, sample2, ... : array_like</span>
+<span class="sd">        The sample measurements should be given as arguments.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    F-value : float</span>
+<span class="sd">        The computed F-value of the test</span>
+<span class="sd">    p-value : float</span>
+<span class="sd">        The associated p-value from the F-distribution</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The ANOVA test has important assumptions that must be satisfied in order</span>
+<span class="sd">    for the associated p-value to be valid.</span>
+
+<span class="sd">    1. The samples are independent</span>
+<span class="sd">    2. Each sample is from a normally distributed population</span>
+<span class="sd">    3. The population standard deviations of the groups are all equal.  This</span>
+<span class="sd">       property is known as homocedasticity.</span>
+
+<span class="sd">    If these assumptions are not true for a given set of data, it may still be</span>
+<span class="sd">    possible to use the Kruskal-Wallis H-test (`stats.kruskal`_) although with</span>
+<span class="sd">    some loss of power</span>
+
+<span class="sd">    The algorithm is from Heiman[2], pp.394-7.</span>
+
+<span class="sd">    See scipy.stats.f_oneway that should give the same results while</span>
+<span class="sd">    being less efficient</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Lowry, Richard.  &quot;Concepts and Applications of Inferential</span>
+<span class="sd">           Statistics&quot;. Chapter 14. http://faculty.vassar.edu/lowry/ch14pt1.html</span>
+
+<span class="sd">    .. [2] Heiman, G.W.  Research Methods in Statistics. 2002.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">n_samples_per_class</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">])</span>
+    <span class="n">n_samples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">n_samples_per_class</span><span class="p">)</span>
+    <span class="n">ss_alldata</span> <span class="o">=</span> <span class="nb">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">a</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">])</span>
+    <span class="n">sums_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">args</span><span class="p">]</span>
+    <span class="n">square_of_sums_alldata</span> <span class="o">=</span> <span class="nb">reduce</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span><span class="o">+</span><span class="n">y</span><span class="p">,</span> <span class="n">sums_args</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">square_of_sums_args</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">sums_args</span><span class="p">]</span>
+    <span class="n">sstot</span> <span class="o">=</span> <span class="n">ss_alldata</span> <span class="o">-</span> <span class="n">square_of_sums_alldata</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
+    <span class="n">ssbn</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+        <span class="n">ssbn</span> <span class="o">+=</span> <span class="n">square_of_sums_args</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">/</span> <span class="n">n_samples_per_class</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+    <span class="n">ssbn</span> <span class="o">-=</span> <span class="n">square_of_sums_alldata</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">n_samples</span><span class="p">)</span>
+    <span class="n">sswn</span> <span class="o">=</span> <span class="n">sstot</span> <span class="o">-</span> <span class="n">ssbn</span>
+    <span class="n">dfbn</span> <span class="o">=</span> <span class="n">n_classes</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">dfwn</span> <span class="o">=</span> <span class="n">n_samples</span> <span class="o">-</span> <span class="n">n_classes</span>
+    <span class="n">msb</span> <span class="o">=</span> <span class="n">ssbn</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">dfbn</span><span class="p">)</span>
+    <span class="n">msw</span> <span class="o">=</span> <span class="n">sswn</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">dfwn</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">msb</span> <span class="o">/</span> <span class="n">msw</span>
+    <span class="n">prob</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">fprob</span><span class="p">(</span><span class="n">dfbn</span><span class="p">,</span> <span class="n">dfwn</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">f</span><span class="p">,</span> <span class="n">prob</span>
+
+
+<div class="viewcode-block" id="f_classif"><a class="viewcode-back" href="../../../../build/scikits.learn/doc/modules/feature_selection.html#scikits.learn.feature_selection.univariate_selection.f_classif">[docs]</a><span class="k">def</span> <span class="nf">f_classif</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the Anova F-value for the provided sample</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X : array of shape (n_samples, n_features)</span>
+<span class="sd">        the set of regressors sthat will tested sequentially</span>
+<span class="sd">    y : array of shape(n_samples)</span>
+<span class="sd">        the data matrix</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    F : array of shape (m),</span>
+<span class="sd">        the set of F values</span>
+<span class="sd">    pval : array of shape(m),</span>
+<span class="sd">        the set of p-values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="n">X</span><span class="p">[</span><span class="n">y</span><span class="o">==</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">f_oneway</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="f_regression"><a class="viewcode-back" href="../../../../build/scikits.learn/doc/modules/feature_selection.html#scikits.learn.feature_selection.univariate_selection.f_regression">[docs]</a><span class="k">def</span> <span class="nf">f_regression</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Quick linear model for testing the effect of a single regressor,</span>
+<span class="sd">    sequentially for many regressors</span>
+<span class="sd">    This is done in 3 steps:</span>
+<span class="sd">    1. the regressor of interest and the data are orthogonalized</span>
+<span class="sd">    wrt constant regressors</span>
+<span class="sd">    2. the cross correlation between data and regressors is computed</span>
+<span class="sd">    3. it is converted to an F score then to a p-value</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    X : array of shape (n_samples, n_features)</span>
+<span class="sd">        the set of regressors sthat will tested sequentially</span>
+<span class="sd">    y : array of shape(n_samples)</span>
+<span class="sd">        the data matrix</span>
+
+<span class="sd">    center : True, bool,</span>
+<span class="sd">        If true, X and y are centered</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    F : array of shape (m),</span>
+<span class="sd">        the set of F values</span>
+<span class="sd">    pval : array of shape(m)</span>
+<span class="sd">        the set of p-values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c"># orthogonalize everything wrt to confounds</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">center</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="c"># compute the correlation</span>
+    <span class="n">X</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">X</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">y</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">corr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+
+    <span class="c"># convert to p-value</span>
+    <span class="n">dof</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="mi">2</span>
+    <span class="n">F</span> <span class="o">=</span> <span class="n">corr</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">corr</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">dof</span>
+    <span class="n">pv</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dof</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">F</span><span class="p">,</span> <span class="n">pv</span>
+
+
+<span class="c">######################################################################</span>
+<span class="c"># General class for filter univariate selection</span>
+<span class="c">######################################################################</span>
+
+</div>
+<span class="k">class</span> <span class="nc">_AbstractUnivariateFilter</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">TransformerMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Abstract class, not meant to be used directly</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_func</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize the univariate feature selection.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ===========</span>
+<span class="sd">        score_func: callable</span>
+<span class="sd">            function taking two arrays X and y, and returning 2 arrays:</span>
+<span class="sd">            both scores and pvalues</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">callable</span><span class="p">(</span><span class="n">score_func</span><span class="p">),</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;The score function should be a callable, &#39;</span><span class="si">%s</span><span class="s">&#39; (type </span><span class="si">%s</span><span class="s">) &quot;</span>
+                <span class="s">&quot;was passed.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">score_func</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">score_func</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">score_func</span> <span class="o">=</span> <span class="n">score_func</span>
+
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate the function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_params</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">_scores</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">score_func</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_scores</span> <span class="o">=</span> <span class="n">_scores</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span> <span class="o">=</span> <span class="n">_scores</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transform a new matrix using the selected features</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_params</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">X</span><span class="p">[:,</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_support</span><span class="p">()]</span>
+
+
+    <span class="k">def</span> <span class="nf">inverse_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X_red</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Transform reduced data back in original feature space</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_samples</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">X_red</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">support</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_support</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">n_samples</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">support</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X_red</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">X</span><span class="p">[</span><span class="n">support</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_red</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">support</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">X_red</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="n">X</span><span class="p">[:,</span> <span class="n">support</span><span class="p">]</span> <span class="o">=</span> <span class="n">X_red</span>
+        <span class="k">return</span> <span class="n">X</span>
+
+
+<span class="c">######################################################################</span>
+<span class="c"># Specific filters</span>
+<span class="c">######################################################################</span>
+
+<div class="viewcode-block" id="SelectPercentile"><a class="viewcode-back" href="../../../../build/scikits.learn/doc/modules/feature_selection.html#scikits.learn.feature_selection.univariate_selection.SelectPercentile">[docs]</a><span class="k">class</span> <span class="nc">SelectPercentile</span><span class="p">(</span><span class="n">_AbstractUnivariateFilter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Filter : Select the best percentile of the p_values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_func</span><span class="p">,</span> <span class="n">percentile</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize the univariate feature selection.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ===========</span>
+<span class="sd">        score_func: callable</span>
+<span class="sd">            function taking two arrays X and y, and returning 2 arrays:</span>
+<span class="sd">            both scores and pvalues</span>
+<span class="sd">        percentile: int, optional</span>
+<span class="sd">            percent of features to keep</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">percentile</span> <span class="o">=</span> <span class="n">percentile</span>
+        <span class="n">_AbstractUnivariateFilter</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_func</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">percentile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">percentile</span>
+        <span class="k">assert</span> <span class="n">percentile</span><span class="o">&lt;=</span><span class="mi">100</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;percentile should be </span><span class="se">\</span>
+<span class="s">                            between 0 and 100 (</span><span class="si">%f</span><span class="s"> given)&#39;</span> <span class="o">%</span><span class="p">(</span><span class="n">percentile</span><span class="p">))</span>
+        <span class="c"># Cater for Nans</span>
+        <span class="k">if</span> <span class="n">percentile</span> <span class="o">==</span> <span class="mi">100</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">percentile</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">scoreatpercentile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span><span class="p">,</span> <span class="n">percentile</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span> <span class="o">&lt;=</span> <span class="n">alpha</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="SelectKBest"><a class="viewcode-back" href="../../../../build/scikits.learn/doc/modules/feature_selection.html#scikits.learn.feature_selection.univariate_selection.SelectKBest">[docs]</a><span class="k">class</span> <span class="nc">SelectKBest</span><span class="p">(</span><span class="n">_AbstractUnivariateFilter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Filter : Select the k lowest p-values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_func</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize the univariate feature selection.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ===========</span>
+<span class="sd">        score_func: callable</span>
+<span class="sd">            function taking two arrays X and y, and returning 2 arrays:</span>
+<span class="sd">            both scores and pvalues</span>
+<span class="sd">        percentile: int, optional</span>
+<span class="sd">            percent of features to keep</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+        <span class="n">_AbstractUnivariateFilter</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_func</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k</span>
+        <span class="k">assert</span> <span class="n">k</span><span class="o">&lt;=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span><span class="p">),</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;cannot select </span><span class="si">%d</span><span class="s"> features&#39;</span>
+                                    <span class="s">&#39; among </span><span class="si">%d</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span><span class="p">)))</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span><span class="p">)[</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span> <span class="o">&lt;=</span> <span class="n">alpha</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="SelectFpr"><a class="viewcode-back" href="../../../../build/scikits.learn/doc/modules/feature_selection.html#scikits.learn.feature_selection.univariate_selection.SelectFpr">[docs]</a><span class="k">class</span> <span class="nc">SelectFpr</span><span class="p">(</span><span class="n">_AbstractUnivariateFilter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Filter : Select the pvalues below alpha</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_func</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">5e-2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize the univariate feature selection.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ===========</span>
+<span class="sd">        score_func: callable</span>
+<span class="sd">            function taking two arrays X and y, and returning 2 arrays:</span>
+<span class="sd">            both scores and pvalues</span>
+<span class="sd">        alpha: float, optional</span>
+<span class="sd">            the highest p-value for features to keep</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="n">_AbstractUnivariateFilter</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_func</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span> <span class="o">&lt;</span> <span class="n">alpha</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="SelectFdr"><a class="viewcode-back" href="../../../../build/scikits.learn/doc/modules/feature_selection.html#scikits.learn.feature_selection.univariate_selection.SelectFdr">[docs]</a><span class="k">class</span> <span class="nc">SelectFdr</span><span class="p">(</span><span class="n">_AbstractUnivariateFilter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Filter : Select the p-values corresponding to an estimated false</span>
+<span class="sd">    discovery rate of alpha. This uses the Benjamini-Hochberg procedure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_func</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">5e-2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize the univariate feature selection.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ===========</span>
+<span class="sd">        score_func: callable</span>
+<span class="sd">            function taking two arrays X and y, and returning 2 arrays:</span>
+<span class="sd">            both scores and pvalues</span>
+<span class="sd">        alpha: float, optional</span>
+<span class="sd">            the highest uncorrected p-value for features to keep</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="n">_AbstractUnivariateFilter</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_func</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span>
+        <span class="n">sv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span><span class="p">)</span>
+        <span class="n">threshold</span> <span class="o">=</span> <span class="n">sv</span><span class="p">[</span><span class="n">sv</span> <span class="o">&lt;</span> <span class="n">alpha</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span><span class="p">))]</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span> <span class="o">&lt;</span> <span class="n">threshold</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="SelectFwe"><a class="viewcode-back" href="../../../../build/scikits.learn/doc/modules/feature_selection.html#scikits.learn.feature_selection.univariate_selection.SelectFwe">[docs]</a><span class="k">class</span> <span class="nc">SelectFwe</span><span class="p">(</span><span class="n">_AbstractUnivariateFilter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Filter : Select the p-values corresponding to a corrected p-value of alpha</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_func</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">5e-2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize the univariate feature selection.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ===========</span>
+<span class="sd">        score_func: callable</span>
+<span class="sd">            function taking two arrays X and y, and returning 2 arrays:</span>
+<span class="sd">            both scores and pvalues</span>
+<span class="sd">        alpha: float, optional</span>
+<span class="sd">            the highest uncorrected p-value for features to keep</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="n">_AbstractUnivariateFilter</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_func</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span> <span class="o">&lt;</span> <span class="n">alpha</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span><span class="p">))</span>
+
+
+<span class="c">######################################################################</span>
+<span class="c"># Generic filter</span>
+<span class="c">######################################################################</span>
+</div>
+<span class="k">class</span> <span class="nc">GenericUnivariateSelect</span><span class="p">(</span><span class="n">_AbstractUnivariateFilter</span><span class="p">):</span>
+    <span class="n">_selection_modes</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;percentile&#39;</span><span class="p">:</span>   <span class="n">SelectPercentile</span><span class="p">,</span>
+                        <span class="s">&#39;k_best&#39;</span><span class="p">:</span>       <span class="n">SelectKBest</span><span class="p">,</span>
+                        <span class="s">&#39;fpr&#39;</span><span class="p">:</span>          <span class="n">SelectFpr</span><span class="p">,</span>
+                        <span class="s">&#39;fdr&#39;</span><span class="p">:</span>          <span class="n">SelectFdr</span><span class="p">,</span>
+                        <span class="s">&#39;fwe&#39;</span><span class="p">:</span>          <span class="n">SelectFwe</span><span class="p">,</span>
+                        <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">score_func</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">&#39;percentile&#39;</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="mf">1e-5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize the univariate feature selection.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ===========</span>
+<span class="sd">        score_func: callable</span>
+<span class="sd">            Function taking two arrays X and y, and returning 2 arrays:</span>
+<span class="sd">            both scores and pvalues</span>
+<span class="sd">        mode: {%s}</span>
+<span class="sd">            Feature selection mode</span>
+<span class="sd">        param: float or int depending on the feature selection mode</span>
+<span class="sd">            Parameter of the corresponding mode</span>
+<span class="sd">        &quot;&quot;&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selection_modes</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="nb">callable</span><span class="p">(</span><span class="n">score_func</span><span class="p">),</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;The score function should be a callable, &#39;</span><span class="si">%s</span><span class="s">&#39; (type </span><span class="si">%s</span><span class="s">) &quot;</span>
+                <span class="s">&quot;was passed.&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">score_func</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">score_func</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="k">assert</span> <span class="n">mode</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selection_modes</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s">&quot;The mode passed should be one of </span><span class="si">%s</span><span class="s">, &#39;</span><span class="si">%s</span><span class="s">&#39;, (type </span><span class="si">%s</span><span class="s">) &quot;</span>
+                <span class="s">&quot;was passed.&quot;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_selection_modes</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
+                        <span class="n">mode</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">mode</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">score_func</span> <span class="o">=</span> <span class="n">score_func</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">param</span>
+
+
+    <span class="k">def</span> <span class="nf">get_support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">selector</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selection_modes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">](</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">selector</span><span class="o">.</span><span class="n">_pvalues</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pvalues</span>
+        <span class="n">selector</span><span class="o">.</span><span class="n">_scores</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scores</span>
+        <span class="c"># Now make some acrobaties to set the right named parameter in</span>
+        <span class="c"># the selector</span>
+        <span class="n">possible_params</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">_get_param_names</span><span class="p">()</span>
+        <span class="n">possible_params</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s">&#39;score_func&#39;</span><span class="p">)</span>
+        <span class="n">selector</span><span class="o">.</span><span class="n">_set_params</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="n">possible_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">param</span><span class="p">})</span>
+        <span class="k">return</span> <span class="n">selector</span><span class="o">.</span><span class="n">get_support</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="../../../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../../../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

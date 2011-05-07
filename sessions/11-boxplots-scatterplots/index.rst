@@ -12,7 +12,7 @@ Resume time
     07-05-2011 12:25
 
 End time
-    07-05-2011 ??:00
+    07-05-2011 14:00
 
 In this session I am going to create boxplots and scatterplots of some of the relevant features.
 
@@ -53,3 +53,11 @@ And now for the scatterplots. First I need to select a subset of features of int
     \frac{27\cdot 26}{2} = 13\cdot 27 = 351
 
 unique scatter plots to create. Hmm. Maybe I just start with E9 and V11 that was used by Inference. And also P3/P4 and P6/P7 that are inverse proportionally related.
+
+I ended up creating scatterplots of some 40 combinations of features and found a single interesting detail. The features V1 and V6 seems to be linearly related when V1 is larger than 80.
+
+.. note::
+
+    I first made the scatter plot of V1 vs. V6 when I had made the PCA and found that V6 had a large coefficient i the second principal component.
+
+Not much else to discuss. Haven't that many interesting details from the scatter plots.

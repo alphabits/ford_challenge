@@ -1,28 +1,39 @@
+import itertools as it
+
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.data_interface import d, L_clean
+from src.data_interface import d, L
 from src.utils import get_path
 
+L = list(L)
+D = d.view()
 
 path = get_path(__file__) + '/..'
+savepath_template = '{0}/plots/scatterplots/{1}-{2}.pdf'
 
-trials = range(101, 151)
+with open('{0}/data/scatter_rows.txt'.format(path), 'r') as f:
+    rows = f.readlines()
 
+data = D[rows,:]
 
-for label in L_clean:
-    data = [d.get_trial(i).get_feature(label).view() for i in trials]
-    plt.title('Boxplot of feature {0} in the trials {1}-{2}'.format(
-            label, trials[0], trials[-1]))
-    plt.boxplot(data)
-    plt.gca().set_xticklabels(ticklabels)
-    for tick in plt.gca().xaxis.get_major_ticks():
-        tick.label1.set_fontsize(10)
-    for tick in plt.gca().yaxis.get_major_ticks():
-        tick.label1.set_fontsize(10)
-    plt.savefig(
-            '{0}/plots/boxplots/{1}-t{2}-t{3}.pdf'.format(
-                    path, label, trials[0], trials[-1]), 
-            format='pdf', papertype='a4')
+def is_alert_colors(is_alert):
+    if is_alert == 1:
+        return 'blue'
+    else:
+        return 'red'
+colors = map(is_alert_colors, data[:,L.index('IsAlert')])
+
+features = ['P6', 'V1', 'V3', 'V6']
+
+for comb in it.combinations(features, 2):
+#for comb in [['E4', 'E5']]:
+    f1, f2 = comb
+    idx1, idx2 = L.index(f1), L.index(f2)
+    plt.title('Feature {0} vs {1}'.format(f1, f2))
+    plt.scatter(data[:,idx1], data[:,idx2], c=colors)
+    plt.gca().set_xlabel(f1)
+    plt.gca().set_ylabel(f2)
+    plt.savefig(savepath_template.format(path,f1,f2), format='pdf', papertype='a4')
     plt.cla()
 

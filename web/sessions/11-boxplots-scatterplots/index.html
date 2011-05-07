@@ -34,9 +34,6 @@
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
           <a href="../10-meeting-with-morten/index.html" title="Session 10: Meeting with Morten"
              accesskey="P">previous</a> |</li>
         <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
@@ -49,6 +46,7 @@
   <ul>
 <li><a class="reference internal" href="#">Session 11: Creating boxplots and scatterplots</a><ul>
 <li><a class="reference internal" href="#boxplots">Boxplots</a></li>
+<li><a class="reference internal" href="#scatterplots">Scatterplots</a></li>
 </ul>
 </li>
 </ul>
@@ -89,8 +87,10 @@
 <dd>07-05-2011 09:00</dd>
 <dt>Pause time</dt>
 <dd>07-05-2011 10:40</dd>
+<dt>Resume time</dt>
+<dd>07-05-2011 12:25</dd>
 <dt>End time</dt>
-<dd>07-05-2011 ??:00</dd>
+<dd>07-05-2011 14:00</dd>
 </dl>
 <p>In this session I am going to create boxplots and scatterplots of some of the relevant features.</p>
 <div class="section" id="boxplots">
@@ -149,6 +149,19 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="scatterplots">
+<h2>Scatterplots<a class="headerlink" href="#scatterplots" title="Permalink to this headline">¶</a></h2>
+<p>And now for the scatterplots. First I need to select a subset of features of interest. Obviously the features that are zero throughout the dataset can be excluded. This means that P8, V7 and V9 are not needed. Also ObsNum and TrialID are not of interest. This leaves 27 features. But that is still</p>
+<div class="math">
+<p><img src="../../_images/math/74494b1be169fe1ceb663234659e5b2083f1973c.png" alt="\frac{27\cdot 26}{2} = 13\cdot 27 = 351" /></p>
+</div><p>unique scatter plots to create. Hmm. Maybe I just start with E9 and V11 that was used by Inference. And also P3/P4 and P6/P7 that are inverse proportionally related.</p>
+<p>I ended up creating scatterplots of some 40 combinations of features and found a single interesting detail. The features V1 and V6 seems to be linearly related when V1 is larger than 80.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">I first made the scatter plot of V1 vs. V6 when I had made the PCA and found that V6 had a large coefficient i the second principal component.</p>
+</div>
+<p>Not much else to discuss. Haven&#8217;t that many interesting details from the scatter plots.</p>
+</div>
 </div>
 
 
@@ -163,9 +176,6 @@
         <li class="right" style="margin-right: 10px">
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
-        <li class="right" >
-          <a href="../../py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
         <li class="right" >
           <a href="../10-meeting-with-morten/index.html" title="Session 10: Meeting with Morten"
              >previous</a> |</li>
