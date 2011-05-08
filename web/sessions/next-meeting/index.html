@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Session 12: Principal Components Analysis &mdash; Ford challenge v1.0 documentation</title>
+    <title>Session #: Next Meeting &mdash; Ford challenge v1.0 documentation</title>
     <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
@@ -24,8 +24,7 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="top" title="Ford challenge v1.0 documentation" href="../../index.html" />
     <link rel="up" title="Sessions" href="../index.html" />
-    <link rel="next" title="Session 13: Recreating Winning Entry" href="../13-recreating-winning-entry/index.html" />
-    <link rel="prev" title="Session 11: Creating boxplots and scatterplots" href="../11-boxplots-scatterplots/index.html" /> 
+    <link rel="prev" title="Session 13: Recreating Winning Entry" href="../13-recreating-winning-entry/index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -36,9 +35,6 @@
              accesskey="I">index</a></li>
         <li class="right" >
           <a href="../13-recreating-winning-entry/index.html" title="Session 13: Recreating Winning Entry"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="../11-boxplots-scatterplots/index.html" title="Session 11: Creating boxplots and scatterplots"
              accesskey="P">previous</a> |</li>
         <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Sessions</a> &raquo;</li> 
@@ -48,21 +44,19 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="../../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Session 12: Principal Components Analysis</a><ul>
-<li><a class="reference internal" href="#simple-pca-on-whole-data-set">Simple PCA on whole data set</a></li>
+<li><a class="reference internal" href="#">Session #: Next Meeting</a><ul>
+<li><a class="reference internal" href="#questions">Questions</a></li>
+<li><a class="reference internal" href="#notation">Notation</a></li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="../11-boxplots-scatterplots/index.html"
-                        title="previous chapter">Session 11: Creating boxplots and scatterplots</a></p>
-  <h4>Next topic</h4>
   <p class="topless"><a href="../13-recreating-winning-entry/index.html"
-                        title="next chapter">Session 13: Recreating Winning Entry</a></p>
+                        title="previous chapter">Session 13: Recreating Winning Entry</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
-    <li><a href="../../_sources/sessions/12-principal-components-analysis/index.txt"
+    <li><a href="../../_sources/sessions/next-meeting/index.txt"
            rel="nofollow">Show Source</a></li>
   </ul>
 <div id="searchbox" style="display: none">
@@ -86,34 +80,36 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="session-12-principal-components-analysis">
-<h1>Session 12: Principal Components Analysis<a class="headerlink" href="#session-12-principal-components-analysis" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="session-next-meeting">
+<h1>Session #: Next Meeting<a class="headerlink" href="#session-next-meeting" title="Permalink to this headline">¶</a></h1>
 <dl class="docutils">
 <dt>Start time:</dt>
-<dd>07-05-2011 16:36</dd>
-<dt>Pause time:</dt>
-<dd>07-05-2011 17:40</dd>
-<dt>Resume time:</dt>
-<dd>07-05-2011 21:40</dd>
+<dd>08-05-2011 09:47</dd>
 <dt>End time:</dt>
-<dd>08-05-2011 01:46</dd>
+<dd>08-05-2011 09:47</dd>
 </dl>
-<p>In this session I am going to create a PCA of the raw data set. It will be interesting to se how much variation, that can be explained in just a few variables. I also need to find out what assumptions, about the data, that are made when a PCA is analyzed. First I need to use some time to get into the theory about PCA.</p>
-<p>Many hours later...</p>
-<p>I have read some theory and I like the descriptions of Bishop and Alpaydin the most. I need to write some theory when I get the time.</p>
-<div class="section" id="simple-pca-on-whole-data-set">
-<h2>Simple PCA on whole data set<a class="headerlink" href="#simple-pca-on-whole-data-set" title="Permalink to this headline">¶</a></h2>
-<p>First of I am going to calculate a PCA based on the whole data set, using the PCA implementation in the scikits.learn module.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Should I include the IsAlert feature when I make the PCA?</p>
+<div class="section" id="questions">
+<h2>Questions<a class="headerlink" href="#questions" title="Permalink to this headline">¶</a></h2>
+<p>Here is a list of questions:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Inference mentions that random forests will saturate beyond their training range. E.g. that random forest is bad for extrapolation. Is it and why?</li>
+<li>Inference mentions that there are little correlation between held back training and test sets AUC. He has calculated a 95% confidence interval on Pearson&#8217;s product moment correlation coefficient as r=[-0.38, 0.24]</li>
+<li>Inference also trained models on whole training data set, where he used a generalised-linear-model training approach and an approach where the model was obtained by optimising the training set AUC by numerical optimisation of the model parameters. Any idea what he talks about?</li>
+<li>Different notation. See next section</li>
+<li>In scikits.learn there is an option between using the L1 or the L2 norm as penalty function. It isn&#8217;t mentioned in the derivations in Bishop, Alpaydin, Hastie, Izenman etc. but what penalty does maximum likelihood correspond to. I think I have read somewhere that maximum likelihood is equivalent to L2-norm penalty (least square error?), but maybe that was assuming a gausian distribution for some of the distributions, and that shouldn&#8217;t be necessary with logistic regression, right?</li>
+</ul>
+</div></blockquote>
 </div>
-<p>I am a bit surprised by the fact that the first pricipal component caries more than 90% of the total variance in the data. When the second and third principal component are included they account for more than 98% og all variantion.</p>
-<p>I have made a couple of scatter plots in 2- and 3-dimensions and there dont seem to be a simple relation between the principal coordinates and the IsAlert feaeture. Instead there seems to be some &#8220;outliers&#8221; in the data, with data points having a first principal coefficient much higher than most datapoints.</p>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Looking at the first and second principal component the most important features seems to be P6, V6 and then V3 and V1</p>
-</div>
+<div class="section" id="notation">
+<h2>Notation<a class="headerlink" href="#notation" title="Permalink to this headline">¶</a></h2>
+<p>When deriving the logistic regression Bishop uses this notation for the likelihood funtion</p>
+<div class="math">
+<p><img src="../../_images/math/2599e8f5f480652182b6f2ce06da36dc92ecde63.png" alt="p(\mathbf{t}|\mathbf{w}) = \prod_{n=1}^{N}y_n^{t_n}\left\{1-y_n\right\}^{1-t_n}" /></p>
+</div><p>while eg. Alpaydin uses</p>
+<div class="math">
+<p><img src="../../_images/math/7f19aa3daf124b932b15e70ddf44ef12ac23d2c1.png" alt="l(\mathbf{w},w_0 | \mathcal{X}) = \prod_t (y^t)^{(r^t)}(1-y^t)^{(1-r^t)}" /></p>
+</div><p>Is the likelihood funtion the probability of the data given the parameters, or is it the probability of the parameters given the data? Or is it equivalent?</p>
 </div>
 </div>
 
@@ -131,9 +127,6 @@
              >index</a></li>
         <li class="right" >
           <a href="../13-recreating-winning-entry/index.html" title="Session 13: Recreating Winning Entry"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="../11-boxplots-scatterplots/index.html" title="Session 11: Creating boxplots and scatterplots"
              >previous</a> |</li>
         <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Sessions</a> &raquo;</li> 

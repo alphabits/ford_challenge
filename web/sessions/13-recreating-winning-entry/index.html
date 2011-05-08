@@ -1,0 +1,208 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Session 13: Recreating Winning Entry &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Sessions" href="../index.html" />
+    <link rel="next" title="Session #: Next Meeting" href="../next-meeting/index.html" />
+    <link rel="prev" title="Session 12: Principal Components Analysis" href="../12-principal-components-analysis/index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../next-meeting/index.html" title="Session #: Next Meeting"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../12-principal-components-analysis/index.html" title="Session 12: Principal Components Analysis"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Sessions</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Session 13: Recreating Winning Entry</a><ul>
+<li><a class="reference internal" href="#logistic-regression-on-first-2e5-rows">Logistic Regression on first 2e5 rows</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../12-principal-components-analysis/index.html"
+                        title="previous chapter">Session 12: Principal Components Analysis</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../next-meeting/index.html"
+                        title="next chapter">Session #: Next Meeting</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/sessions/13-recreating-winning-entry/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="session-13-recreating-winning-entry">
+<h1>Session 13: Recreating Winning Entry<a class="headerlink" href="#session-13-recreating-winning-entry" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>Start time:</dt>
+<dd>08-05-2011 09:44</dd>
+<dt>End time:</dt>
+<dd>08-05-2011 09:44</dd>
+</dl>
+<p>In this session I will try to emulate the approach that got Inference his first place in the ford competition. Some of the key elements extracted from <a class="reference download internal" href="../../_downloads/inference_on_winning2.pdf"><tt class="xref download docutils literal"><span class="pre">his</span> <span class="pre">description</span></tt></a> are that he:</p>
+<blockquote>
+<div><ul class="simple">
+<li>Trained logistic model with 20% of (random?) training trials, which means 100 trials. I am going to use 25% as my training data set only have 400 trials.</li>
+<li>He measured performance on remaining 400 trials, which for me is going to be 300 trials.</li>
+<li>First he used aggregate features based on whole trials, but midway through the competition demanded that an online model was constructed, so Inference had to use running features instead. It hurt his performance a little bit.</li>
+<li>Conducted feature selection on diagnostics of logistic regression.</li>
+<li>Also trained some models on the whole training set using &#8220;a generalised-linear-model training approach and also the model obtained by optimising the training set AUC by numerical optimisation of the model parameters&#8221;</li>
+</ul>
+</div></blockquote>
+<div class="section" id="logistic-regression-on-first-2e5-rows">
+<h2>Logistic Regression on first 2e5 rows<a class="headerlink" href="#logistic-regression-on-first-2e5-rows" title="Permalink to this headline">¶</a></h2>
+<p>First I try to train a logistic regression on the first 1e5 rows of the training data set. I haven&#8217;t added any features. The code is shown below</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scikits.learn.linear_model</span> <span class="kn">import</span> <span class="n">LogisticRegression</span>
+
+<span class="kn">from</span> <span class="nn">src.data_interface</span> <span class="kn">import</span> <span class="n">d</span><span class="p">,</span> <span class="n">L_clean</span><span class="p">,</span> <span class="n">L</span>
+<span class="kn">from</span> <span class="nn">src.utils</span> <span class="kn">import</span> <span class="n">get_path</span><span class="p">,</span> <span class="n">bool_to_color</span><span class="p">,</span> <span class="n">sigmoid</span>
+
+
+<span class="n">path</span> <span class="o">=</span> <span class="n">get_path</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/..&#39;</span>
+<span class="n">L</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">view</span><span class="p">()[:,</span><span class="mi">3</span><span class="p">:]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">view</span><span class="p">()[:,</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="c"># Learning rate when estimating parameters</span>
+<span class="n">C</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="n">classifier</span> <span class="o">=</span> <span class="n">LogisticRegression</span><span class="p">(</span><span class="n">C</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">penalty</span><span class="o">=</span><span class="s">&#39;l2&#39;</span><span class="p">)</span>
+
+<span class="n">training_rows</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mf">1e5</span><span class="p">))</span>
+
+<span class="n">classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">training_rows</span><span class="p">,:],</span> <span class="n">y</span><span class="p">[</span><span class="n">training_rows</span><span class="p">,:])</span>
+
+<span class="n">coef_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="mi">3</span><span class="p">:],</span> <span class="nb">list</span><span class="p">(</span><span class="n">classifier</span><span class="o">.</span><span class="n">coef_</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+<span class="n">coef_dict</span><span class="p">[</span><span class="s">&#39;intercept&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">intercept_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;{0}/data/coefs_train_0-1e5.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">coef_dict</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>When run it saves the fitted parameters in a json file shown next</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;E1&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.017536186098857091</span><span class="p">,</span> 
+    <span class="s2">&quot;E10&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.023401153642919215</span><span class="p">,</span> 
+    <span class="s2">&quot;E11&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.019926771862447984</span><span class="p">,</span> 
+    <span class="s2">&quot;E2&quot;</span><span class="o">:</span> <span class="mf">0.0019328127328137746</span><span class="p">,</span> 
+    <span class="s2">&quot;E3&quot;</span><span class="o">:</span> <span class="mf">0.10107558685979436</span><span class="p">,</span> 
+    <span class="s2">&quot;E4&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0023757135222129424</span><span class="p">,</span> 
+    <span class="s2">&quot;E5&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.014319711954328823</span><span class="p">,</span> 
+    <span class="s2">&quot;E6&quot;</span><span class="o">:</span> <span class="mf">0.0070707305281794645</span><span class="p">,</span> 
+    <span class="s2">&quot;E7&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.16570587615270099</span><span class="p">,</span> 
+    <span class="s2">&quot;E8&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.45254738307453407</span><span class="p">,</span> 
+    <span class="s2">&quot;E9&quot;</span><span class="o">:</span> <span class="mf">4.9863494757650351</span><span class="p">,</span> 
+    <span class="s2">&quot;P1&quot;</span><span class="o">:</span> <span class="mf">0.010619881246453588</span><span class="p">,</span> 
+    <span class="s2">&quot;P2&quot;</span><span class="o">:</span> <span class="mf">0.0017904065038992206</span><span class="p">,</span> 
+    <span class="s2">&quot;P3&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">8.2304710476152645</span><span class="nx">e</span><span class="o">-</span><span class="mi">05</span><span class="p">,</span> 
+    <span class="s2">&quot;P4&quot;</span><span class="o">:</span> <span class="mf">0.0018073800735428156</span><span class="p">,</span> 
+    <span class="s2">&quot;P5&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.014535073625657844</span><span class="p">,</span> 
+    <span class="s2">&quot;P6&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.0023064652131897273</span><span class="p">,</span> 
+    <span class="s2">&quot;P7&quot;</span><span class="o">:</span> <span class="mf">0.0090797158767872109</span><span class="p">,</span> 
+    <span class="s2">&quot;P8&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mi">0</span><span class="p">,</span> 
+    <span class="s2">&quot;V1&quot;</span><span class="o">:</span> <span class="mf">0.01039985786067691</span><span class="p">,</span> 
+    <span class="s2">&quot;V10&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.38081896785501368</span><span class="p">,</span> 
+    <span class="s2">&quot;V11&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.10916794002865413</span><span class="p">,</span> 
+    <span class="s2">&quot;V2&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.14828397238467148</span><span class="p">,</span> 
+    <span class="s2">&quot;V3&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">6.4867400089223959</span><span class="nx">e</span><span class="o">-</span><span class="mi">05</span><span class="p">,</span> 
+    <span class="s2">&quot;V4&quot;</span><span class="o">:</span> <span class="mf">0.0066333546765894019</span><span class="p">,</span> 
+    <span class="s2">&quot;V5&quot;</span><span class="o">:</span> <span class="mf">0.098196534049953071</span><span class="p">,</span> 
+    <span class="s2">&quot;V6&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.00033814166569498533</span><span class="p">,</span> 
+    <span class="s2">&quot;V7&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mi">0</span><span class="p">,</span> 
+    <span class="s2">&quot;V8&quot;</span><span class="o">:</span> <span class="mf">9.9848617620661709</span><span class="nx">e</span><span class="o">-</span><span class="mi">06</span><span class="p">,</span> 
+    <span class="s2">&quot;V9&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mi">0</span><span class="p">,</span> 
+    <span class="s2">&quot;intercept&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.023138863237992326</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../next-meeting/index.html" title="Session #: Next Meeting"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../12-principal-components-analysis/index.html" title="Session 12: Principal Components Analysis"
+             >previous</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Sessions</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
