@@ -49,7 +49,10 @@
   <h3><a href="../../index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Session 13: Recreating Winning Entry</a><ul>
-<li><a class="reference internal" href="#logistic-regression-on-first-2e5-rows">Logistic Regression on first 2e5 rows</a></li>
+<li><a class="reference internal" href="#logistic-regression-on-first-1e5-rows">Logistic Regression on first 1e5 rows</a></li>
+<li><a class="reference internal" href="#roc-curve-calculation-interlude">ROC-curve calculation interlude</a></li>
+<li><a class="reference internal" href="#calculate-running-mean-and-std">Calculate running mean and std</a></li>
+<li><a class="reference internal" href="#check-that-i-get-approx-the-same-auc-as-inference">Check that I get approx the same AUC as inference</a></li>
 </ul>
 </li>
 </ul>
@@ -91,10 +94,14 @@
 <dl class="docutils">
 <dt>Start time:</dt>
 <dd>08-05-2011 09:44</dd>
-<dt>End time:</dt>
-<dd>08-05-2011 09:44</dd>
+<dt>Pause time:</dt>
+<dd>08-05-2011 12:05</dd>
+<dt>Resume time:</dt>
+<dd>09-05-2011 08:30</dd>
+<dt>Pause time:</dt>
+<dd>09-05-2011 11:24</dd>
 </dl>
-<p>In this session I will try to emulate the approach that got Inference his first place in the ford competition. Some of the key elements extracted from <a class="reference download internal" href="../../_downloads/inference_on_winning2.pdf"><tt class="xref download docutils literal"><span class="pre">his</span> <span class="pre">description</span></tt></a> are that he:</p>
+<p>In this session I will try to emulate the approach that got Inference his first place in the ford competition. Some of the key elements extracted from <a class="reference download internal" href="../../_downloads/inference_on_winning9.pdf"><tt class="xref download docutils literal"><span class="pre">his</span> <span class="pre">description</span></tt></a> are that he:</p>
 <blockquote>
 <div><ul class="simple">
 <li>Trained logistic model with 20% of (random?) training trials, which means 100 trials. I am going to use 25% as my training data set only have 400 trials.</li>
@@ -104,8 +111,8 @@
 <li>Also trained some models on the whole training set using &#8220;a generalised-linear-model training approach and also the model obtained by optimising the training set AUC by numerical optimisation of the model parameters&#8221;</li>
 </ul>
 </div></blockquote>
-<div class="section" id="logistic-regression-on-first-2e5-rows">
-<h2>Logistic Regression on first 2e5 rows<a class="headerlink" href="#logistic-regression-on-first-2e5-rows" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="logistic-regression-on-first-1e5-rows">
+<h2>Logistic Regression on first 1e5 rows<a class="headerlink" href="#logistic-regression-on-first-1e5-rows" title="Permalink to this headline">¶</a></h2>
 <p>First I try to train a logistic regression on the first 1e5 rows of the training data set. I haven&#8217;t added any features. The code is shown below</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
 
@@ -174,6 +181,97 @@
     <span class="s2">&quot;intercept&quot;</span><span class="o">:</span> <span class="o">-</span><span class="mf">0.023138863237992326</span>
 <span class="p">}</span>
 </pre></div>
+</div>
+</div>
+<div class="section" id="roc-curve-calculation-interlude">
+<h2>ROC-curve calculation interlude<a class="headerlink" href="#roc-curve-calculation-interlude" title="Permalink to this headline">¶</a></h2>
+<p>When I tried to calculate the ROC of af test set with 1e5 records python froze. The ROC implementation in scikits.learn calculates the FPR and TPR for <strong>every unique</strong> value of the prediction score. I have altered the implementation a little bit, by adding af third input &#8220;thresholds&#8221;, so the user can specify the steps between each calculation of FPR, TPR. Around 1000 steps seems to give a nice picture of the ROC.</p>
+</div>
+<div class="section" id="calculate-running-mean-and-std">
+<h2>Calculate running mean and std<a class="headerlink" href="#calculate-running-mean-and-std" title="Permalink to this headline">¶</a></h2>
+<p>To be able to recreate the winning entry from Inference I have to create an extended data set, with the running mean and std of every feature. The data set therefore ends as a 90-dimensional dataset. The code to calculate the extra features is</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">data</span> <span class="kn">import</span> <span class="n">D</span>
+
+<span class="n">trial_id</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">D_ex</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">D</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">93</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="k">if</span> <span class="n">trial_id</span> <span class="o">!=</span> <span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">cnt</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">trial_id</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">sums</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">30</span><span class="p">))</span>
+        <span class="n">sums_sq</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">30</span><span class="p">))</span>
+    
+    <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">sums</span> <span class="o">+=</span> <span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">3</span><span class="p">:]</span>
+    <span class="n">sums_sq</span> <span class="o">+=</span> <span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">3</span><span class="p">:]</span><span class="o">**</span><span class="mi">2</span>
+
+    <span class="n">D_ex</span><span class="p">[</span><span class="n">i</span><span class="p">,:</span><span class="mi">33</span><span class="p">]</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span>
+    <span class="n">D_ex</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">33</span><span class="p">:</span><span class="mi">63</span><span class="p">]</span> <span class="o">=</span> <span class="n">sums</span><span class="o">/</span><span class="n">cnt</span>
+    <span class="n">D_ex</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">63</span><span class="p">:</span><span class="mi">93</span><span class="p">]</span> <span class="o">=</span> <span class="n">sums_sq</span><span class="o">/</span><span class="n">cnt</span> <span class="o">-</span> <span class="p">(</span><span class="n">sums</span><span class="o">/</span><span class="n">cnt</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+
+<span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&#39;data/fordTrainExtended.npy&#39;</span><span class="p">,</span> <span class="n">D_ex</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="check-that-i-get-approx-the-same-auc-as-inference">
+<h2>Check that I get approx the same AUC as inference<a class="headerlink" href="#check-that-i-get-approx-the-same-auc-as-inference" title="Permalink to this headline">¶</a></h2>
+<p>Before I try to recreate the winning approach, I want to test that I actually get the same AUC as Inference, if I just hardcode the coefficients into the model. The code to calculate the AUC of the hard coded model is</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scikits.learn.metrics</span> <span class="kn">import</span> <span class="n">auc</span>
+
+<span class="kn">from</span> <span class="nn">src.extended_data</span> <span class="kn">import</span> <span class="n">D_ex</span>
+<span class="kn">from</span> <span class="nn">src.utils</span> <span class="kn">import</span> <span class="n">L_ex</span><span class="p">,</span> <span class="n">sigmoid</span><span class="p">,</span> <span class="n">roc_curve</span><span class="p">,</span> <span class="n">get_path</span>
+
+
+<span class="n">path</span> <span class="o">=</span> <span class="n">get_path</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/..&#39;</span>
+
+<span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">410.6073</span><span class="p">,</span> <span class="mf">0.1494</span><span class="p">,</span> <span class="mf">4.4185</span><span class="p">])</span>
+
+<span class="n">idxs</span> <span class="o">=</span> <span class="p">[</span><span class="n">L_ex</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;sdE5&#39;</span><span class="p">,</span> <span class="s">&#39;V11&#39;</span><span class="p">,</span> <span class="s">&#39;E9&#39;</span><span class="p">]]</span>
+<span class="n">Xf</span> <span class="o">=</span> <span class="n">D_ex</span><span class="p">[:,</span> <span class="n">idxs</span><span class="p">]</span>
+
+<span class="n">num_tests</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_tests</span><span class="p">):</span>
+    <span class="n">test_rows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random_integers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">D_ex</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1e5</span><span class="p">)</span>
+
+    <span class="n">X</span> <span class="o">=</span> <span class="n">Xf</span><span class="p">[</span><span class="n">test_rows</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">D_ex</span><span class="p">[</span><span class="n">test_rows</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">lin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+    <span class="n">probs</span> <span class="o">=</span> <span class="n">sigmoid</span><span class="p">(</span><span class="n">lin</span><span class="p">)</span>
+
+    <span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">,</span> <span class="n">thresholds</span> <span class="o">=</span> <span class="n">roc_curve</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">probs</span><span class="p">,</span> <span class="n">thresholds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1e3</span><span class="p">))</span>
+
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">auc</span><span class="p">(</span><span class="n">fpr</span><span class="p">,</span> <span class="n">tpr</span><span class="p">))</span>
+
+
+<span class="n">json_path</span> <span class="o">=</span> <span class="s">&#39;{0}/data/hard-coded-results-{1}-tests.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">num_tests</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">json_path</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And gave the results</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">[</span>
+    <span class="mf">0.79343227431568908</span><span class="p">,</span> 
+    <span class="mf">0.79617911598189239</span><span class="p">,</span> 
+    <span class="mf">0.79803846892717889</span><span class="p">,</span> 
+    <span class="mf">0.79508014244935321</span><span class="p">,</span> 
+    <span class="mf">0.79635984566462337</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Check that I have calculated the running features correct</p>
 </div>
 </div>
 </div>
