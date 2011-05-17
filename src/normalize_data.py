@@ -2,7 +2,6 @@ from __future__ import division
 
 import numpy as np
 
-# Load training data set. The name A is kept for backward compability
 D = np.load('data/fordTrain.npy')
 
 trial_ids = range(511)

@@ -17,5 +17,7 @@ Sessions
     11-boxplots-scatterplots/index
     12-principal-components-analysis/index
     13-recreating-winning-entry/index
+    14-meeting-with-morten/index
+    15-new-principal-components-analysis/index
+    16-create-data-sets/index
     next-meeting/index
-

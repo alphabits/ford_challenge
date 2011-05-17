@@ -26,10 +26,6 @@ Simple PCA on whole data set
 
 First of I am going to calculate a PCA based on the whole data set, using the PCA implementation in the scikits.learn module.
 
-.. note::
-
-    Should I include the IsAlert feature when I make the PCA?
-
 I am a bit surprised by the fact that the first pricipal component caries more than 90% of the total variance in the data. When the second and third principal component are included they account for more than 98% og all variantion.
 
 I have made a couple of scatter plots in 2- and 3-dimensions and there dont seem to be a simple relation between the principal coordinates and the IsAlert feaeture. Instead there seems to be some "outliers" in the data, with data points having a first principal coefficient much higher than most datapoints.

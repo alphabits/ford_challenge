@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="top" title="Ford challenge v1.0 documentation" href="../../index.html" />
     <link rel="up" title="Sessions" href="../index.html" />
-    <link rel="next" title="Session #: Next Meeting" href="../next-meeting/index.html" />
+    <link rel="next" title="Session 14: Meeting with Morten" href="../14-meeting-with-morten/index.html" />
     <link rel="prev" title="Session 12: Principal Components Analysis" href="../12-principal-components-analysis/index.html" /> 
   </head>
   <body>
@@ -35,7 +35,7 @@
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../next-meeting/index.html" title="Session #: Next Meeting"
+          <a href="../14-meeting-with-morten/index.html" title="Session 14: Meeting with Morten"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="../12-principal-components-analysis/index.html" title="Session 12: Principal Components Analysis"
@@ -61,8 +61,8 @@
   <p class="topless"><a href="../12-principal-components-analysis/index.html"
                         title="previous chapter">Session 12: Principal Components Analysis</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="../next-meeting/index.html"
-                        title="next chapter">Session #: Next Meeting</a></p>
+  <p class="topless"><a href="../14-meeting-with-morten/index.html"
+                        title="next chapter">Session 14: Meeting with Morten</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../../_sources/sessions/13-recreating-winning-entry/index.txt"
@@ -101,7 +101,7 @@
 <dt>Pause time:</dt>
 <dd>09-05-2011 11:24</dd>
 </dl>
-<p>In this session I will try to emulate the approach that got Inference his first place in the ford competition. Some of the key elements extracted from <a class="reference download internal" href="../../_downloads/inference_on_winning9.pdf"><tt class="xref download docutils literal"><span class="pre">his</span> <span class="pre">description</span></tt></a> are that he:</p>
+<p>In this session I will try to emulate the approach that got Inference his first place in the ford competition. Some of the key elements extracted from <a class="reference download internal" href="../../_downloads/inference_on_winning10.pdf"><tt class="xref download docutils literal"><span class="pre">his</span> <span class="pre">description</span></tt></a> are that he:</p>
 <blockquote>
 <div><ul class="simple">
 <li>Trained logistic model with 20% of (random?) training trials, which means 100 trials. I am going to use 25% as my training data set only have 400 trials.</li>
@@ -190,6 +190,10 @@
 <div class="section" id="calculate-running-mean-and-std">
 <h2>Calculate running mean and std<a class="headerlink" href="#calculate-running-mean-and-std" title="Permalink to this headline">¶</a></h2>
 <p>To be able to recreate the winning entry from Inference I have to create an extended data set, with the running mean and std of every feature. The data set therefore ends as a 90-dimensional dataset. The code to calculate the extra features is</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">There are errors in the following code. The right way to calculate the extended data set can be seen in <a class="reference internal" href="../16-create-data-sets/index.html"><em>Session 16: Create Data Sets</em></a></p>
+</div>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">data</span> <span class="kn">import</span> <span class="n">D</span>
@@ -289,7 +293,7 @@
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../next-meeting/index.html" title="Session #: Next Meeting"
+          <a href="../14-meeting-with-morten/index.html" title="Session 14: Meeting with Morten"
              >next</a> |</li>
         <li class="right" >
           <a href="../12-principal-components-analysis/index.html" title="Session 12: Principal Components Analysis"

@@ -32,3 +32,9 @@ cs = create_session
 def docs():
     local('sphinx-build -c sphinx/ . web/')
 d = docs
+
+def createpng(pdf, r=150):
+    path, ext = pdf.rsplit('.')
+    new_path = '.'.join([path, 'png'])
+    local('gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png256 -dGraphicsAlphaBits=4 '
+            '-dTextAlphaBits=4 -sOutputFile={0} -r{1} {2}'.format(new_path, r, pdf))

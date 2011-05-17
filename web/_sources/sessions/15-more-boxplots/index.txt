@@ -1,0 +1,12 @@
+=========================
+Session 15: More boxplots
+=========================
+
+Start time:
+    15-05-2011 15:35
+
+End time:
+    15-05-2011 18:35
+
+In this session, I will continue the work from :doc:`../11-boxplots-scatterplots/index`, but as suggested by Morten at our last meeting (:doc:`../14-meeting-with-morten/index`), it could be a good idea to make separate boxplots, for the rows where `IsAlert=0` and `IsAlert=1`.
+

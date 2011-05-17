@@ -52,6 +52,10 @@ Calculate running mean and std
 
 To be able to recreate the winning entry from Inference I have to create an extended data set, with the running mean and std of every feature. The data set therefore ends as a 90-dimensional dataset. The code to calculate the extra features is
 
+.. note::
+
+    There are errors in the following code. The right way to calculate the extended data set can be seen in :doc:`../16-create-data-sets/index`
+
 .. literalinclude:: /src/create_extended_data.py
 
 
