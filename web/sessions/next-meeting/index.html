@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="top" title="Ford challenge v1.0 documentation" href="../../index.html" />
     <link rel="up" title="Sessions" href="../index.html" />
-    <link rel="prev" title="Session 17: Recreating Winning Entry" href="../17-recreating-winning-entry/index.html" /> 
+    <link rel="prev" title="Session 18: Forward Selection" href="../18-forward-selection/index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -34,7 +34,7 @@
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../17-recreating-winning-entry/index.html" title="Session 17: Recreating Winning Entry"
+          <a href="../18-forward-selection/index.html" title="Session 18: Forward Selection"
              accesskey="P">previous</a> |</li>
         <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Sessions</a> &raquo;</li> 
@@ -43,8 +43,8 @@
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
   <h4>Previous topic</h4>
-  <p class="topless"><a href="../17-recreating-winning-entry/index.html"
-                        title="previous chapter">Session 17: Recreating Winning Entry</a></p>
+  <p class="topless"><a href="../18-forward-selection/index.html"
+                        title="previous chapter">Session 18: Forward Selection</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../../_sources/sessions/next-meeting/index.txt"
@@ -87,6 +87,7 @@
 <li>Is there any point in using a penalty, if I am only doing regression on 3 features? If I only use 3 features, I have already made a feature selection, and then the penalty should not be needed? ... Just found out that scikits.learn will not allow a penalty-value of 0... Hmmm</li>
 <li>When doing crossvalidation on LogisticRegression with Inferences features, I got auc scores around 0.98 when I used only the first 10000 rows in the training data set. If I only used the first 1000 auc was aroun 0.75, and if I used the whole data set the auc was approx 0.82? OK found the reason. As already discovered the feature E9 is equal to isalert about 70% of the time. In the first 10000 rows E9 is equal to IsAlert 99% of the time!</li>
 <li>Should I use the same rows when doing forward selection? I think it makes sense to use the same rows, so the feature selection isn&#8217;t prematurely stopped, because of the randomly selected data.</li>
+<li>When doing forward selection, does it make sense to limit the number of features selected?</li>
 </ul>
 </div></blockquote>
 </div>
@@ -104,7 +105,7 @@
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../17-recreating-winning-entry/index.html" title="Session 17: Recreating Winning Entry"
+          <a href="../18-forward-selection/index.html" title="Session 18: Forward Selection"
              >previous</a> |</li>
         <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Sessions</a> &raquo;</li> 

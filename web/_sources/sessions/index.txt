@@ -21,4 +21,6 @@ Sessions
     15-new-principal-components-analysis/index
     16-create-data-sets/index
     17-recreating-winning-entry/index
+    18-forward-selection/index
+    19-window-features/index
     next-meeting/index

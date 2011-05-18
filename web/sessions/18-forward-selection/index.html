@@ -1,0 +1,460 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Session 18: Forward Selection &mdash; Ford challenge v1.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="Ford challenge v1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Sessions" href="../index.html" />
+    <link rel="next" title="Session 19: Window Features" href="../19-window-features/index.html" />
+    <link rel="prev" title="Session 17: Recreating Winning Entry" href="../17-recreating-winning-entry/index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../19-window-features/index.html" title="Session 19: Window Features"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../17-recreating-winning-entry/index.html" title="Session 17: Recreating Winning Entry"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Sessions</a> &raquo;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Session 18: Forward Selection</a><ul>
+<li><a class="reference internal" href="#testing-the-top-4-features">Testing the top 4 features</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../17-recreating-winning-entry/index.html"
+                        title="previous chapter">Session 17: Recreating Winning Entry</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../19-window-features/index.html"
+                        title="next chapter">Session 19: Window Features</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/sessions/18-forward-selection/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="session-18-forward-selection">
+<h1>Session 18: Forward Selection<a class="headerlink" href="#session-18-forward-selection" title="Permalink to this headline">¶</a></h1>
+<dl class="docutils">
+<dt>Start time:</dt>
+<dd>18-05-2011 16:14</dd>
+<dt>End time:</dt>
+<dd>18-05-2011 22:02</dd>
+</dl>
+<p>In this session I will try to find the features that makes the best classifier. Maybe I can find some features that achieve a higher auc than the winning entry&#8217;s. The script that I use to make forward selection is shown here</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">src.utils2</span> <span class="kn">import</span> <span class="n">c_ex</span> <span class="k">as</span> <span class="n">c</span><span class="p">,</span> <span class="n">get_path</span><span class="p">,</span> <span class="n">L_ex</span><span class="p">,</span> <span class="n">LabelIndex</span>
+<span class="kn">import</span> <span class="nn">src.dataloaders</span> <span class="kn">as</span> <span class="nn">d</span>
+<span class="kn">from</span> <span class="nn">src.logistic</span> <span class="kn">import</span> <span class="n">fit_logistic_regression</span>
+
+
+<span class="n">path</span> <span class="o">=</span> <span class="n">get_path</span><span class="p">(</span><span class="n">__file__</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;/..&#39;</span>
+
+<span class="n">D</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">trainingset_extended</span><span class="p">()</span>
+<span class="c">#Dt = d.testset_extended()</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+<span class="n">num_train_rows</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">num_test_rows</span> <span class="o">=</span> <span class="mi">5000</span>
+
+<span class="n">tr_rows</span> <span class="o">=</span> <span class="n">a</span><span class="p">[:</span><span class="n">num_train_rows</span><span class="p">]</span>
+<span class="n">ts_rows</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="n">num_train_rows</span><span class="p">:(</span><span class="n">num_train_rows</span><span class="o">+</span><span class="n">num_test_rows</span><span class="p">)]</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">D</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">:]</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="n">tr_rows</span><span class="p">,</span> <span class="p">:]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="n">tr_rows</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="s">&#39;isalert&#39;</span><span class="p">)]</span>
+
+<span class="n">Xt</span> <span class="o">=</span> <span class="n">D</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">:]</span>
+<span class="n">Xt</span> <span class="o">=</span> <span class="n">Xt</span><span class="p">[</span><span class="n">ts_rows</span><span class="p">,</span> <span class="p">:]</span>
+<span class="n">yt</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="n">ts_rows</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="s">&#39;isalert&#39;</span><span class="p">)]</span>
+
+<span class="n">auc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">90</span><span class="p">,</span><span class="mi">90</span><span class="p">));</span>
+
+<span class="c"># Remove P3, P6, P8, V7 and V9 and </span>
+<span class="c"># the corresponding running features.</span>
+<span class="c"># See session 9 on data exploration</span>
+<span class="c"># for details</span>
+<span class="n">cc</span> <span class="o">=</span> <span class="n">LabelIndex</span><span class="p">(</span><span class="n">L_ex</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+<span class="n">exclude</span> <span class="o">=</span> <span class="n">cc</span><span class="p">(</span><span class="s">&#39;p3&#39;</span><span class="p">,</span> <span class="s">&#39;p6&#39;</span><span class="p">,</span> <span class="s">&#39;p8&#39;</span><span class="p">,</span> <span class="s">&#39;v7&#39;</span><span class="p">,</span> <span class="s">&#39;v9&#39;</span><span class="p">,</span> 
+             <span class="s">&#39;mp3&#39;</span><span class="p">,</span> <span class="s">&#39;mp6&#39;</span><span class="p">,</span> <span class="s">&#39;mp8&#39;</span><span class="p">,</span> <span class="s">&#39;mv7&#39;</span><span class="p">,</span> <span class="s">&#39;mv9&#39;</span><span class="p">,</span>
+             <span class="s">&#39;sdp3&#39;</span><span class="p">,</span> <span class="s">&#39;sdp6&#39;</span><span class="p">,</span> <span class="s">&#39;sdp8&#39;</span><span class="p">,</span> <span class="s">&#39;sdv7&#39;</span><span class="p">,</span> <span class="s">&#39;sdv9&#39;</span><span class="p">)</span>
+<span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">]</span>
+
+<span class="n">chosen</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">90</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">candidates</span><span class="p">:</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">chosen</span> <span class="o">+</span> <span class="p">[</span><span class="n">c</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">fit_logistic_regression</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span> <span class="n">features</span><span class="p">],</span> <span class="n">y</span><span class="p">,</span> <span class="n">Xt</span><span class="p">[:,</span> <span class="n">features</span><span class="p">],</span> <span class="n">yt</span><span class="p">)</span>
+        <span class="n">auc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="n">chosen_feature</span> <span class="o">=</span> <span class="n">auc</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">auc</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">chosen_feature</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">auc</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,:]</span><span class="o">.</span><span class="n">max</span><span class="p">():</span>
+        <span class="k">break</span>
+
+    <span class="n">candidates</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">chosen_feature</span><span class="p">)</span>
+    <span class="n">chosen</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chosen_feature</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>First the script was run for 3000 training samples and 1000 test samples; both taken from the training dataset. The result was</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;labels_chosen&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="s2">&quot;v11&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;e9&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sde1&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;me6&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdp2&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdp3&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sde6&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mv3&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;p5&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdp5&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mp5&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mp4&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mv8&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;v6&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mv4&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdv10&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;p1&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdp4&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;e8&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;v5&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;v8&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;me2&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sde9&quot;</span>
+    <span class="p">],</span> 
+    <span class="s2">&quot;num_test_rows&quot;</span><span class="o">:</span> <span class="mi">1000</span><span class="p">,</span> 
+    <span class="s2">&quot;max_auc&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="mf">0.70198573007737919</span><span class="p">,</span> 
+        <span class="mf">0.81240679328710697</span><span class="p">,</span> 
+        <span class="mf">0.85617123907145198</span><span class="p">,</span> 
+        <span class="mf">0.86900813988543979</span><span class="p">,</span> 
+        <span class="mf">0.87477037483670139</span><span class="p">,</span> 
+        <span class="mf">0.87768666465681988</span><span class="p">,</span> 
+        <span class="mf">0.88160586875691027</span><span class="p">,</span> 
+        <span class="mf">0.88279770877298858</span><span class="p">,</span> 
+        <span class="mf">0.88391920410009039</span><span class="p">,</span> 
+        <span class="mf">0.88503868957893705</span><span class="p">,</span> 
+        <span class="mf">0.887285699929657</span><span class="p">,</span> 
+        <span class="mf">0.88829263390614066</span><span class="p">,</span> 
+        <span class="mf">0.88933775499949885</span><span class="p">,</span> 
+        <span class="mf">0.89068837302783699</span><span class="p">,</span> 
+        <span class="mf">0.89172143503165613</span><span class="p">,</span> 
+        <span class="mf">0.89223394633705333</span><span class="p">,</span> 
+        <span class="mf">0.8930841121495342</span><span class="p">,</span> 
+        <span class="mf">0.89393025826550154</span><span class="p">,</span> 
+        <span class="mf">0.89452517334941406</span><span class="p">,</span> 
+        <span class="mf">0.89541151643051053</span><span class="p">,</span> 
+        <span class="mf">0.89611697316852723</span><span class="p">,</span> 
+        <span class="mf">0.89630589890463497</span><span class="p">,</span> 
+        <span class="mf">0.89652296251633212</span>
+    <span class="p">],</span> 
+    <span class="s2">&quot;num_training_rows&quot;</span><span class="o">:</span> <span class="mi">3000</span><span class="p">,</span>
+    <span class="s2">&quot;same_rows_in_all_iterations&quot;</span><span class="o">:</span> <span class="s2">&quot;yes&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>And after that the script was run one more time for 10000 training samples and 5000 test samples. The results</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;num_training_rows&quot;</span><span class="o">:</span> <span class="mi">10000</span><span class="p">,</span> 
+    <span class="s2">&quot;same_rows_in_all_iterations&quot;</span><span class="o">:</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;num_test_rows&quot;</span><span class="o">:</span> <span class="mi">5000</span><span class="p">,</span> 
+    <span class="s2">&quot;labels_chosen&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="s2">&quot;V11&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;E9&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdE1&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mE6&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdE4&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mV3&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdV8&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;E8&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mE10&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mP5&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdP5&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mP7&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mV11&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;V10&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdV1&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mE4&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdP2&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdE6&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdP7&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdP1&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdE2&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mV2&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mE8&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdV10&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdV3&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdE9&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdE8&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mE7&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mE9&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mV4&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mV5&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mE1&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;E6&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;V4&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;V2&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;E10&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;V5&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdE3&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdE11&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;P4&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mE11&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdP4&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdV2&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdV4&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mV8&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mV6&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;mP1&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;sdE5&quot;</span>
+    <span class="p">],</span> 
+    <span class="s2">&quot;max_auc&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="mf">0.6978180153212814</span><span class="p">,</span> 
+        <span class="mf">0.80889035789759878</span><span class="p">,</span> 
+        <span class="mf">0.83329148620090843</span><span class="p">,</span> 
+        <span class="mf">0.85000729055510238</span><span class="p">,</span> 
+        <span class="mf">0.85389024674115388</span><span class="p">,</span> 
+        <span class="mf">0.85660687757621334</span><span class="p">,</span> 
+        <span class="mf">0.85970920493063852</span><span class="p">,</span> 
+        <span class="mf">0.86119853783503786</span><span class="p">,</span> 
+        <span class="mf">0.86234107897600087</span><span class="p">,</span> 
+        <span class="mf">0.86345811952064222</span><span class="p">,</span> 
+        <span class="mf">0.86870004498566777</span><span class="p">,</span> 
+        <span class="mf">0.87048696657983426</span><span class="p">,</span> 
+        <span class="mf">0.87166612396166798</span><span class="p">,</span> 
+        <span class="mf">0.8727137734605499</span><span class="p">,</span> 
+        <span class="mf">0.87366669478270842</span><span class="p">,</span> 
+        <span class="mf">0.87441373148264412</span><span class="p">,</span> 
+        <span class="mf">0.87586603948276887</span><span class="p">,</span> 
+        <span class="mf">0.87659076316092399</span><span class="p">,</span> 
+        <span class="mf">0.87713502108049202</span><span class="p">,</span> 
+        <span class="mf">0.87775226628376357</span><span class="p">,</span> 
+        <span class="mf">0.87813003473311879</span><span class="p">,</span> 
+        <span class="mf">0.87854711660180373</span><span class="p">,</span> 
+        <span class="mf">0.87901609872261544</span><span class="p">,</span> 
+        <span class="mf">0.87934629875190917</span><span class="p">,</span> 
+        <span class="mf">0.87986758978825275</span><span class="p">,</span> 
+        <span class="mf">0.88023326180089112</span><span class="p">,</span> 
+        <span class="mf">0.88106472835980121</span><span class="p">,</span> 
+        <span class="mf">0.88175847535203833</span><span class="p">,</span> 
+        <span class="mf">0.88222614974996316</span><span class="p">,</span> 
+        <span class="mf">0.88274335415228156</span><span class="p">,</span> 
+        <span class="mf">0.88315782057518821</span><span class="p">,</span> 
+        <span class="mf">0.8832925977653624</span><span class="p">,</span> 
+        <span class="mf">0.88346202961207698</span><span class="p">,</span> 
+        <span class="mf">0.88386113029104652</span><span class="p">,</span> 
+        <span class="mf">0.88390657366141456</span><span class="p">,</span> 
+        <span class="mf">0.88399607094658206</span><span class="p">,</span> 
+        <span class="mf">0.88414825719770662</span><span class="p">,</span> 
+        <span class="mf">0.88426031270269689</span><span class="p">,</span> 
+        <span class="mf">0.88433125666938739</span><span class="p">,</span> 
+        <span class="mf">0.8844335859853959</span><span class="p">,</span> 
+        <span class="mf">0.88459508976210011</span><span class="p">,</span> 
+        <span class="mf">0.88475634834076078</span><span class="p">,</span> 
+        <span class="mf">0.88479672428493705</span><span class="p">,</span> 
+        <span class="mf">0.88489341404598987</span><span class="p">,</span> 
+        <span class="mf">0.88511213069905625</span><span class="p">,</span> 
+        <span class="mf">0.88550591875379259</span><span class="p">,</span> 
+        <span class="mf">0.88570591862301995</span><span class="p">,</span> 
+        <span class="mf">0.88575152545874936</span><span class="p">,</span> 
+        <span class="mf">0.88572643352583058</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In both results, the script was allowed to run as long as the auc score increased in every iteration. In the first run some 20 features were selected, and in the second run some 40 was selected. The second run took about 100 minutes to finish, and I think that the last 30 features is overfitting galore. If i need to do another run the number of features to select should be capped. Maybe 10 features max? 20?</p>
+<div class="section" id="testing-the-top-4-features">
+<h2>Testing the top 4 features<a class="headerlink" href="#testing-the-top-4-features" title="Permalink to this headline">¶</a></h2>
+<p>In this section I will test the performance of a model, consisting of the top 4 features from the second feature selection. The same script as was used in <a class="reference internal" href="../17-recreating-winning-entry/index.html"><em>Session 17: Recreating Winning Entry</em></a> is used here to make a cross validation of the performance. The results for the top 4 features are</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;auc&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="mf">0.85288683561124046</span><span class="p">,</span> 
+        <span class="mf">0.85047498405839506</span><span class="p">,</span> 
+        <span class="mf">0.85034755367146453</span><span class="p">,</span> 
+        <span class="mf">0.85013995642929663</span>
+    <span class="p">],</span> 
+    <span class="s2">&quot;features&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="s2">&quot;sde1&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;v11&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;e9&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;me6&quot;</span>
+    <span class="p">],</span> 
+    <span class="s2">&quot;generator&quot;</span><span class="o">:</span> <span class="s2">&quot;sessions/18-forward-selection/scripts/testing_features_selected.py&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;dataset_size&quot;</span><span class="o">:</span> <span class="mi">482242</span><span class="p">,</span> 
+    <span class="s2">&quot;C&quot;</span><span class="o">:</span> <span class="mi">10000</span><span class="p">,</span> 
+    <span class="s2">&quot;weights&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">[</span>
+            <span class="o">-</span><span class="mf">0.10200740631440322</span><span class="p">,</span> 
+            <span class="mf">0.19809673316828341</span><span class="p">,</span> 
+            <span class="mf">3.8256510835175113</span><span class="p">,</span> 
+            <span class="o">-</span><span class="mf">0.022755156322068506</span>
+        <span class="p">],</span> 
+        <span class="p">[</span>
+            <span class="o">-</span><span class="mf">0.10233848635671956</span><span class="p">,</span> 
+            <span class="mf">0.19719663181300073</span><span class="p">,</span> 
+            <span class="mf">3.8346571706101091</span><span class="p">,</span> 
+            <span class="o">-</span><span class="mf">0.022937370856124788</span>
+        <span class="p">],</span> 
+        <span class="p">[</span>
+            <span class="o">-</span><span class="mf">0.10208051992200502</span><span class="p">,</span> 
+            <span class="mf">0.20240323821023626</span><span class="p">,</span> 
+            <span class="mf">3.839757466953583</span><span class="p">,</span> 
+            <span class="o">-</span><span class="mf">0.022814877638475832</span>
+        <span class="p">],</span> 
+        <span class="p">[</span>
+            <span class="o">-</span><span class="mf">0.1021571947656485</span><span class="p">,</span> 
+            <span class="mf">0.20060562262179948</span><span class="p">,</span> 
+            <span class="mf">3.8519059201887837</span><span class="p">,</span> 
+            <span class="o">-</span><span class="mf">0.023023293750960825</span>
+        <span class="p">]</span>
+    <span class="p">],</span> 
+    <span class="s2">&quot;intercepts&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="mf">3.848735404611169</span><span class="p">,</span> 
+        <span class="mf">3.9197730270811557</span><span class="p">,</span> 
+        <span class="mf">3.8120586235934022</span><span class="p">,</span> 
+        <span class="mf">3.897052581538587</span>
+    <span class="p">],</span> 
+    <span class="s2">&quot;num_bins&quot;</span><span class="o">:</span> <span class="mi">4</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Likewise the top three features was tested and here the results was</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s2">&quot;auc&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="mf">0.83339345245067975</span><span class="p">,</span> 
+        <span class="mf">0.833597772624869</span><span class="p">,</span> 
+        <span class="mf">0.83492605512585438</span><span class="p">,</span> 
+        <span class="mf">0.83223962917988192</span>
+    <span class="p">],</span> 
+    <span class="s2">&quot;features&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="s2">&quot;sde1&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;v11&quot;</span><span class="p">,</span> 
+        <span class="s2">&quot;e9&quot;</span>
+    <span class="p">],</span> 
+    <span class="s2">&quot;generator&quot;</span><span class="o">:</span> <span class="s2">&quot;sessions/18-forward-selection/scripts/testing_features_selected.py&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;dataset_size&quot;</span><span class="o">:</span> <span class="mi">482242</span><span class="p">,</span> 
+    <span class="s2">&quot;C&quot;</span><span class="o">:</span> <span class="mi">10000</span><span class="p">,</span> 
+    <span class="s2">&quot;weights&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="p">[</span>
+            <span class="o">-</span><span class="mf">0.098671263009051213</span><span class="p">,</span> 
+            <span class="mf">0.20108023103185435</span><span class="p">,</span> 
+            <span class="mf">3.640618179679866</span>
+        <span class="p">],</span> 
+        <span class="p">[</span>
+            <span class="o">-</span><span class="mf">0.098398949316113454</span><span class="p">,</span> 
+            <span class="mf">0.20280233820735319</span><span class="p">,</span> 
+            <span class="mf">3.6527731476589631</span>
+        <span class="p">],</span> 
+        <span class="p">[</span>
+            <span class="o">-</span><span class="mf">0.098550744314456734</span><span class="p">,</span> 
+            <span class="mf">0.20096915926109851</span><span class="p">,</span> 
+            <span class="mf">3.6332765272808079</span>
+        <span class="p">],</span> 
+        <span class="p">[</span>
+            <span class="o">-</span><span class="mf">0.099400573232850661</span><span class="p">,</span> 
+            <span class="mf">0.20264029925535684</span><span class="p">,</span> 
+            <span class="mf">3.6405481698637825</span>
+        <span class="p">]</span>
+    <span class="p">],</span> 
+    <span class="s2">&quot;intercepts&quot;</span><span class="o">:</span> <span class="p">[</span>
+        <span class="o">-</span><span class="mf">4.1948107336304341</span><span class="p">,</span> 
+        <span class="o">-</span><span class="mf">4.2365563357430522</span><span class="p">,</span> 
+        <span class="o">-</span><span class="mf">4.1886789260965536</span><span class="p">,</span> 
+        <span class="o">-</span><span class="mf">4.2103371406463888</span>
+    <span class="p">],</span> 
+    <span class="s2">&quot;num_bins&quot;</span><span class="o">:</span> <span class="mi">4</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../19-window-features/index.html" title="Session 19: Window Features"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../17-recreating-winning-entry/index.html" title="Session 17: Recreating Winning Entry"
+             >previous</a> |</li>
+        <li><a href="../../index.html">Ford challenge v1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Sessions</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Anders Hørsted.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

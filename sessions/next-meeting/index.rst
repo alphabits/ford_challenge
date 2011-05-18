@@ -19,3 +19,5 @@ Questions for this meeting:
     * When doing crossvalidation on LogisticRegression with Inferences features, I got auc scores around 0.98 when I used only the first 10000 rows in the training data set. If I only used the first 1000 auc was aroun 0.75, and if I used the whole data set the auc was approx 0.82? OK found the reason. As already discovered the feature E9 is equal to isalert about 70% of the time. In the first 10000 rows E9 is equal to IsAlert 99% of the time!
 
     * Should I use the same rows when doing forward selection? I think it makes sense to use the same rows, so the feature selection isn't prematurely stopped, because of the randomly selected data.
+
+    * When doing forward selection, does it make sense to limit the number of features selected?
