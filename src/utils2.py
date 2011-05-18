@@ -13,8 +13,7 @@ L_clean = [l for l in L if l not in ['P8','V7','V9','ObsNum','TrialID','RowNum']
 
 # Extended labels
 prefix = 30*[''] + 30*['m'] + 30*['sd']
-postfix = 30*[''] + 60*['r']
-L_ex = L[:4] + [a+b+c for a,b,c in zip(prefix, 3*L[4:], postfix)]
+L_ex = L[:4] + [a+b for a,b in zip(prefix, 3*L[4:])]
 
 
 class LabelIndex(object):
@@ -35,6 +34,7 @@ class LabelIndex(object):
         return map(self.__getattr__, args)
 
 c = LabelIndex(L)
+c_ex = LabelIndex(L_ex)
 
 
 def create_extended_dataset(D):
@@ -60,7 +60,9 @@ def create_extended_dataset(D):
         # Calculate running std
         # Avoid dividing by zero in first row
         if cnt > 1:
-            D_ex[i,64:94] = (cnt*sums_sq - sums**2)/(cnt*(cnt-1))
+            tmp_var = (cnt*sums_sq - sums**2)/(cnt*(cnt-1))
+            tmp_var[:,np.nonzero(tmp_var<0)[1]] = 0
+            D_ex[i,64:94] = np.sqrt(tmp_var)
         else:
             D_ex[i,64:94] = std_first_row
 
@@ -88,17 +90,22 @@ def create_extended_dataset_window(D, window_size=30):
 
         if obsnum >= window_size:
             sums -= D[i-window_size,4:]
-            sums_sq -= D[i-window_size,4:]
+            sums_sq -= D[i-window_size,4:]**2
 
         D_ex[i,:34] = D[i,:]
 
         # Calculate window mean
         D_ex[i,34:64] = sums/cnt
         
-        # Calculate window std
-        # Avoid dividing by zero in first row
+        # Calculate window std.
+        # Avoid dividing by zero in first row.
+        # And ensure that variance is non negative.
+        # Guess negative values occur because 
+        # of rounding errors
         if cnt > 1:
-            D_ex[i,64:94] = (cnt*sums_sq - sums**2)/(cnt*(cnt-1))
+            tmp_var = (cnt*sums_sq - sums**2)/(cnt*(cnt-1))
+            tmp_var[:,np.nonzero(tmp_var<0)[1]] = 0
+            D_ex[i,64:94] = np.sqrt(tmp_var)
         else:
             D_ex[i,64:94] = std_first_row
 

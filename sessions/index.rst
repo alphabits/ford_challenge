@@ -20,4 +20,5 @@ Sessions
     14-meeting-with-morten/index
     15-new-principal-components-analysis/index
     16-create-data-sets/index
+    17-recreating-winning-entry/index
     next-meeting/index

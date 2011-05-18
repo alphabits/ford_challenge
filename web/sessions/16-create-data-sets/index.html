@@ -91,8 +91,12 @@
 <dl class="docutils">
 <dt>Start time:</dt>
 <dd>16-05-2011 22:55</dd>
-<dt>End time:</dt>
+<dt>Pause time:</dt>
 <dd>16-05-2011 23:32</dd>
+<dt>Resume time:</dt>
+<dd>17-05-2011 13:10</dd>
+<dt>End time:</dt>
+<dd>17-05-2011 17:40</dd>
 </dl>
 <p>I am going to create the official training set and test set. First the unique line number is added as the first column. That way new data sets can be created, without duplicating all the original data. The training data set consists of all trials that has an id not divisible by 5. Trials with an id divisible with 5 is in the test data set. The code to generate the two data sets is</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -145,7 +149,9 @@
         <span class="c"># Calculate running std</span>
         <span class="c"># Avoid dividing by zero in first row</span>
         <span class="k">if</span> <span class="n">cnt</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">D_ex</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">64</span><span class="p">:</span><span class="mi">94</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">cnt</span><span class="o">*</span><span class="n">sums_sq</span> <span class="o">-</span> <span class="n">sums</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">cnt</span><span class="o">*</span><span class="p">(</span><span class="n">cnt</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">tmp_var</span> <span class="o">=</span> <span class="p">(</span><span class="n">cnt</span><span class="o">*</span><span class="n">sums_sq</span> <span class="o">-</span> <span class="n">sums</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">cnt</span><span class="o">*</span><span class="p">(</span><span class="n">cnt</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">tmp_var</span><span class="p">[:,</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">tmp_var</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">D_ex</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">64</span><span class="p">:</span><span class="mi">94</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tmp_var</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">D_ex</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">64</span><span class="p">:</span><span class="mi">94</span><span class="p">]</span> <span class="o">=</span> <span class="n">std_first_row</span>
 
@@ -176,17 +182,22 @@
 
         <span class="k">if</span> <span class="n">obsnum</span> <span class="o">&gt;=</span> <span class="n">window_size</span><span class="p">:</span>
             <span class="n">sums</span> <span class="o">-=</span> <span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">window_size</span><span class="p">,</span><span class="mi">4</span><span class="p">:]</span>
-            <span class="n">sums_sq</span> <span class="o">-=</span> <span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">window_size</span><span class="p">,</span><span class="mi">4</span><span class="p">:]</span>
+            <span class="n">sums_sq</span> <span class="o">-=</span> <span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">window_size</span><span class="p">,</span><span class="mi">4</span><span class="p">:]</span><span class="o">**</span><span class="mi">2</span>
 
         <span class="n">D_ex</span><span class="p">[</span><span class="n">i</span><span class="p">,:</span><span class="mi">34</span><span class="p">]</span> <span class="o">=</span> <span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span>
 
         <span class="c"># Calculate window mean</span>
         <span class="n">D_ex</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">34</span><span class="p">:</span><span class="mi">64</span><span class="p">]</span> <span class="o">=</span> <span class="n">sums</span><span class="o">/</span><span class="n">cnt</span>
         
-        <span class="c"># Calculate window std</span>
-        <span class="c"># Avoid dividing by zero in first row</span>
+        <span class="c"># Calculate window std.</span>
+        <span class="c"># Avoid dividing by zero in first row.</span>
+        <span class="c"># And ensure that variance is non negative.</span>
+        <span class="c"># Guess negative values occur because </span>
+        <span class="c"># of rounding errors</span>
         <span class="k">if</span> <span class="n">cnt</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">D_ex</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">64</span><span class="p">:</span><span class="mi">94</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">cnt</span><span class="o">*</span><span class="n">sums_sq</span> <span class="o">-</span> <span class="n">sums</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">cnt</span><span class="o">*</span><span class="p">(</span><span class="n">cnt</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">tmp_var</span> <span class="o">=</span> <span class="p">(</span><span class="n">cnt</span><span class="o">*</span><span class="n">sums_sq</span> <span class="o">-</span> <span class="n">sums</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">cnt</span><span class="o">*</span><span class="p">(</span><span class="n">cnt</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">tmp_var</span><span class="p">[:,</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">tmp_var</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">D_ex</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">64</span><span class="p">:</span><span class="mi">94</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tmp_var</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">D_ex</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="mi">64</span><span class="p">:</span><span class="mi">94</span><span class="p">]</span> <span class="o">=</span> <span class="n">std_first_row</span>
 

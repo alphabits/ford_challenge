@@ -14,3 +14,11 @@ def trainingset_extended():
 def testset_extended():
     from src.testset_extended import D
     return D
+
+def trainingset_extended_window():
+    from src.trainingset_extended_window import D
+    return D
+
+def testset_extended_window():
+    from src.testset_extended_window import D
+    return D

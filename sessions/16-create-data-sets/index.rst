@@ -5,8 +5,14 @@ Session 16: Create Data Sets
 Start time:
     16-05-2011 22:55
 
-End time:
+Pause time:
     16-05-2011 23:32
+
+Resume time:
+    17-05-2011 13:10
+
+End time:
+    17-05-2011 17:40
 
 I am going to create the official training set and test set. First the unique line number is added as the first column. That way new data sets can be created, without duplicating all the original data. The training data set consists of all trials that has an id not divisible by 5. Trials with an id divisible with 5 is in the test data set. The code to generate the two data sets is
 
@@ -25,3 +31,5 @@ Now it is time to create the window dataset. This dataset includes features for 
 
 .. literalinclude:: /src/utils2.py
     :pyobject: create_extended_dataset_window
+
+

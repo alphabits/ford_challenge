@@ -62,6 +62,10 @@ To be able to recreate the winning entry from Inference I have to create an exte
 Check that I get approx the same AUC as inference
 =================================================
 
+.. note::
+
+    This code is based on the extended data set with errors in the calculation. The following results are therefore wrong.
+
 Before I try to recreate the winning approach, I want to test that I actually get the same AUC as Inference, if I just hardcode the coefficients into the model. The code to calculate the AUC of the hard coded model is
 
 .. literalinclude:: scripts/hard_coded_coefficients.py
