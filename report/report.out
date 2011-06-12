@@ -1,3 +1,15 @@
-\BOOKMARK [0][]{chapter.1}{1 Data}{}
-\BOOKMARK [1][]{section.1.1}{1.1 Introducing the data}{chapter.1}
-\BOOKMARK [1][]{section.1.2}{1.2 Introductory data cleaning}{chapter.1}
+\BOOKMARK [0][]{chapter.1}{1 Introduction}{}
+\BOOKMARK [1][]{section.1.1}{1.1 The competition}{chapter.1}
+\BOOKMARK [2][]{subsection.1.1.1}{1.1.1 Problemformulering}{section.1.1}
+\BOOKMARK [0][]{chapter.2}{2 The Ford Challenge}{}
+\BOOKMARK [1][]{section.2.1}{2.1 Other online machine learning competitions}{chapter.2}
+\BOOKMARK [1][]{section.2.2}{2.2 The ford competition}{chapter.2}
+\BOOKMARK [2][]{subsection.2.2.1}{2.2.1 The data set}{section.2.2}
+\BOOKMARK [0][]{chapter.3}{3 Toolset}{}
+\BOOKMARK [0][]{chapter.4}{4 Data exploration}{}
+\BOOKMARK [0][]{chapter.5}{5 Recreating winning approach}{}
+\BOOKMARK [0][]{chapter.6}{6 Improving the winning approach}{}
+\BOOKMARK [0][]{chapter.7}{7 Other classification methods}{}
+\BOOKMARK [0][]{chapter.8}{8 Theory of classification}{}
+\BOOKMARK [0][]{chapter.9}{9 Discussion}{}
+\BOOKMARK [0][]{chapter.10}{10 Conclusion}{}

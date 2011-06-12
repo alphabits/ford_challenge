@@ -23,4 +23,6 @@ Sessions
     17-recreating-winning-entry/index
     18-forward-selection/index
     19-window-features/index
+    20-meeting-with-morten-and-ole/index
+    21-report-structure-and-writing/index
     next-meeting/index
