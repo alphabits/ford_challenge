@@ -1,4 +1,4 @@
-\begin{thebibliography}{4}
+\begin{thebibliography}{8}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -7,26 +7,50 @@
 
 \bibitem[Abou-Nasr(2011{\natexlab{a}})]{kaggle_forum_266}
 Mahmoud Abou-Nasr.
-\newblock Kaggle forum: Discrete or continuous values, 2011{\natexlab{a}}.
+\newblock {Kaggle forum: Discrete or continuous values - Reply 2},
+  2011{\natexlab{a}}.
 \newblock URL
   \url{http://www.kaggle.com/c/stayalert/forums/t/266/discrete-or-continuous-v%
 alues/1635#post1635}.
 
-\bibitem[Abou-Nasr(2011{\natexlab{b}})]{kaggle_forum_317}
+\bibitem[Abou-Nasr(2011{\natexlab{b}})]{kaggle_forum_268_reply_2}
 Mahmoud Abou-Nasr.
-\newblock Kaggle forum: About the parameter, 2011{\natexlab{b}}.
+\newblock {Kaggle forum: Were units changed? - Reply 2}, 06 2011{\natexlab{b}}.
+\newblock URL
+  \url{http://www.kaggle.com/c/stayalert/forums/t/268/were-units-changed/1641#%
+post1641}.
+
+\bibitem[Abou-Nasr(2011{\natexlab{c}})]{kaggle_forum_317}
+Mahmoud Abou-Nasr.
+\newblock {Kaggle forum: About the parameter - Reply 3}, 2011{\natexlab{c}}.
 \newblock URL
   \url{http://www.kaggle.com/c/stayalert/forums/t/317/about-the-parameter/1861%
 #post1861}.
 
-\bibitem[Bishop(2006)]{bishop}
-Christopher~M. Bishop.
-\newblock \emph{Pattern Recognition and Machine Learning}.
-\newblock Springer Science + Business Media LLC, 2006.
+\bibitem[ACM(2011)]{kdd_cup_center}
+ACM.
+\newblock {KDD Cup Center}, 06 2011.
+\newblock URL \url{http://www.sigkdd.org/kddcup/index.php}.
 
-\bibitem[Kaggle.com(2011)]{kaggle_data}
-Kaggle.com.
-\newblock The ford challenge data files, 2011.
-\newblock URL \url{http://www.kaggle.com/c/stayalert/Data}.
+\bibitem[Inference(2011)]{kaggle_forum_295_reply_3}
+Inference.
+\newblock {Kaggle forum: Ford - Reply 3}, 06 2011.
+\newblock URL
+  \url{http://www.kaggle.com/c/stayalert/forums/t/295/ford/1743#post1743}.
+
+\bibitem[Labs(2011)]{kdd_cup_2011}
+Yahoo! Labs.
+\newblock {KDD Cup 2011}, 06 2011.
+\newblock URL \url{http://kddcup.yahoo.com/}.
+
+\bibitem[Netflix(2011)]{netflix_leaderboard}
+Netflix.
+\newblock {Netflix Prize Leaderboard}, 06 2011.
+\newblock URL \url{http://www.netflixprize.com/leaderboard}.
+
+\bibitem[Wikipedia(2011)]{wiki:netflix_prize}
+Wikipedia.
+\newblock {Netflix Prize}, 06 2011.
+\newblock URL \url{http://en.wikipedia.org/wiki/Netflix_Prize}.
 
 \end{thebibliography}
