@@ -1,4 +1,4 @@
-\begin{thebibliography}{8}
+\begin{thebibliography}{11}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -38,6 +38,11 @@ Inference.
 \newblock URL
   \url{http://www.kaggle.com/c/stayalert/forums/t/295/ford/1743#post1743}.
 
+\bibitem[Kaggle.com(2011)]{kaggle_data}
+Kaggle.com.
+\newblock {The Ford Challenge Data Files}, 2011.
+\newblock URL \url{http://www.kaggle.com/c/stayalert/Data}.
+
 \bibitem[Labs(2011)]{kdd_cup_2011}
 Yahoo! Labs.
 \newblock {KDD Cup 2011}, 06 2011.
@@ -47,6 +52,20 @@ Yahoo! Labs.
 Netflix.
 \newblock {Netflix Prize Leaderboard}, 06 2011.
 \newblock URL \url{http://www.netflixprize.com/leaderboard}.
+
+\bibitem[Pardos(2011)]{kaggle_forum_327_reply_1}
+Zach Pardos.
+\newblock {Kaggle forum: Top two teams with same AUC - Reply 1}, 06 2011.
+\newblock URL
+  \url{http://www.kaggle.com/c/stayalert/forums/t/327/top-two-teams-with-same-%
+auc/1937#post1937}.
+
+\bibitem[Rosanne(2011)]{kaggle_forum_327_reply_4}
+Rosanne.
+\newblock {Kaggle forum: Top two teams with same AUC - Reply 4}, 06 2011.
+\newblock URL
+  \url{http://www.kaggle.com/c/stayalert/forums/t/327/top-two-teams-with-same-%
+auc/1957#post1957}.
 
 \bibitem[Wikipedia(2011)]{wiki:netflix_prize}
 Wikipedia.

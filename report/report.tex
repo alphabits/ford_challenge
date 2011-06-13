@@ -15,11 +15,77 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage{url}
-\usepackage[numbers,square]{natbib}
+\usepackage[round]{natbib}
 \usepackage{color}
+\definecolor{mygray}{RGB}{230,230,230}
+\usepackage{tabularx}
 
 \newcommand\mydef[1]{\emph{#1}}
 \newcommand\mytodo[1]{\textbf{\textcolor{red}{TODO: #1}}}
+\newcommand\fn[1]{#1}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}%
+
+\usepackage{lmodern}
+\usepackage{fouriernc}
+\usepackage[scaled]{beramono}
+\usepackage{listings}
+\lstset {                 % A rudimentary config that shows off some features.
+    language=Python,
+    basicstyle=\footnotesize\ttfamily, % Without beramono, we'd get cmtt, the teletype font.
+    commentstyle=\textit, % cmtt doesn't do italics. It might do slanted text though.
+    keywordstyle=\bfseries,
+    framextopmargin=4pt,
+    framexbottommargin=4pt,
+    framexleftmargin=4pt,
+    framexrightmargin=4pt,
+    xleftmargin=4pt,
+    xrightmargin=4pt,
+    backgroundcolor=\color{mygray},
+    frame=single,
+    showstringspaces=false,
+    tabsize=4            % Or whatever you use in your editor, I suppose.
+}
+
+\renewcommand{\lstlistlistingname}{Code Listings}
+\renewcommand{\lstlistingname}{Code Listing}
+\definecolor{gray}{gray}{0.5}
+\definecolor{green}{rgb}{0,0.5,0}
+\lstnewenvironment{python}[1][]{
+    \lstset{
+        language=python,
+        stringstyle=\color{red},
+        showstringspaces=false,
+        alsoletter={1234567890},
+        otherkeywords={\ , \}, \{},
+        keywordstyle=\color{blue},
+        emph={access,and,break,class,continue,def,del,elif ,else,%
+        except,exec,finally,for,from,global,if,import,in,i s,%
+        lambda,not,or,pass,print,raise,return,try,while},
+        emphstyle=\color{black}\bfseries,
+        emph={[2]True, False, None, self},
+        emphstyle=[2]\color{green},
+        emph={[3]from, import, as},
+        emphstyle=[3]\color{blue},
+        upquote=true,
+        morecomment=[s]{"""}{"""},
+        commentstyle=\color{gray}\slshape,
+        emph={[4]1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
+        emphstyle=[4]\color{blue},
+        literate=*{:}{{\textcolor{blue}:}}{1}%
+        {=}{{\textcolor{blue}=}}{1}%
+        {-}{{\textcolor{blue}-}}{1}%
+        {+}{{\textcolor{blue}+}}{1}%
+        {*}{{\textcolor{blue}*}}{1}%
+        {!}{{\textcolor{blue}!}}{1}%
+        {(}{{\textcolor{blue}(}}{1}%
+        {)}{{\textcolor{blue})}}{1}%
+        {[}{{\textcolor{blue}[}}{1}%
+        {]}{{\textcolor{blue}]}}{1}%
+        {<}{{\textcolor{blue}<}}{1}%
+        {>}{{\textcolor{blue}>}}{1},%
+        rulesepcolor=\color{blue},#1
+    }
+}{}
 
 
 %%%%%%%%%%% MODIFY THESE LINES ONLY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -66,12 +132,12 @@
 
 \include{chapters/introduction}
 \include{chapters/the-competition}
-\include{chapters/toolset}
 \include{chapters/data-exploration}
 \include{chapters/recreating-winning-approach}
 \include{chapters/improving-winning-approach}
 \include{chapters/other-classification-methods}
 \include{chapters/theory-of-classification}
+\include{chapters/toolset}
 %\include{chapters/describing-the-workflow}
 \include{chapters/discussion}
 \include{chapters/conclusion}
