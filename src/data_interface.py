@@ -35,9 +35,12 @@ class Trial(object):
         return self.features[feature_id]
 
     def get_trial(self, trial_id):
-        if not trial_id in self.trial_id_list:
+        if not self.has_trial(trial_id):
             raise AttributeError("No trial with id %s" % (trial_id,))
         return Trial.get(trial_id)
+
+    def has_trial(self, trial_id):
+        return trial_id in self.trial_id_list
 
     def view(self):
         return self._view

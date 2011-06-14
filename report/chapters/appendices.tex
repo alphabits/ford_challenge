@@ -3,16 +3,36 @@ A little introduction and then a new page
 \vspace{\stretch{1}}
 \pagebreak
 
-\section{Source code for calculating common statistics}\label{app:source-common-statistics}
-\lstinputlisting{../sessions/9-data-exploration/src/calculate_summary_statistics.py}
+\section{Calculating common statistics - Code}\label{app:source-common-statistics}
+\lstinputlisting[caption=\githuburl{sessions/9-data-exploration/src/calculate_summary_statistics.py}]{../sessions/9-data-exploration/src/calculate_summary_statistics.py}
+
 \vspace{\stretch{1}}
 
 \pagebreak
 
-\section{Results of calculating common statistics}\label{app:result-common-statistics}
+\section{Calculating common statistics - Result}\label{app:result-common-statistics}
 {\small\sffamily
 \begin{python}
     import scripts.commonstats_table as c; c.render('../sessions/9-data-exploration/src/summary_statistics.json')
 \end{python}
 }
 
+\clearpage
+
+\section{Calculate unique values of features - Code} % (fold)
+\label{app:source-unique-values}
+\lstinputlisting[caption=\githuburl{sessions/9-data-exploration/src/calculate_unique_values.py}]{../sessions/9-data-exploration/src/calculate_unique_values.py}
+\lstinputlisting[caption=\githuburl{sessions/9-data-exploration/src/calculate_unique_values_pr_trial.py}]{../sessions/9-data-exploration/src/calculate_unique_values_pr_trial.py}
+\lstinputlisting[caption=\githuburl{sessions/9-data-exploration/src/unique_values_combined.py}]{../sessions/9-data-exploration/src/unique_values_combined.py}
+% section Calculate unique values of features (end)
+
+\clearpage
+
+\section{Calculate unique values of features - Result} % (fold)
+\label{app:result-unique-values}
+{\small\sffamily
+\begin{python}
+    import scripts.uniquevalues_table as c; c.render()
+\end{python}
+}
+% section Calculate unique values of features - Result (end)

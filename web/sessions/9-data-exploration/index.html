@@ -100,7 +100,9 @@
 </dl>
 <p>This may be the first real working session.</p>
 <p>First I will calculate summary statistics for every feature across the whole data set. That leads to the abandoning of three features that turns out to be 0 in all rows.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">dump</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># sessions/9-data-exploration/src/calculate_summary_statistics.py</span>
+
+<span class="kn">from</span> <span class="nn">json</span> <span class="kn">import</span> <span class="n">dump</span>
 
 <span class="kn">from</span> <span class="nn">src.data_interface</span> <span class="kn">import</span> <span class="n">trd</span><span class="p">,</span> <span class="n">L</span>
 <span class="kn">from</span> <span class="nn">src.utils</span> <span class="kn">import</span> <span class="n">get_path</span>

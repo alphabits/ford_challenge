@@ -7,7 +7,7 @@ from src.utils import get_path
 
 path = get_path(__file__) + '/..'
 
-trials = range(101, 151)
+trials = range(301, 351)
 
 ticklabels = []
 for i in trials:
@@ -16,8 +16,9 @@ for i in trials:
     else:
         ticklabels.append('')
 
-for label in L_clean:
-    data = [d.get_trial(i).get_feature(label).view() for i in trials]
+#for label in L_clean:
+for label in ['V1']:
+    data = [d.get_trial(i).get_feature(label).view() for i in trials if d.has_trial(i)]
     plt.title('Boxplot of feature {0} in the trials {1}-{2}'.format(
             label, trials[0], trials[-1]))
     plt.boxplot(data)

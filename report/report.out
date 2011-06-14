@@ -14,11 +14,12 @@
 \BOOKMARK [1][]{section.3.3}{3.3 Determining the datatype of features}{chapter.3}
 \BOOKMARK [2][]{subsection.3.3.1}{3.3.1 Unique values}{section.3.3}
 \BOOKMARK [2][]{subsection.3.3.2}{3.3.2 Plotting some features}{section.3.3}
-\BOOKMARK [1][]{section.3.4}{3.4 Finding possible discriminating features}{chapter.3}
-\BOOKMARK [2][]{subsection.3.4.1}{3.4.1 Testing binary features}{section.3.4}
-\BOOKMARK [2][]{subsection.3.4.2}{3.4.2 Scatterplots}{section.3.4}
-\BOOKMARK [1][]{section.3.5}{3.5 Making a Principal Component Analysis}{chapter.3}
-\BOOKMARK [2][]{subsection.3.5.1}{3.5.1 The math behind PCA}{section.3.5}
+\BOOKMARK [1][]{section.3.4}{3.4 Outlier detection}{chapter.3}
+\BOOKMARK [2][]{subsection.3.4.1}{3.4.1 Making boxplots of features}{section.3.4}
+\BOOKMARK [1][]{section.3.5}{3.5 Finding possible discriminating features}{chapter.3}
+\BOOKMARK [2][]{subsection.3.5.1}{3.5.1 Testing binary features}{section.3.5}
+\BOOKMARK [2][]{subsection.3.5.2}{3.5.2 Scatterplots}{section.3.5}
+\BOOKMARK [2][]{subsection.3.5.3}{3.5.3 Making a Principal Component Analysis}{section.3.5}
 \BOOKMARK [1][]{section.3.6}{3.6 Conclusions}{chapter.3}
 \BOOKMARK [0][]{chapter.4}{4 Recreating winning approach}{}
 \BOOKMARK [0][]{chapter.5}{5 Improving the winning approach}{}
@@ -29,5 +30,7 @@
 \BOOKMARK [0][]{chapter.9}{9 Discussion}{}
 \BOOKMARK [0][]{chapter.10}{10 Conclusion}{}
 \BOOKMARK [0][]{chapter.11}{A Appendices}{}
-\BOOKMARK [1][]{section.11.1}{A.1 Source code for calculating common statistics}{chapter.11}
-\BOOKMARK [1][]{section.11.2}{A.2 Results of calculating common statistics}{chapter.11}
+\BOOKMARK [1][]{section.11.1}{A.1 Calculating common statistics - Code}{chapter.11}
+\BOOKMARK [1][]{section.11.2}{A.2 Calculating common statistics - Result}{chapter.11}
+\BOOKMARK [1][]{section.11.3}{A.3 Calculate unique values of features - Code}{chapter.11}
+\BOOKMARK [1][]{section.11.4}{A.4 Calculate unique values of features - Result}{chapter.11}

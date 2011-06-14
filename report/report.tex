@@ -19,13 +19,29 @@
 \usepackage[round]{natbib}
 \usepackage{color}
 \definecolor{mygray}{RGB}{244,244,244}
+\definecolor{gray}{gray}{0.5}
+\definecolor{myredish}{RGB}{193,33,97}
+\definecolor{grayblue}{RGB}{91,112,142}
+\definecolor{myorange}{RGB}{255,134,0}
+\definecolor{green}{rgb}{0,0.4,0}
 \usepackage{tabularx}
+
+\usepackage[pdftex]{hyperref}
+\hypersetup{ 
+    colorlinks,% 
+    citecolor=grayblue,% 
+    filecolor=grayblue,% 
+    linkcolor=grayblue,% 
+    urlcolor=grayblue 
+}
 
 \newcommand\mydef[1]{\emph{#1}}
 \newcommand\mytodo[1]{\textbf{\textcolor{red}{TODO: #1}}}
-\newcommand\fn[1]{#1}
+\newcommand\fn[1]{{\ttfamily\small #1}}
 \newcolumntype{R}{>{\raggedleft\arraybackslash}X}%
 \newcommand\appref[1]{appendix \ref{app:#1}}
+\newcommand\mypagebreak{\vspace{\stretch{1}}\pagebreak}
+\newcommand\githuburl[1]{\url{https://github.com/alphabits/ford_challenge/tree/master/#1}}
 
 \usepackage{lmodern}
 \usepackage{fouriernc}
@@ -45,16 +61,13 @@
     backgroundcolor=\color{mygray},
     frame=single,
     showstringspaces=false,
+    captionpos=b,
     tabsize=4            % Or whatever you use in your editor, I suppose.
 }
 
 \renewcommand{\lstlistlistingname}{Code Listings}
 \renewcommand{\lstlistingname}{Code Listing}
-\definecolor{gray}{gray}{0.5}
-\definecolor{myredish}{RGB}{193,33,97}
-\definecolor{grayblue}{RGB}{91,112,142}
-\definecolor{myorange}{RGB}{255,134,0}
-\definecolor{green}{rgb}{0,0.4,0}
+
 \lstset{
     language=python,
     stringstyle=\color{myorange},
@@ -90,6 +103,8 @@
     rulesepcolor=\color{blue}
 }
 
+
+
 %% Define a new 'leo' style for the url package that will use a smaller font.
 \makeatletter
 \def\url@leostyle{%
@@ -113,6 +128,8 @@
 %%%%%%%%%%%%%%% DO NOT MODIFY START %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \input{immphddef.sty}
 %%%%%%%%%%%%%%% DO NOT MODIFY END %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 %%%%%%%PREFACE CHAPTERS INCLUDE%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
