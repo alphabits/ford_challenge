@@ -1,0 +1,18 @@
+\chapter{Appendices}
+A little introduction and then a new page
+\vspace{\stretch{1}}
+\pagebreak
+
+\section{Source code for calculating common statistics}\label{app:source-common-statistics}
+\lstinputlisting{../sessions/9-data-exploration/src/calculate_summary_statistics.py}
+\vspace{\stretch{1}}
+
+\pagebreak
+
+\section{Results of calculating common statistics}\label{app:result-common-statistics}
+{\small\sffamily
+\begin{python}
+    import scripts.commonstats_table as c; c.render('../sessions/9-data-exploration/src/summary_statistics.json')
+\end{python}
+}
+

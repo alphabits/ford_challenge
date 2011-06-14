@@ -1,5 +1,5 @@
 pdf: report.tex 
-	pdflatex report.tex
+	pdflatex --shell-escape report.tex
 	open report.pdf
 
 pdfwithbib: report.tex bibdb.bib

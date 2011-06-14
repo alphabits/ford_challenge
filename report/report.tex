@@ -10,20 +10,22 @@
 %  ps2pdf -sPAPERSIZE=b5 phdthesis.ps phdthesis.pdf (or use Acrobat Distiller)
 
 %  COMPILATION STEP USING PDFLATEX
-\documentclass[10pt,twoside]{book}
+\documentclass[11pt,twoside]{book}
 %  pdflatex phdthesis.tex
 
 \usepackage[utf8]{inputenc}
 \usepackage{url}
+\usepackage{python}
 \usepackage[round]{natbib}
 \usepackage{color}
-\definecolor{mygray}{RGB}{230,230,230}
+\definecolor{mygray}{RGB}{244,244,244}
 \usepackage{tabularx}
 
 \newcommand\mydef[1]{\emph{#1}}
 \newcommand\mytodo[1]{\textbf{\textcolor{red}{TODO: #1}}}
 \newcommand\fn[1]{#1}
 \newcolumntype{R}{>{\raggedleft\arraybackslash}X}%
+\newcommand\appref[1]{appendix \ref{app:#1}}
 
 \usepackage{lmodern}
 \usepackage{fouriernc}
@@ -31,7 +33,7 @@
 \usepackage{listings}
 \lstset {                 % A rudimentary config that shows off some features.
     language=Python,
-    basicstyle=\footnotesize\ttfamily, % Without beramono, we'd get cmtt, the teletype font.
+    basicstyle=\scriptsize\ttfamily, % Without beramono, we'd get cmtt, the teletype font.
     commentstyle=\textit, % cmtt doesn't do italics. It might do slanted text though.
     keywordstyle=\bfseries,
     framextopmargin=4pt,
@@ -49,43 +51,52 @@
 \renewcommand{\lstlistlistingname}{Code Listings}
 \renewcommand{\lstlistingname}{Code Listing}
 \definecolor{gray}{gray}{0.5}
-\definecolor{green}{rgb}{0,0.5,0}
-\lstnewenvironment{python}[1][]{
-    \lstset{
-        language=python,
-        stringstyle=\color{red},
-        showstringspaces=false,
-        alsoletter={1234567890},
-        otherkeywords={\ , \}, \{},
-        keywordstyle=\color{blue},
-        emph={access,and,break,class,continue,def,del,elif ,else,%
-        except,exec,finally,for,from,global,if,import,in,i s,%
-        lambda,not,or,pass,print,raise,return,try,while},
-        emphstyle=\color{black}\bfseries,
-        emph={[2]True, False, None, self},
-        emphstyle=[2]\color{green},
-        emph={[3]from, import, as},
-        emphstyle=[3]\color{blue},
-        upquote=true,
-        morecomment=[s]{"""}{"""},
-        commentstyle=\color{gray}\slshape,
-        emph={[4]1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
-        emphstyle=[4]\color{blue},
-        literate=*{:}{{\textcolor{blue}:}}{1}%
-        {=}{{\textcolor{blue}=}}{1}%
-        {-}{{\textcolor{blue}-}}{1}%
-        {+}{{\textcolor{blue}+}}{1}%
-        {*}{{\textcolor{blue}*}}{1}%
-        {!}{{\textcolor{blue}!}}{1}%
-        {(}{{\textcolor{blue}(}}{1}%
-        {)}{{\textcolor{blue})}}{1}%
-        {[}{{\textcolor{blue}[}}{1}%
-        {]}{{\textcolor{blue}]}}{1}%
-        {<}{{\textcolor{blue}<}}{1}%
-        {>}{{\textcolor{blue}>}}{1},%
-        rulesepcolor=\color{blue},#1
-    }
-}{}
+\definecolor{myredish}{RGB}{193,33,97}
+\definecolor{grayblue}{RGB}{91,112,142}
+\definecolor{myorange}{RGB}{255,134,0}
+\definecolor{green}{rgb}{0,0.4,0}
+\lstset{
+    language=python,
+    stringstyle=\color{myorange},
+    showstringspaces=false,
+    alsoletter={1234567890},
+    otherkeywords={\ , \}, \{},
+    keywordstyle=\color{blue},
+    emph={access,and,break,class,continue,def,del,elif ,else,%
+    except,exec,finally,for,from,global,if,import,in,i s,%
+    lambda,not,or,pass,print,raise,return,try,while},
+    emphstyle=\color{myredish}\bfseries,
+    emph={[2]True, False, None, self, __file__},
+    emphstyle=[2]\color{green},
+    emph={[3]from, import, as},
+    emphstyle=[3]\color{blue},
+    upquote=true,
+    morecomment=[s]{"""}{"""},
+    commentstyle=\color{gray}\slshape,
+    emph={[4]1, 2, 3, 4, 5, 6, 7, 8, 9, 0},
+    emphstyle=[4]\color{blue},
+    literate=*{:}{{\textcolor{blue}:}}{1}%
+    {=}{{\textcolor{blue}=}}{1}%
+    {-}{{\textcolor{blue}-}}{1}%
+    {+}{{\textcolor{blue}+}}{1}%
+    {*}{{\textcolor{blue}*}}{1}%
+    {!}{{\textcolor{blue}!}}{1}%
+    {(}{{\textcolor{blue}(}}{1}%
+    {)}{{\textcolor{blue})}}{1}%
+    {[}{{\textcolor{blue}[}}{1}%
+    {]}{{\textcolor{blue}]}}{1}%
+    {<}{{\textcolor{blue}<}}{1}%
+    {>}{{\textcolor{blue}>}}{1},%
+    rulesepcolor=\color{blue}
+}
+
+%% Define a new 'leo' style for the url package that will use a smaller font.
+\makeatletter
+\def\url@leostyle{%
+  \@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\small\ttfamily}}}
+\makeatother
+%% Now actually use the newly defined style.
+\urlstyle{leo}
 
 
 %%%%%%%%%%% MODIFY THESE LINES ONLY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -141,10 +152,14 @@
 %\include{chapters/describing-the-workflow}
 \include{chapters/discussion}
 \include{chapters/conclusion}
-\appendix
+%\appendix
 
 %%%%%%%APPENDIX CHAPTERS INCLUDE%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\newcounter{alphasect}
+\addtocounter{alphasect}{1}
+\renewcommand{\thechapter}{\Alph{alphasect}}
+\include{chapters/appendices}
 % Appendix A, B, ...
 %\include{Appendix1}
 %\include{paper1}

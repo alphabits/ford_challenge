@@ -1,7 +1,23 @@
 \chapter{Data exploration}
 Here I describe the various data exploration techniques I have used. Lots of nice graphs. PCA. Boxplots. Feature plots. Scatter Plots. Unique Values. Is it discrete, binary, continuous.
 
-\begin{python}[moreemph={[4]42},caption={Simple python example No. 1},label=ex1]
-def test(name):
-    print "Hallo" + name
-\end{python}
+\section{A note about Test data, training data}
+
+\section{Calculating common statistics}
+To start out the data exploration four common statistics, namely the mean, min, max and standard deviation, of every feature across the whole dataset was calculated. The source code for the calculations can be found in \appref{source-common-statistics} and all results in \appref{result-common-statistics}
+
+\par\par
+Mean, min, max, std for whole data set. Conclusions: P8, V7, V9 are zero throughout the data set, V5, E9 could be binary. Drivers only alert a little over half the time...
+
+\section{Determining the datatype of features}
+\subsection{Unique values}
+\subsection{Plotting some features}
+
+\section{Finding possible discriminating features}
+\subsection{Testing binary features}
+\subsection{Scatterplots}
+
+\section{Making a Principal Component Analysis}
+\subsection{The math behind PCA}
+
+\section{Conclusions}
