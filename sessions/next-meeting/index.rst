@@ -1,19 +1,13 @@
-============
-Next meeting
-============
+=====================
+Session: Next Meeting
+=====================
 
 Start time:
-    14-06-2011 10:00
+    16-06-2011 14:35
 
 End time:
-    14-06-2011 11:00
+    16-06-2011 14:35
 
-In this meeting I need to show Morten the first draft of my report. A couple of questions would be great to discuss:
+Some questions
 
-    * Placement of theory section: Place after data exploration section and before recreating winning approach
-
-    * His comments on my structure: Move the PCA theory from theory section to data exploration section
-
-    * Not including every plot in the appendices, but refer to github account
-
-    * Which plots to show in next section?
+    * Not including every plot in the appendices, but refer to github account.

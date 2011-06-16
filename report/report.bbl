@@ -1,4 +1,4 @@
-\begin{thebibliography}{12}
+\begin{thebibliography}{13}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -36,6 +36,13 @@ ACM.
 Ethem Alpaydin.
 \newblock \emph{{Introduction to Machine Learning}}.
 \newblock The MIT Press, 2 edition, 2010.
+
+\bibitem[David(2011)]{kaggle_forum_328_reply_2}
+David.
+\newblock {Methods/Tips from non-top 3 participants}, 2011.
+\newblock URL
+  \url{http://www.kaggle.com/c/stayalert/forums/t/328/methods-tips-from-non-to%
+p-3-participants/1967#post1967}.
 
 \bibitem[Inference(2011)]{kaggle_forum_295_reply_3}
 Inference.

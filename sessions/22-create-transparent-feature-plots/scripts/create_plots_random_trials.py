@@ -22,7 +22,7 @@ for feature, min, max in plots:
 #for feature in L[2:]:
     for tid in trials[:20]:
         v = trd.get_trial(tid).get_feature(feature).view()
-        plt.plot(range(len(v)), v, 'b-', alpha=0.1)
+        plt.plot(range(len(v)), v, 'b-', alpha=0.2)
     ax = plt.gca()
     ax.set_xlim(0,1200)
     ax.set_ylim(min, max)

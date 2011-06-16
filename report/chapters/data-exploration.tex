@@ -4,7 +4,7 @@ Here I describe the various data exploration techniques I have used. Lots of nic
 
 \section{A note about Test data, training data}
 
-\section{Calculating common statistics}
+\section{Calculating common statistics}\label{sec:summary-statistics}
 To start the data exploration, four common statistics, namely the mean, min, max and standard deviation, of every feature across the whole dataset was calculated. The standard deviation was calculated as (with $n$ equal the total number of rows in the dataset, and $x_i$ equal to the $i$'th value of any of the features)
 \[
     s = \sqrt{\frac{\sum_{i=1}^n (x_i-\bar{x})^2}{n}}
@@ -43,7 +43,7 @@ Another interesting detail is that there are two pairs of features ((\fn{P3},\fn
 
 A final remark about the number of unique values, is that feature \fn{E9} and \fn{V5} indeed are binary. Also if a limit of max 40 unique values within a single trial is set, as an indicator for categorical features, \fn{E3}, \fn{E7}, \fn{E8}, \fn{V3} and \fn{V10} are seen to be categorical. \par
 
-\subsection{Plotting some features}
+\subsection{Plotting some features}\label{sec:plotting-features}
 To get a more nuanced picture of the various features, it is now time to visualize the data. The first thing of interest is to plot every feature for a couple of trials, to see the structure of the features, and how much they vary between different trials. For a start some random plotting was done in the interactive ipython-shell\footnote{For details about the software setup used, see chapter~\ref{chp:tools}}. \par
 \begin{figure}[!hbtp]
     \centering
@@ -85,16 +85,51 @@ As many features have datapoints outside the 95 percentile even within a single 
 The boxplots do not correctly identify the outliers in the dataset, and another method is therefore neede.
 
 \subsection{Making layered feature plots}
-Instead of trying to categorize single datapoints as outliers, it may make more sense to define a specific feature in a specific trial as an outlier.
+Instead of trying to categorize single datapoints as outliers, it may make more sense to define a specific feature in a specific trial as an outlier. The fact that some features deviates a lot from their normal structure, in a few trials was already mentioned in section~\ref{sec:plotting-features} about exploratory plotting of features. Since the exploratory plotting was a rather unstructered process, a more thorough picture, of the structure of the different features across all trials, is needed. One way to get a better picture is by plotting all trials of a single feature, in a single plot. The graph of each trial is given a low opacity and then all 500 trials\mytodo{update number based on number of training trials} are plotted on top of each other. That way the common structure of a feature across trials are visualized, and possible outlier trials can be detected. Two examples of this plot type can be seen in figure~\ref{fig:layered-feature-plots}\footnote{Source code for the layered feature plots can be found in \appref{source-layered-feature-plots} and the results are in \appref{result-layered-feature-plots}} \par
+\begin{figure}
+    \centering
+    \subfloat[]{\includegraphics[width=.5\textwidth]{../sessions/22-create-transparent-feature-plots/plots/naive_p6.png}\label{fig:layered-all-trials}}
+    \subfloat[]{\includegraphics[width=.5\textwidth]{../sessions/22-create-transparent-feature-plots/plots/P6_20-trials.png}\label{fig:layered-20-trials}}
+    \caption{Layered feature plots of feature \fn{P6}. All 500 trials are shown on the left. A couple of possible outliers are seen. On the right only 20 randomly chosen trials are plotted}
+    \label{fig:layered-feature-plots}
+\end{figure}
+From the layered feature plots it is confirmed that many features have some trials that seems to deviate from the normal pattern of the feature. Using feature \fn{P6} as an example, it is seen in figure~\ref{fig:layered-all-trials} that \fn{P6} in almost all trials lies within the range $[0,2000]$. But one trial have a max value larger than 200000. This behaviour was hinted in section~\ref{sec:summary-statistics} and now there is a visual confirmation. \par
+The question is, how should this ``outlier" trial of feature \fn{P6} be handled? One approach is to exclude the trial from the dataset. But as nothing about the origin of the dataset is known, it can't be justified with a commen sense argument, and if this trial is excluded then how is the line between outlier and normal drawn? There is a couple of other trials where the \fn{P6} feature has values as high as 20000, but should this be seen as outliers? And are there other ways a trial could be an outlier than the scale? In figure~\ref{fig:layered-20-trials} most trials have the same structure, but the trial with the lowest mean has a noticeable different shape than the other trials. It somehow has a baseline at the value 400 and then oscillates a a higher frequency than the other trials. Is this an outlier? If it is regarded as an outlier many other trials could possibly be classified as outliers, and we're are still only looking at one feature. If the same amount of cleaning is done for the other features, not much is left for the ``normal" dataset. \par
 
- Trial with only IsAlert=0 outlier? Maybe mention troubles with defining outlier? Theorem in book Duda.
+The immediate conclusion is that the outlier detection easily becomes, either too all-encompassing or is done in an inconsistent manner. An alternative way to tackle the trials with datapoints with large values, could be to do some kind of variable transformation (eg. taking the log) of the feature. This could be a solution and the idea is investigated a little more in section~\ref{sec:recreating}.
+
+\subsection{Features that are constant in a trial}
+Another type of potential outlier trials, are all the trials where one or more features are constant throughout the trial. This could be a sign of a failure in the measurement equipment, and then maybe the trial should be regarded as an outlier? A great example is the \fn{IsAlert} feature, that is the feature that should be predicted by the classifier. In 142 out of the 400 trials the \fn{IsAlert} feature is constant and in 127 of the trials with a constant value, the driver isn't alert. At first it may seem a bit odd, and indeed some of the contestants of The Ford Challenge revealed that they had excluded all trials where the \fn{IsAlert} feature was 0 throughout the trial (see \citet{kaggle_forum_328_reply_2}). But it is speculative to do, since the precise meaning of the \fn{IsAlert} feature isn't known, let alone the fact that, measurering human alertness with a binary variable is speculative by itself. \par
+As it seems to speculative to exclude features with constant values, this idea won't be pursued any further. Instead the focus changes from "finding features to get rid of" till "finding features that could be benificial for classification" as the next section is all about finding features that can discriminate between alert/not-alert drivers.
+
+
 \section{Finding possible discriminating features}
-\subsection{Testing binary features}
-\subsection{Scatterplots}\label{sec:scatterplots}
+In this section all features are examined in an attempt to find one or more features that are in some way correlated with the \fn{IsAlert} feature that should be predicted. 
 
-\section{Making a Principal Component Analysis}
+\subsection{Testing binary features}
+A tempting first attempt at finding a feature that can be used to predict the \fn{IsAlert} feature, is to look at the two binary features \fn{V5} and \fn{E9} and see if they are correlated with the predictor\mytodo{What is the \fn{IsAlert} feature called?}.
+
+\subsection{Scatterplots}\label{sec:scatterplots}
+A great way to visualize whether a pair of features can be used to discriminate between datapoints where the driver is alert and where he/she is not alert, is to create scatterplots of the possible pair of features. Since feature \fn{V7}, \fn{V9} and \fn{P8} are removed and feature \fn{E3}, \fn{E7}, \fn{E8}, \fn{E9}, \fn{V3}, \fn{V5} and \fn{V10} was found to be categorical, only 20 features are left for the scatterplots. Since the order of the two features in a scatterplot doesn't matter there is a total of 
+\[
+    \begin{pmatrix}
+        20 \\
+        2
+    \end{pmatrix} = 190\:\text{combinations}
+\]
+All combinations of the 20 features was plotted\footnote{Source code can be found in \appref{source-scatterplots} and the results in \appref{result-scatterplots}}, and no interesting results was found; at least not regarding feature pairs that could classify the \fn{IsAlert} feature. One interesting result was found though. As can be seen in figure~\ref{fig:scatterplots}
+\begin{figure}
+    \begin{tabularx}{\textwidth}{ X X }
+        \includegraphics[width=.5\textwidth]{../sessions/24-writing-helper-scripts/plots/scatterplots/P3-P4.pdf} &
+        \includegraphics[width=.5\textwidth]{../sessions/24-writing-helper-scripts/plots/scatterplots/P6-P7.pdf}
+    \end{tabularx}
+    \caption{Scatterplots of the feature pairs (\fn{P3}, \fn{P4}) and (\fn{P6}, \fn{P7}). An arithmetic relationship between the features is clearly present}
+\end{figure}
+
+
+\section{Principal Component Analysis}
 \subsection{Theory}
-The idea in Principal Component Analysis (PCA) is to find a mapping from the $d$-dimensional input space, to a new $k$-dimensional space (with $k<d$), while keeping as much of the variation in the input data, as possible. To begin with let $k=1$. Then the subspace is identified by a $d$-dimensional vector $\ve{w}_1$, that without loss of generality is assumed to have length $\norm{\ve{w}_1}=1$. \par
+The idea in Principal Component Analysis (PCA) is to find a mapping from a $d$-dimensional input space, to a new $k$-dimensional space (with $k<d$), while keeping as much of the variation in the input data, as possible. To begin with let $k=1$. Then the subspace is identified by a $d$-dimensional vector $\ve{w}_1$, that without loss of generality is assumed to have length $\norm{\ve{w}_1}=1$. \par
 For any vector $\ve{x}$ in the input space, the projection onto $\ve{w}_1$ is given by
 \[
     z_1 = \ve{w}_1^T \ve{x}
@@ -121,3 +156,4 @@ which is true exactly when $\ve{w}_1$ is an eigenvector of $\ve{\Sigma}$ and $\a
 Giver det mening på binære variable?
 
 \section{Conclusions}
+

@@ -25,4 +25,6 @@ Sessions
     19-window-features/index
     20-meeting-with-morten-and-ole/index
     21-report-structure-and-writing/index
+    22-create-transparent-feature-plots/index
+    23-meeting-with-morten/index
     next-meeting/index
