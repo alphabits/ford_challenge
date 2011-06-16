@@ -15,7 +15,9 @@ json_file.close()
 for k in vals_pr_trial:
     data = vals_pr_trial[k]["trial_results"].values()
     plt.title('Histogram for unique values of {0}'.format(k))
-    plt.hist(data, 10)
-    plt.savefig('{0}/plots/unique_values_hists/{1}.png'.format(path, k), format='png', dpi=150)
+    plt.xlabel('Number of unique values')
+    plt.ylabel('Number of trials')
+    plt.hist(data, 20)
+    plt.savefig('{0}/plots/unique_values_hists/{1}.pdf'.format(path, k), format='pdf')
     plt.cla()
 

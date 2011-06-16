@@ -23,7 +23,7 @@ The results of this first step have been to exclude a few features, and get some
 
 \section{Determining the datatype of features}
 Since Ford would not disclose any information about the different features, it is important to get a good picture of which features are discrete/categorical and which features are continous. A natural first step to learn the datatype of the features, is to calculate the number of unique values each feature takes.
-\subsection{Unique values}
+\subsection{Unique values}\label{sec:unique-values}
 It requires a little thought to pinpoint exactly what needs to be calculated. On one hand it is natural to calculate the number of unique values a feature takes across the whole dataset. On the other hand it could happen, that a discrete feature might have only (eg.) 3 unique value within any trial, but the values differ between various trials. This way we would have a feature with 1500 unique values across the whole dataset, but with max 3 unique values within any given trial. Therefore the number of unique values within a trial are calculated for every feature and every trial. Based on this result, the minimum and maximum number of unique values within a single trial, is calculated for every feature. The source code can be found in \appref{source-unique-values} and results are shown in table~\ref{tbl:result-unique-values}.\mytodo{The result table in appendix or in report?} \par
 \begin{table}
     {\small\sffamily
@@ -43,7 +43,14 @@ Another interesting detail is that there are two pairs of features ((\fn{P3},\fn
 A final remark about the number of unique values, is that feature \fn{E9} and \fn{V5} indeed are binary. Also if a limit of max 40 unique values within a single trial is set, as an indicator for categorical features, \fn{E3}, \fn{E7}, \fn{E8}, \fn{V3} and \fn{V10} are seen to be categorical. \par
 
 \subsection{Plotting some features}
-P6 in trial 372, 374 is very strange.
+To get a more nuanced picture of the various features, it is now time to visualize the data. The first thing of interest is to plot every feature for a couple of trials, to see the structure of the features, and how much they vary between different trials. For a start some random plotting was done in the interactive ipython-shell\footnote{For details about the software setup used, see chapter~\ref{chp:tools}}. \par
+\begin{figure}[!hbtp]
+    \centering
+        \includegraphics[width=\textwidth]{media/feature-plots-sheet.pdf}
+    \caption{A caption}
+    \label{fig:exploratory-feature-plots}
+\end{figure}
+The main result from the introductory plotting of features is that: a feature varies alot in structure between different trials, many features are just one value in some trials (was already shown in section~\ref{sec:unique-values}), some features deviates a lot from their ``normal" structure, in a few trials (more about that in section~\ref{sec:outlier-detection} about outliers). Above all, the main conclusion from the plots is that the data quality could be better.
 
 
 \section{Outlier detection}\label{sec:outlier-detection}

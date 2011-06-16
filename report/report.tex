@@ -18,6 +18,9 @@
 \usepackage{python}
 \usepackage[round]{natbib}
 \usepackage{color}
+\usepackage{caption}
+\captionsetup{font={small,it},labelfont=bf}
+\usepackage{subfig}
 \definecolor{mygray}{RGB}{244,244,244}
 \definecolor{gray}{gray}{0.5}
 \definecolor{myredish}{RGB}{193,33,97}
@@ -42,6 +45,12 @@
 \newcommand\appref[1]{appendix \ref{app:#1}}
 \newcommand\mypagebreak{\vspace{\stretch{1}}\pagebreak}
 \newcommand\githuburl[1]{\url{https://github.com/alphabits/ford_challenge/tree/master/#1}}
+\newcommand\norm[1]{||\,#1\,||}
+\newcommand\ve[1]{\boldsymbol{#1}}
+\newcommand\varop[1]{\text{Var}\,[#1]}
+\newcommand\expop[1]{\text{E}\,[#1]}
+\newcommand\covop[1]{\text{Cov}\,[#1]}
+\newcommand\myimp{\quad\quad\Leftrightarrow}
 
 \usepackage{lmodern}
 \usepackage{fouriernc}

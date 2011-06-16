@@ -15,3 +15,5 @@ In this meeting I need to show Morten the first draft of my report. A couple of 
     * His comments on my structure
 
     * Not including every plot in the appendices, but refer to github account
+
+    * Which plots to show in next section?

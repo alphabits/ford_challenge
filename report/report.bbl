@@ -1,4 +1,4 @@
-\begin{thebibliography}{11}
+\begin{thebibliography}{12}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -31,6 +31,11 @@ Mahmoud Abou-Nasr.
 ACM.
 \newblock {KDD Cup Center}, 06 2011.
 \newblock URL \url{http://www.sigkdd.org/kddcup/index.php}.
+
+\bibitem[Alpaydin(2010)]{alpaydin10}
+Ethem Alpaydin.
+\newblock \emph{{Introduction to Machine Learning}}.
+\newblock The MIT Press, 2 edition, 2010.
 
 \bibitem[Inference(2011)]{kaggle_forum_295_reply_3}
 Inference.
