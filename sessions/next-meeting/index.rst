@@ -10,9 +10,9 @@ End time:
 
 In this meeting I need to show Morten the first draft of my report. A couple of questions would be great to discuss:
 
-    * Placement of theory section
+    * Placement of theory section: Place after data exploration section and before recreating winning approach
 
-    * His comments on my structure
+    * His comments on my structure: Move the PCA theory from theory section to data exploration section
 
     * Not including every plot in the appendices, but refer to github account
 

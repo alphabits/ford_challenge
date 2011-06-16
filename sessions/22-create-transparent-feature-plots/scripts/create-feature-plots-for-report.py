@@ -16,6 +16,14 @@ plots = {
     'V2': [490,494,442]
 }
 
+'''
+plots = {
+    'V11': [2]
+}
+'''
+
+label_font = {'family': 'normal', 'weight': 'normal', 'size': 18}
+
 
 for feature, trials in plots.items():
     for tid in trials:
@@ -23,9 +31,9 @@ for feature, trials in plots.items():
         plt.plot(range(len(v)), v)
         ax = plt.gca()
         ax.set_xlim(0,1200)
-        ax.set_xlabel('Observation number')
-        ax.set_ylabel(feature)
-        ax.set_title('Feature {0} in trial {1}'.format(feature, tid))
+        ax.set_xlabel('Observation number', label_font)
+        ax.set_ylabel(feature, label_font)
+        ax.set_title('Feature {0} in trial {1}'.format(feature, tid), label_font)
         plot_path = '{0}/plots/report/{1}_trial-{2}.'.format(path, feature, tid)
         plt.savefig(plot_path + 'pdf', format='pdf')
         plt.savefig(plot_path + 'png', format='png', dpi=300)

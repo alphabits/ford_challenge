@@ -21,6 +21,7 @@
 \usepackage{caption}
 \captionsetup{font={small,it},labelfont=bf}
 \usepackage{subfig}
+\usepackage{paralist}
 \definecolor{mygray}{RGB}{244,244,244}
 \definecolor{gray}{gray}{0.5}
 \definecolor{myredish}{RGB}{193,33,97}
@@ -167,13 +168,16 @@
 % Chapter 1, 2, ...
 %%%%%%%MAIN CHAPTERS INCLUDE%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\part{Introduction and data exploration}
 \include{chapters/introduction}
 \include{chapters/the-competition}
 \include{chapters/data-exploration}
+\part{Modelling}
+\include{chapters/theory-of-classification}
 \include{chapters/recreating-winning-approach}
 \include{chapters/improving-winning-approach}
 \include{chapters/other-classification-methods}
-\include{chapters/theory-of-classification}
+\part{Workflow and discussion}
 \include{chapters/toolset}
 %\include{chapters/describing-the-workflow}
 \include{chapters/discussion}

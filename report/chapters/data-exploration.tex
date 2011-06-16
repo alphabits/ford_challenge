@@ -1,5 +1,6 @@
 \chapter{Data exploration}
-Here I describe the various data exploration techniques I have used. Lots of nice graphs. PCA. Boxplots. Feature plots. Scatter Plots. Unique Values. Is it discrete, binary, continuous.
+Here I describe the various data exploration techniques I have used. Lots of nice graphs. 
+
 
 \section{A note about Test data, training data}
 
@@ -47,20 +48,76 @@ To get a more nuanced picture of the various features, it is now time to visuali
 \begin{figure}[!hbtp]
     \centering
         \includegraphics[width=\textwidth]{media/feature-plots-sheet.pdf}
-    \caption{A caption}
+    \caption{Plots of the features \fn{E1}, \fn{E10}, \fn{P5}, \fn{V2}, \fn{V11}, for a couple of trials. The trials was selected to show the diversity a single feature exhibits between trials.}
     \label{fig:exploratory-feature-plots}
 \end{figure}
-The main result from the introductory plotting of features is that: a feature varies alot in structure between different trials, many features are just one value in some trials (was already shown in section~\ref{sec:unique-values}), some features deviates a lot from their ``normal" structure, in a few trials (more about that in section~\ref{sec:outlier-detection} about outliers). Above all, the main conclusion from the plots is that the data quality could be better.
+Some selected plots from the interactive plotting session are shown i figure~\ref{fig:exploratory-feature-plots}. The main results from the introductory plotting of features are that: 
+\begin{itemize}
+    \item A feature varies alot in structure between different trials
+    \item Many features are constant in some trials (was already hinted at in section~\ref{sec:unique-values})
+    \item Some features deviates a lot from their ``normal" structure, in a few trials (more about that in section~\ref{sec:outlier-detection} about outliers).
+    \item The feature \fn{P2} looks like pure noise\mytodo{Is this right?}
+    \item The features \fn{E3}, \fn{E7}, \fn{E8}, \fn{V3} and \fn{V10} does indeed seems to be categorical features, although \fn{V3} do have some extra structure\mytodo{What do I mean? Plot categorical features?}
+\end{itemize}
+Apart from the observations above, a subjective conclusion from the plots of the features is that the data quality could be better. Since the data quality isn't perfect it is important to consider how outliers should be dealt with. This i what the next section is about.
 
 
 \section{Outlier detection}\label{sec:outlier-detection}
-Broader view than 95\% percentile. Trial with only IsAlert=0 outlier? Maybe mention troubles with defining outlier? Theorem in book Duda.
+The textbook approach for detecting outliers is to create boxplots of the different features, and then argue that data points outside the 95-percentile should be removed. Although this is a naive approach some useful information could be obtained from boxplots of the features. But i doesn't necessarily make sense to make boxplots of the features for the whole dataset. Some features have the same structure in different trials, but their mean varies. Eg. feature \fn{V11} in trials 29 and 35 have similar structure but the range in trial 29 is $[16.75, 19]$ and $[10,12.6]$ in trial 35 (see figure~\ref{fig:exploratory-feature-plots}). If a feature has a different mean in only a few trials, those datapoints could be seen as outliers, if we look at the feature across the whole dataset. Instead boxplots of the features for the 50 first trials are created. This also gives a visual idea about how feature means varies from trial to trial. 
 \subsection{Making boxplots of features}
+The boxplots for 4 selected features are shown i figure~\ref{fig:boxplots}. All boxplots are in \appref{result-boxplots}, and the source code can be seen in \appref{source-boxplots}. \par
+\begin{figure}
+    \begin{tabularx}{\textwidth}{ X X }
+        \includegraphics[width=.5\textwidth]{../sessions/11-boxplots-scatterplots/plots/boxplots/E5-t0-t50.pdf} &
+         \includegraphics[width=.5\textwidth]{../sessions/11-boxplots-scatterplots/plots/boxplots/P1-t0-t50.pdf}\\
+        \includegraphics[width=.5\textwidth]{../sessions/11-boxplots-scatterplots/plots/boxplots/P3-t0-t50.pdf} &
+         \includegraphics[width=.5\textwidth]{../sessions/11-boxplots-scatterplots/plots/boxplots/V11-t0-t50.pdf}
+    \end{tabularx}
+    \caption{Boxplots of feature \fn{E5}, \fn{P1}, \fn{P3} and \fn{V11} in the first 50 trials}
+    \label{fig:boxplots}
+\end{figure}
+From the boxplots a couple of things are of interest.
+\begin{itemize}
+    \item For some features the trial mean varies a lot between different trials \mytodo{Remember to check with boxpots in appendix}
+    \item Within a single trial some features still have a lot of data points outside the 95 percentile. See eg. \fn{P1} in figure~\ref{fig:boxplots} \mytodo{Check the right name (percentile?)}
+\end{itemize}
+As many features have datapoints outside the 95 percentile even within a single trial, the next step could be to categorize these datapoints as outliers. But inspection of some examples of specific features in specific trials, shows that it would be wrong to remove these ``outliers". Eg. feature \fn{V11} in trial 29 is plotted in figure~\ref{fig:exploratory-feature-plots} and seems to be perfectly normal. Careful inspection of the boxplot for feature \fn{V11} in trial 29 (figure~\ref{fig:boxplots}) shows that the feature has many outliers in this specific trial. \par
+The boxplots do not correctly identify the outliers in the dataset, and another method is therefore neede.
 
+\subsection{Making layered feature plots}
+Instead of trying to categorize single datapoints as outliers, it may make more sense to define a specific feature in a specific trial as an outlier.
+
+ Trial with only IsAlert=0 outlier? Maybe mention troubles with defining outlier? Theorem in book Duda.
 \section{Finding possible discriminating features}
 \subsection{Testing binary features}
 \subsection{Scatterplots}\label{sec:scatterplots}
-\subsection{Making a Principal Component Analysis}
+
+\section{Making a Principal Component Analysis}
+\subsection{Theory}
+The idea in Principal Component Analysis (PCA) is to find a mapping from the $d$-dimensional input space, to a new $k$-dimensional space (with $k<d$), while keeping as much of the variation in the input data, as possible. To begin with let $k=1$. Then the subspace is identified by a $d$-dimensional vector $\ve{w}_1$, that without loss of generality is assumed to have length $\norm{\ve{w}_1}=1$. \par
+For any vector $\ve{x}$ in the input space, the projection onto $\ve{w}_1$ is given by
+\[
+    z_1 = \ve{w}_1^T \ve{x}
+\]
+and we now wish to maximize the variance of $z_1$. By the definition of variance we get (with $\ve{\mu}=\expop{\ve{x}}$)
+\begin{align*}
+    \varop{z_1} &= \varop{\ve{w}_1^T\ve{x}} \\
+    &= \expop{(\ve{w}_1^T\ve{x} - \ve{w}_1^T\ve{\mu})^2} \\
+    &= \expop{(\ve{w}_1^T\ve{x} - \ve{w}_1^T\ve{\mu})(\ve{w}_1^T\ve{x} - \ve{w}_1^T\ve{\mu})} \\
+    &= \expop{\ve{w}_1^T(\ve{x}-\ve{\mu})(\ve{x}-\ve{\mu})^T\ve{w}_1} \\
+    &= \ve{w}_1^T\expop{(\ve{x}-\ve{\mu})(\ve{x}-\ve{\mu})^T}\ve{w}_1 \\
+    &= \ve{w}_1^T\ve{\Sigma}\ve{w}_1
+\end{align*}
+where $\ve{\Sigma} = \covop{\ve{x}}$. So to maximize the variance of $z_1$ is the same as maximizing $\ve{w}_1^T\ve{\Sigma}\ve{w}_1$, subject to the contraint that $\ve{w}_1^T\ve{w}_1=1$. By introducing a Lagrange multiplier $\alpha$, we get
+\[
+    \max_{\ve{w}_1} \ve{w}_1^T\ve{\Sigma}\ve{w}_1 - \alpha(\ve{w}_1^T\ve{w}_1 - 1)
+\]
+This is a normal, unconstrained maximization problem. Taking the derivative with respect to $\ve{w}_1$, and setting this equal to 0, gives
+\begin{align*}
+    2\ve{\Sigma}\ve{w}_1 - 2\alpha\ve{w}_1 &= 0 \myimp \\
+    \ve{\Sigma}\ve{w}_1 &= \alpha\ve{w}_1
+\end{align*}
+which is true exactly when $\ve{w}_1$ is an eigenvector of $\ve{\Sigma}$ and $\alpha$ is the corresponding eigenvalue.
 Giver det mening på binære variable?
 
 \section{Conclusions}
