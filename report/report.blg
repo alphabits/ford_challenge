@@ -37,45 +37,45 @@ Warning--entry type for "kaggle_forum_266" isn't style-file defined
 --line 281 of file bibdb.bib
 Warning--entry type for "kaggle_data" isn't style-file defined
 --line 290 of file bibdb.bib
-You've used 13 entries,
+You've used 14 entries,
             2773 wiz_defined-function locations,
-            656 strings with 6751 characters,
-and the built_in function-call counts, 3919 in all, are:
-= -- 336
-> -- 130
-< -- 13
-+ -- 54
-- -- 39
-* -- 221
-:= -- 598
-add.period$ -- 39
-call.type$ -- 13
-change.case$ -- 52
-chr.to.int$ -- 11
-cite$ -- 26
-duplicate$ -- 200
-empty$ -- 417
-format.name$ -- 52
-if$ -- 832
+            661 strings with 6859 characters,
+and the built_in function-call counts, 4211 in all, are:
+= -- 358
+> -- 140
+< -- 14
++ -- 58
+- -- 42
+* -- 236
+:= -- 646
+add.period$ -- 42
+call.type$ -- 14
+change.case$ -- 55
+chr.to.int$ -- 12
+cite$ -- 28
+duplicate$ -- 220
+empty$ -- 449
+format.name$ -- 56
+if$ -- 893
 int.to.chr$ -- 3
 int.to.str$ -- 1
-missing$ -- 2
-newline$ -- 73
-num.names$ -- 52
-pop$ -- 155
+missing$ -- 4
+newline$ -- 78
+num.names$ -- 56
+pop$ -- 167
 preamble$ -- 1
-purify$ -- 39
+purify$ -- 42
 quote$ -- 0
-skip$ -- 169
+skip$ -- 181
 stack$ -- 0
-substring$ -- 26
-swap$ -- 24
+substring$ -- 28
+swap$ -- 25
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 138
+type$ -- 144
 warning$ -- 0
-while$ -- 39
+while$ -- 42
 width$ -- 0
-write$ -- 164
+write$ -- 176
 (There were 12 warnings)

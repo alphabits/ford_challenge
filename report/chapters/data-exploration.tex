@@ -117,7 +117,7 @@ A great way to visualize whether a pair of features can be used to discriminate 
         2
     \end{pmatrix} = 190\:\text{combinations}
 \]
-All combinations of the 20 features was plotted\footnote{Source code can be found in \appref{source-scatterplots} and the results in \appref{result-scatterplots}}, and no interesting results was found; at least not regarding feature pairs that could classify the \fn{IsAlert} feature. One interesting result was found though. As can be seen in figure~\ref{fig:scatterplots}
+All combinations of the 20 features was plotted\footnote{Source code can be found in \appref{source-scatterplots} and the results in \appref{result-scatterplots}}, but no interesting results was found; at least not regarding feature pairs that could classify the \fn{IsAlert} feature. One interesting result was found though. As can be seen in figure~\ref{fig:scatterplots} the features pairs (\fn{P3}, \fn{P4}) and (\fn{P6}, \fn{P7}) both appear to have an arithmetic relationship. A quick calculation shows that \fn{P3} multiplied by \fn{P4} is $60000\pm0.2$ for all rows in the dataset, and likewise for \fn{P6} and \fn{P7}. We can therefore ignore one of the features from each pair.\mytodo{Am I sure? Details can't hide in the decimal difference?}
 \begin{figure}
     \begin{tabularx}{\textwidth}{ X X }
         \includegraphics[width=.5\textwidth]{../sessions/24-writing-helper-scripts/plots/scatterplots/P3-P4.pdf} &
@@ -128,7 +128,8 @@ All combinations of the 20 features was plotted\footnote{Source code can be foun
 
 
 \section{Principal Component Analysis}
-\subsection{Theory}
+
+\subsection[Theory]{Theory\protect\footnote{Theory section is based on \citet[p.113]{alpaydin10}}} % (fold)
 The idea in Principal Component Analysis (PCA) is to find a mapping from a $d$-dimensional input space, to a new $k$-dimensional space (with $k<d$), while keeping as much of the variation in the input data, as possible. To begin with let $k=1$. Then the subspace is identified by a $d$-dimensional vector $\ve{w}_1$, that without loss of generality is assumed to have length $\norm{\ve{w}_1}=1$. \par
 For any vector $\ve{x}$ in the input space, the projection onto $\ve{w}_1$ is given by
 \[

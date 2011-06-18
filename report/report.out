@@ -27,8 +27,14 @@
 \BOOKMARK [1][]{section.3.7}{3.7 Conclusions}{chapter.3}
 \BOOKMARK [-1][]{part.2}{II Modelling}{}
 \BOOKMARK [0][]{chapter.4}{4 Theory of classification}{part.2}
-\BOOKMARK [1][]{section.4.1}{4.1 AUC}{chapter.4}
-\BOOKMARK [1][]{section.4.2}{4.2 Principal Component Analysis}{chapter.4}
+\BOOKMARK [1][]{section.4.1}{4.1 The binary classification problem}{chapter.4}
+\BOOKMARK [1][]{section.4.2}{4.2 Parametric models and maximum likelihood}{chapter.4}
+\BOOKMARK [1][]{section.4.3}{4.3 Logistic Regression}{chapter.4}
+\BOOKMARK [1][]{section.4.4}{4.4 The binary classification problem}{chapter.4}
+\BOOKMARK [1][]{section.4.5}{4.5 Measuring classifier performance}{chapter.4}
+\BOOKMARK [1][]{section.4.6}{4.6 Logistic Regression}{chapter.4}
+\BOOKMARK [1][]{section.4.7}{4.7 Feed Forward Neural Network}{chapter.4}
+\BOOKMARK [1][]{section.4.8}{4.8 AUC}{chapter.4}
 \BOOKMARK [0][]{chapter.5}{5 Recreating winning approach}{part.2}
 \BOOKMARK [0][]{chapter.6}{6 Improving the winning approach}{part.2}
 \BOOKMARK [0][]{chapter.7}{7 Other classification methods}{part.2}

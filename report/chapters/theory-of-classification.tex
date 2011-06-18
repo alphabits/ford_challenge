@@ -1,33 +1,114 @@
 \chapter{Theory of classification}
-Here I describe some general results about classification. Bayes error rate. No free lunch theorem. Ugly duckling theorem.
+In this chapter some of the theory of classification is explained. The discussion is constrained to binary classification, of which the Ford Challenge classifier, is an example. First a general problem definition is given and notation is introduced. Then three different approaches to classification are introduced, and some pros and cons of each approach are mentioned. After this two concrete examples of classification models are introduced (Logistic Regression and Feed Forward Neural Network), and they are related to the three general approaches of classification. Finally different ways to measure the performance of different classifiers are discussed, including AUC that was used as the grading method in The Ford Challenge.
+
+\section[The binary classification problem]{The binary classification problem\protect\footnote{This section is loosely based on \citet[sec 22.1-22.2]{wasserman04}}}
+In a binary classification problem a binary outcome $t$ must be predicted from a $d$-dimensional input vector $\ve{x}=[x_1, x_2, \dots, x_d]^T$. The input vector represents an event, and the outcome variable $t$ represents the assignment of the event to one of two classes.
+\begin{Exa}
+    In \TFC\ the input is an instant in a driving situation, and this input should be assigned to either the class alert, or the class not-alert. The input is represented by an 30-dimensional vector and the assignment to a class is represented by $t=0$ meaning not-alert and $t=1$ alert.
+\end{Exa}
+To make the prediction possible, a trainingset $\mathcal{T}$ is given consisting of $n$ pairs of input vectors and corresponding, known outcomes.
+\[
+    \mathcal{T} = \bigl\{\:(\ve{x}_i, t_i)\:\bigr\}
+\]
+Based on this trainingset, a classification rule $f$ is learned, that can predict the outcome, of yet unknown input vectors. Therefore a classification rule is a function $f\,:\,\R^d\to\{0,1\}$, that is used to make the prediction $t=f(x)$ on a new input. \par
+A common way to obtain a classification rule is by the Bayes classification rule. First define $p_k(\ve{x})$ as
+    \[
+        p_k(\ve{x}) = P(t=k|\ve{x}),\quad k\in\{0,1\}
+    \]
+    and then the Bayes classification rule is defined by
+    \begin{definition}\label{def:bayes-rule}
+        Let $\alpha\in[0,\infty[$. The Bayes classification rule $f^*$ is given by
+        \[
+            f^*(\ve{x}) = \begin{cases}
+                1 & \text{if}\quad \alpha p_1(\ve{x})>p_0(\ve{x}) \\
+                0 & \text{else}
+            \end{cases}
+        \]
+    \end{definition}
+    Since $p_0(\ve{x})=1-p_1(\ve{x})$, the Bayes classification rule can be written
+    \[
+        f^*(\ve{x}) = \begin{cases}
+            1 & \text{if}\quad p_1(\ve{x}) > \frac{1}{1+\alpha} \\
+            0 & \text{else}
+        \end{cases}
+    \]
+    By the Bayes classification rule we have got a theoretical classification rule. In practice the posterior class probabilities $p_0(\ve{x})$ and $p_1(\ve{x})$ are unknown, so the trainingset must be used to find some approximation for these probabilities. The problem of approximating a probability distribution from a given data set is a classic statistical problem. The next section gives one way to solve this problem.
+
+\section{Parametric models and maximum likelihood}\label{sec:parametric-models-and-likelihood}
+Two distinct ways to approximate the probability distribution $\Ptx$ is using either a parametric or a non-paramtric approach. The focus in this report is on a paramtric approach. The distribution $\Ptx$, is therefore approximated by a distribution $\PtxHat$ restricted to a class of distributions
+\[
+    \mathcal{F} = \Bigl\{\,f_{\ve{w}}(t|\ve{x})\,\Bigr\}
+\]
+where the distributions $f_{\ve{w}}\in\mathcal{F}$ are uniquely identified by their parameter $\ve{w}=[w_1, w_2, \dots, w_k]^T$. By restricting the approximating distribution $\PtxHat$ to the set $\mathcal{F}$, the problem of approximating $\Ptx$ reduces to the problem of estimating the parameter $\ve{w}$.
+
+\subsection{Maximum likelihood}
+There exist many different techniques to estimate the parameter $\ve{w}$ in a parametric model\footnote{See eg. \citet[Sec.9]{wasserman04}}
+
+
+
+
+\section{Logistic Regression}
+
+
+
+
+\section{The binary classification problem}\label{sec:binary-classification-problem}
+In a binary classification problem, a set of $n$ inputs are given along with a set of $n$ corresponding class labels. These two sets are called the trainingset. Based on this trainingset, a procedure is \mydef{learned}. The procedure should predict the class of a new input, with as few errors as possible. The input is represented by a $d$-dimensional vector 
+\[
+    \ve{x} = \begin{bmatrix}
+        x_1 \\ 
+        x_2 \\ 
+        \vdots \\
+        x_d 
+    \end{bmatrix}
+\]
+and the predicted class is represented by a binary variable $t\in\{0,1\}$. The trainingset are then given by a set 
+\[
+    \mathcal{T} = \bigl\{\:(\ve{x}_i, t_i)\:\bigr\}_{i=1}^n 
+\]
+In the Ford Challenge eg., the input is a driving instant and the classes are alert and not alert. The driving instant is represented by a 30-dimensional vector of physiological, environmental and vehicular features, and the alert/not-alert classes are represented by respectively $t=1$ and $t=0$. \par
+A simple way to mathematically express the binary classification problem is: Given a trainingset $\mathcal{T}$, a discriminant function $f : \myreal^d \to \{0,1\}$ must be learned such that errors on future inputs are minimized. Although this is a simple description, and concrete classifier methods using this approach exists\footnote{Eg. \citet[p.181]{bishop}}, it is preferred \citep[p.43]{bishop} to use a probabilistic description. In this perspective the classification consists of two separate steps, namely an inference step and a decision step. \par
+    In the inference step, the problem of determining the probabilities $P(t|\ve{x})$\footnote{In another approach the $P(t|\ve{x})$ isn't determined directly. Instead $p(\ve{x}|t)$ and $P(t)$ are determined and then using Bayes Formula $P(t|\ve{x})$ is calculated. This is called generative modelling.}, are solved\mytodo{Should i use $P$ for mass distribution and $p$ for density distribution?}. These probabilities are called the posterior class probabilities. \par
+    In the decision step a loss table is set up describing the relative costs of predicting a class of an input given its true class. For The Ford Challenge, the loss table could eg. be as shown in table~\ref{tbl:loss-table}.
+    \begin{table}
+        \centering
+        {\small\sffamily
+        \begin{tabularx}{6cm}{ l | X X }
+            {\footnotesize True $\backslash$ Predict} & Not Alert & Alert \\\hline
+            Not Alert & 0 & 100 \\
+            Alert & 1 & 0
+        \end{tabularx}
+        }
+        \caption{An example of a loss table for The Ford Challenge classification problem.}
+        \label{tbl:loss-table}
+    \end{table}
+    The information in the loss table can be represented as a loss matrix $L$. In our example this means that eg. $L_{01}=100$. Using the posterior class probabilities $P(t|\ve{x})$ a decision about the predicted class label of an new input $\ve{x}_0$ can be made by the rule
+    \[
+        \min_j \sum_{k} L_{jk}P(t=k|\ve{x}_0)
+    \]
+    where $j,k\in\{0,1\}$. In words the decision step chooses the class label that minimizes the expected loss\mytodo{Is this the right interpretation?}. \par
+    What is gained from making the two steps explicit? If we only have a discriminant function $f$, and the loss table is changed, we need to train a whole new discriminant function, using the trainingset again. If we instead have determined the posterior class probabilities, we only need to update the loss matrix, and don't have to retrain anything. Another reason is a common sense argument. When a class label is predicted for a new input, there will always be some level of uncertainty in the prediction. In the Ford Challenge the class label is predicted for a 30-dimensional input vector, but this vector is only a representation of the real input; namely an instant in a driving session. There is no doubt that some details that could influence the alertness of the driver aren't included in the 30 measurements, and this gives an uncertainty in the prediction. Probability is what is used to mathematically express uncertainty, and it therefore seems natural to take a probabilistic view on the classification problem. \par
+    The theory presented in this section has been on a general level. Two questions of practical importance needs to answered though. First of all, how can the posterior class probabilities $P(t|\ve{x})$ be determined from the training data? And secondly, how can the performance of the classifier on future inputs be determined, when training the classifier? The answer to the first question is delayed till the sections about specific classifier methods, and the second question is answered in the next section.
+    \begin{definition}
+        Anders
+    \end{definition}
+
+
+\section{Measuring classifier performance}\label{sec:classifier-performance}
+
+
+
+
+\section{Logistic Regression}\label{sec:logistic-regression}
+
+
+
+
+\section{Feed Forward Neural Network}\label{sec:feed-forward-neural-network}
+
+
+
 
 \section{AUC}\label{sec:theory:auc}
 Mentioning critiques of AUC?
 
-\section[Principal Component Analysis]{Principal Component Analysis\protect\footnote{Section is based on \citet[p.113]{alpaydin10}}} % (fold)
-\label{sec:pca}
-The idea in Principal Component Analysis (PCA) is to find a mapping from the $d$-dimensional input space, to a new $k$-dimensional space (with $k<d$), while keeping as much of the variation in the input data, as possible. To begin with let $k=1$. Then the subspace is identified by a $d$-dimensional vector $\ve{w}_1$, that without loss of generality is assumed to have length $\norm{\ve{w}_1}=1$. \par
-For any vector $\ve{x}$ in the input space, the projection onto $\ve{w}_1$ is given by
-\[
-    z_1 = \ve{w}_1^T \ve{x}
-\]
-and we now wish to maximize the variance of $z_1$. By the definition of variance we get (with $\ve{\mu}=\expop{\ve{x}}$)
-\begin{align*}
-    \varop{z_1} &= \varop{\ve{w}_1^T\ve{x}} \\
-    &= \expop{(\ve{w}_1^T\ve{x} - \ve{w}_1^T\ve{\mu})^2} \\
-    &= \expop{(\ve{w}_1^T\ve{x} - \ve{w}_1^T\ve{\mu})(\ve{w}_1^T\ve{x} - \ve{w}_1^T\ve{\mu})} \\
-    &= \expop{\ve{w}_1^T(\ve{x}-\ve{\mu})(\ve{x}-\ve{\mu})^T\ve{w}_1} \\
-    &= \ve{w}_1^T\expop{(\ve{x}-\ve{\mu})(\ve{x}-\ve{\mu})^T}\ve{w}_1 \\
-    &= \ve{w}_1^T\ve{\Sigma}\ve{w}_1
-\end{align*}
-where $\ve{\Sigma} = \covop{\ve{x}}$. So to maximize the variance of $z_1$ is the same as maximizing $\ve{w}_1^T\ve{\Sigma}\ve{w}_1$, subject to the contraint that $\ve{w}_1^T\ve{w}_1=1$. By introducing a Lagrange multiplier $\alpha$, we get
-\[
-    \max_{\ve{w}_1} \ve{w}_1^T\ve{\Sigma}\ve{w}_1 - \alpha(\ve{w}_1^T\ve{w}_1 - 1)
-\]
-This is a normal, unconstrained maximization problem. Taking the derivative with respect to $\ve{w}_1$, and setting this equal to 0, gives
-\begin{align*}
-    2\ve{\Sigma}\ve{w}_1 - 2\alpha\ve{w}_1 &= 0 \myimp \\
-    \ve{\Sigma}\ve{w}_1 &= \alpha\ve{w}_1
-\end{align*}
-which is true exactly when $\ve{w}_1$ is an eigenvector of $\ve{\Sigma}$ and $\alpha$ is the corresponding eigenvalue.
-% section pca (end)
