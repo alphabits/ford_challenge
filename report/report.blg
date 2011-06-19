@@ -11,7 +11,7 @@ A level-1 auxiliary file: chapters/toolset.aux
 A level-1 auxiliary file: chapters/discussion.aux
 A level-1 auxiliary file: chapters/conclusion.aux
 A level-1 auxiliary file: chapters/appendices.aux
-The style file: plainnat.bst
+The style file: anders.bst
 Database file #1: bibdb.bib
 Warning--entry type for "kaggle_forum_328_reply_2" isn't style-file defined
 --line 12 of file bibdb.bib
@@ -37,45 +37,45 @@ Warning--entry type for "kaggle_forum_266" isn't style-file defined
 --line 281 of file bibdb.bib
 Warning--entry type for "kaggle_data" isn't style-file defined
 --line 290 of file bibdb.bib
-You've used 14 entries,
-            2773 wiz_defined-function locations,
-            661 strings with 6859 characters,
-and the built_in function-call counts, 4211 in all, are:
-= -- 358
-> -- 140
-< -- 14
-+ -- 58
-- -- 42
-* -- 236
-:= -- 646
-add.period$ -- 42
-call.type$ -- 14
-change.case$ -- 55
-chr.to.int$ -- 12
-cite$ -- 28
-duplicate$ -- 220
-empty$ -- 449
-format.name$ -- 56
-if$ -- 893
+You've used 16 entries,
+            2850 wiz_defined-function locations,
+            663 strings with 7016 characters,
+and the built_in function-call counts, 6260 in all, are:
+= -- 530
+> -- 178
+< -- 15
++ -- 74
+- -- 54
+* -- 324
+:= -- 1106
+add.period$ -- 48
+call.type$ -- 16
+change.case$ -- 95
+chr.to.int$ -- 14
+cite$ -- 16
+duplicate$ -- 488
+empty$ -- 496
+format.name$ -- 72
+if$ -- 1212
 int.to.chr$ -- 3
 int.to.str$ -- 1
-missing$ -- 4
-newline$ -- 78
-num.names$ -- 56
-pop$ -- 167
+missing$ -- 95
+newline$ -- 89
+num.names$ -- 64
+pop$ -- 242
 preamble$ -- 1
-purify$ -- 42
+purify$ -- 82
 quote$ -- 0
-skip$ -- 181
+skip$ -- 219
 stack$ -- 0
-substring$ -- 28
-swap$ -- 25
+substring$ -- 178
+swap$ -- 167
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 144
+type$ -- 132
 warning$ -- 0
-while$ -- 42
+while$ -- 48
 width$ -- 0
-write$ -- 176
+write$ -- 201
 (There were 12 warnings)

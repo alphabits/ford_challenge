@@ -1,92 +1,104 @@
-\begin{thebibliography}{14}
+\begin{thebibliography}{16}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
 \expandafter\ifx\csname urlstyle\endcsname\relax
-  \providecommand{\doi}[1]{doi: #1}\else
-  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+  \providecommand{\doi}[1]{doi:\discretionary{}{}{}#1}\else
+  \providecommand{\doi}{doi:\discretionary{}{}{}\begingroup
+  \urlstyle{rm}\Url}\fi
 
-\bibitem[Abou-Nasr(2011{\natexlab{a}})]{kaggle_forum_266}
-Mahmoud Abou-Nasr.
-\newblock {Kaggle forum: Discrete or continuous values - Reply 2},
-  2011{\natexlab{a}}.
-\newblock URL
-  \url{http://www.kaggle.com/c/stayalert/forums/t/266/discrete-or-continuous-v%
-alues/1635#post1635}.
+\bibitem[{Abou-Nasr(2011{\natexlab{a}})}]{kaggle_forum_317}
+Abou-Nasr, M. (2011{\natexlab{a}}).
+\newblock {Kaggle forum: About the parameter - Reply 3}.
+\newblock
+  \urlprefix\url{http://www.kaggle.com/c/stayalert/forums/t/317/about-the-para%
+meter/1861#post1861}.
 
-\bibitem[Abou-Nasr(2011{\natexlab{b}})]{kaggle_forum_268_reply_2}
-Mahmoud Abou-Nasr.
-\newblock {Kaggle forum: Were units changed? - Reply 2}, 06 2011{\natexlab{b}}.
-\newblock URL
-  \url{http://www.kaggle.com/c/stayalert/forums/t/268/were-units-changed/1641#%
-post1641}.
+\bibitem[{Abou-Nasr(2011{\natexlab{b}})}]{kaggle_forum_266}
+Abou-Nasr, M. (2011{\natexlab{b}}).
+\newblock {Kaggle forum: Discrete or continuous values - Reply 2}.
+\newblock
+  \urlprefix\url{http://www.kaggle.com/c/stayalert/forums/t/266/discrete-or-co%
+ntinuous-values/1635#post1635}.
 
-\bibitem[Abou-Nasr(2011{\natexlab{c}})]{kaggle_forum_317}
-Mahmoud Abou-Nasr.
-\newblock {Kaggle forum: About the parameter - Reply 3}, 2011{\natexlab{c}}.
-\newblock URL
-  \url{http://www.kaggle.com/c/stayalert/forums/t/317/about-the-parameter/1861%
-#post1861}.
+\bibitem[{Abou-Nasr(2011{\natexlab{c}})}]{kaggle_forum_268_reply_2}
+Abou-Nasr, M. (2011{\natexlab{c}}).
+\newblock {Kaggle forum: Were units changed? - Reply 2}.
+\newblock
+  \urlprefix\url{http://www.kaggle.com/c/stayalert/forums/t/268/were-units-cha%
+nged/1641#post1641}.
 
-\bibitem[ACM(2011)]{kdd_cup_center}
-ACM.
-\newblock {KDD Cup Center}, 06 2011.
-\newblock URL \url{http://www.sigkdd.org/kddcup/index.php}.
+\bibitem[{ACM(2011)}]{kdd_cup_center}
+ACM (2011).
+\newblock {KDD Cup Center}.
+\newblock \urlprefix\url{http://www.sigkdd.org/kddcup/index.php}.
 
-\bibitem[Alpaydin(2010)]{alpaydin10}
-Ethem Alpaydin.
+\bibitem[{Alpaydin(2010)}]{alpaydin10}
+Alpaydin, E. (2010).
 \newblock \emph{{Introduction to Machine Learning}}.
-\newblock The MIT Press, 2 edition, 2010.
+\newblock The MIT Press, 2 edition.
 
-\bibitem[Bishop(2006)]{bishop}
-Christopher~M. Bishop.
+\bibitem[{Bishop(2006)}]{bishop}
+Bishop, C.~M. (2006).
 \newblock \emph{Pattern Recognition and Machine Learning}.
-\newblock Springer Science + Business Media LLC, 2006.
+\newblock Springer Science + Business Media LLC.
 
-\bibitem[David(2011)]{kaggle_forum_328_reply_2}
-David.
-\newblock {Methods/Tips from non-top 3 participants}, 2011.
-\newblock URL
-  \url{http://www.kaggle.com/c/stayalert/forums/t/328/methods-tips-from-non-to%
-p-3-participants/1967#post1967}.
+\bibitem[{David(2011)}]{kaggle_forum_328_reply_2}
+David (2011).
+\newblock {Methods/Tips from non-top 3 participants}.
+\newblock
+  \urlprefix\url{http://www.kaggle.com/c/stayalert/forums/t/328/methods-tips-f%
+rom-non-top-3-participants/1967#post1967}.
 
-\bibitem[Inference(2011)]{kaggle_forum_295_reply_3}
-Inference.
-\newblock {Kaggle forum: Ford - Reply 3}, 06 2011.
-\newblock URL
-  \url{http://www.kaggle.com/c/stayalert/forums/t/295/ford/1743#post1743}.
+\bibitem[{Hastie et~al.(2009)Hastie, Tibshirani, and Friedman}]{hastie09}
+Hastie, T., Tibshirani, R., and Friedman, J. (2009).
+\newblock \emph{The Elements of Statistical Learning}.
+\newblock Springer Science + Business Media LLC.
 
-\bibitem[Kaggle.com(2011)]{kaggle_data}
-Kaggle.com.
-\newblock {The Ford Challenge Data Files}, 2011.
-\newblock URL \url{http://www.kaggle.com/c/stayalert/Data}.
+\bibitem[{Inference(2011)}]{kaggle_forum_295_reply_3}
+Inference (2011).
+\newblock {Kaggle forum: Ford - Reply 3}.
+\newblock
+  \urlprefix\url{http://www.kaggle.com/c/stayalert/forums/t/295/ford/1743#post%
+1743}.
 
-\bibitem[Labs(2011)]{kdd_cup_2011}
-Yahoo! Labs.
-\newblock {KDD Cup 2011}, 06 2011.
-\newblock URL \url{http://kddcup.yahoo.com/}.
+\bibitem[{Kaggle.com(2011)}]{kaggle_data}
+Kaggle.com (2011).
+\newblock {The Ford Challenge Data Files}.
+\newblock \urlprefix\url{http://www.kaggle.com/c/stayalert/Data}.
 
-\bibitem[Netflix(2011)]{netflix_leaderboard}
-Netflix.
-\newblock {Netflix Prize Leaderboard}, 06 2011.
-\newblock URL \url{http://www.netflixprize.com/leaderboard}.
+\bibitem[{Labs(2011)}]{kdd_cup_2011}
+Labs, Y. (2011).
+\newblock {KDD Cup 2011}.
+\newblock \urlprefix\url{http://kddcup.yahoo.com/}.
 
-\bibitem[Pardos(2011)]{kaggle_forum_327_reply_1}
-Zach Pardos.
-\newblock {Kaggle forum: Top two teams with same AUC - Reply 1}, 06 2011.
-\newblock URL
-  \url{http://www.kaggle.com/c/stayalert/forums/t/327/top-two-teams-with-same-%
-auc/1937#post1937}.
+\bibitem[{Netflix(2011)}]{netflix_leaderboard}
+Netflix (2011).
+\newblock {Netflix Prize Leaderboard}.
+\newblock \urlprefix\url{http://www.netflixprize.com/leaderboard}.
 
-\bibitem[Rosanne(2011)]{kaggle_forum_327_reply_4}
-Rosanne.
-\newblock {Kaggle forum: Top two teams with same AUC - Reply 4}, 06 2011.
-\newblock URL
-  \url{http://www.kaggle.com/c/stayalert/forums/t/327/top-two-teams-with-same-%
-auc/1957#post1957}.
+\bibitem[{Pardos(2011)}]{kaggle_forum_327_reply_1}
+Pardos, Z. (2011).
+\newblock {Kaggle forum: Top two teams with same AUC - Reply 1}.
+\newblock
+  \urlprefix\url{http://www.kaggle.com/c/stayalert/forums/t/327/top-two-teams-%
+with-same-auc/1937#post1937}.
 
-\bibitem[Wikipedia(2011)]{wiki:netflix_prize}
-Wikipedia.
-\newblock {Netflix Prize}, 06 2011.
-\newblock URL \url{http://en.wikipedia.org/wiki/Netflix_Prize}.
+\bibitem[{Rosanne(2011)}]{kaggle_forum_327_reply_4}
+Rosanne (2011).
+\newblock {Kaggle forum: Top two teams with same AUC - Reply 4}.
+\newblock
+  \urlprefix\url{http://www.kaggle.com/c/stayalert/forums/t/327/top-two-teams-%
+with-same-auc/1957#post1957}.
+
+\bibitem[{Wasserman(2004)}]{wasserman04}
+Wasserman, L.~A. (2004).
+\newblock \emph{All of Statistics: a concise course in statistical inference}.
+\newblock Springer Science + Business Media Inc.
+
+\bibitem[{Wikipedia(2011)}]{wiki:netflix_prize}
+Wikipedia (2011).
+\newblock {Netflix Prize}.
+\newblock \urlprefix\url{http://en.wikipedia.org/wiki/Netflix_Prize}.
 
 \end{thebibliography}

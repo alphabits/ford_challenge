@@ -29,12 +29,22 @@
 \BOOKMARK [0][]{chapter.4}{4 Theory of classification}{part.2}
 \BOOKMARK [1][]{section.4.1}{4.1 The binary classification problem}{chapter.4}
 \BOOKMARK [1][]{section.4.2}{4.2 Parametric models and maximum likelihood}{chapter.4}
+\BOOKMARK [2][]{subsection.4.2.1}{4.2.1 Maximum likelihood}{section.4.2}
 \BOOKMARK [1][]{section.4.3}{4.3 Logistic Regression}{chapter.4}
-\BOOKMARK [1][]{section.4.4}{4.4 The binary classification problem}{chapter.4}
+\BOOKMARK [2][]{subsection.4.3.1}{4.3.1 The decision boundary}{section.4.3}
+\BOOKMARK [2][]{subsection.4.3.2}{4.3.2 Model complexity}{section.4.3}
+\BOOKMARK [2][]{subsection.4.3.3}{4.3.3 Regularization}{section.4.3}
+\BOOKMARK [1][]{section.4.4}{4.4 Feed Forward Neural Network}{chapter.4}
+\BOOKMARK [2][]{subsection.4.4.1}{4.4.1 Model complexity}{section.4.4}
+\BOOKMARK [2][]{subsection.4.4.2}{4.4.2 Regularization}{section.4.4}
 \BOOKMARK [1][]{section.4.5}{4.5 Measuring classifier performance}{chapter.4}
-\BOOKMARK [1][]{section.4.6}{4.6 Logistic Regression}{chapter.4}
-\BOOKMARK [1][]{section.4.7}{4.7 Feed Forward Neural Network}{chapter.4}
-\BOOKMARK [1][]{section.4.8}{4.8 AUC}{chapter.4}
+\BOOKMARK [2][]{subsection.4.5.1}{4.5.1 Splitting the dataset}{section.4.5}
+\BOOKMARK [2][]{subsection.4.5.2}{4.5.2 Cross validation}{section.4.5}
+\BOOKMARK [2][]{subsection.4.5.3}{4.5.3 AUC}{section.4.5}
+\BOOKMARK [1][]{section.4.6}{4.6 Model selection}{chapter.4}
+\BOOKMARK [2][]{subsection.4.6.1}{4.6.1 Over- and underfitting}{section.4.6}
+\BOOKMARK [2][]{subsection.4.6.2}{4.6.2 Forward feature selection}{section.4.6}
+\BOOKMARK [2][]{subsection.4.6.3}{4.6.3 Regularization}{section.4.6}
 \BOOKMARK [0][]{chapter.5}{5 Recreating winning approach}{part.2}
 \BOOKMARK [0][]{chapter.6}{6 Improving the winning approach}{part.2}
 \BOOKMARK [0][]{chapter.7}{7 Other classification methods}{part.2}
