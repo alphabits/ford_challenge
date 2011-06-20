@@ -50,6 +50,8 @@
 \BOOKMARK [1][]{section.5.2}{5.2 Recreating the winning approach}{chapter.5}
 \BOOKMARK [2][]{subsection.5.2.1}{5.2.1 Statistics on the AUC score}{section.5.2}
 \BOOKMARK [0][]{chapter.6}{6 Improving the winning approach}{part.2}
+\BOOKMARK [1][]{section.6.1}{6.1 Forward selection}{chapter.6}
+\BOOKMARK [2][]{subsection.6.1.1}{6.1.1 Testing performance on the original testset}{section.6.1}
 \BOOKMARK [0][]{chapter.7}{7 Other classification methods}{part.2}
 \BOOKMARK [-1][]{part.3}{III Workflow and discussion}{}
 \BOOKMARK [0][]{chapter.8}{8 Workflow and tools}{part.3}
@@ -67,3 +69,5 @@
 \BOOKMARK [1][]{section.11.9}{A.9 Scatterplots - Code}{chapter.11}
 \BOOKMARK [1][]{section.11.10}{A.10 Scatterplots - Result}{chapter.11}
 \BOOKMARK [1][]{section.11.11}{A.11 Recreating the winning approach - Code}{chapter.11}
+\BOOKMARK [1][]{section.11.12}{A.12 Forward selection - Code}{chapter.11}
+\BOOKMARK [1][]{section.11.13}{A.13 Forward selection - Results}{chapter.11}

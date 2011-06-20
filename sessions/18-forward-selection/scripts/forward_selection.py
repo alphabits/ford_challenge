@@ -10,8 +10,8 @@ from src.logistic import fit_logistic_regression
 
 path = get_path(__file__) + '/..'
 
-D = d.trainingset_extended()
-#Dt = d.testset_extended()
+#D = d.trainingset_extended()
+D = d.testset_extended()
 
 a = range(D.shape[0])
 random.shuffle(a)

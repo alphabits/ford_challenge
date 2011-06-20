@@ -13,15 +13,23 @@ from src.logistic import fit_logistic_regression
 
 path = get_path(__file__) + '/..'
 
-#D = d.trainingset_extended()
+with open(path+'/data/forward-selection-results-2-for-docs.json') as f:
+    _tmp = json.load(f)
+    features = _tmp['labels_chosen']
+
+# Controls how many of the 48
+# features from feature selection
+# that are included in the log reg.
+features = features[:3]
+
 D = d.testset_extended()
 
-cols = c('sde5', 'v11', 'e9')
+cols = c(*features)
 
 a = range(int(D.shape[0]))
 random.shuffle(a)
 
-C = 1000000
+C = 10000
 num_bins = 10
 bin_size = int(np.ceil(len(a)/num_bins))
 bins = [a[i*bin_size:(i+1)*bin_size] for i in range(num_bins)]
@@ -47,7 +55,15 @@ def save_result(save_path):
 def get_result():
     wl = [a[0].tolist() for a in w]
     save_data = dict(zip(
-        ['weights', 'auc', 'intercepts', 'C', 'num_bins', 'dataset_size', 'generator'], 
-        [wl, auc, b, C, num_bins, D.shape[0], __file__]
+        ['weights', 'auc', 'intercepts', 'C', 'num_bins', 'dataset_size', 'generator', 'features'], 
+        [wl, auc, b, C, num_bins, D.shape[0], __file__, features]
     ))
     return save_data
+
+def save_roc_curve(run, title, filename):
+    plt.plot(fpr[run], tpr[run], linewidth=3)
+    plt.xlabel('False positive rate', {'size': 16})
+    plt.ylabel('True positive rate', {'size': 16})
+    plt.title(title, {'size': 18})
+    plt.savefig(path+'/plots/'+filename+'.pdf')
+

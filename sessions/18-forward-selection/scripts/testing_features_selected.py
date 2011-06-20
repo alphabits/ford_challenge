@@ -13,8 +13,6 @@ from src.logistic import fit_logistic_regression
 path = get_path(__file__) + '/..'
 
 D = d.trainingset_extended()
-# Try with 10000 first rows. Gives auc around 0.98!
-#D = D[:10000,:]
 
 features = ['sde1', 'v11', 'e9']
 cols = c(*features)
