@@ -1,4 +1,4 @@
-\begin{thebibliography}{16}
+\begin{thebibliography}{18}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\urlprefix}{URL }
@@ -55,8 +55,15 @@ Hastie, T., Tibshirani, R., and Friedman, J. (2009).
 \newblock \emph{The Elements of Statistical Learning}.
 \newblock Springer Science + Business Media LLC.
 
-\bibitem[{Inference(2011)}]{kaggle_forum_295_reply_3}
-Inference (2011).
+\bibitem[{Inference(2011{\natexlab{a}})}]{inference_winning_approach}
+Inference (2011{\natexlab{a}}).
+\newblock First place in the stay alert! competition.
+\newblock
+  \urlprefix\url{http://www.kaggle.com/blog/wp-content/uploads/2011/03/ford.pd%
+f}.
+
+\bibitem[{Inference(2011{\natexlab{b}})}]{kaggle_forum_295_reply_3}
+Inference (2011{\natexlab{b}}).
 \newblock {Kaggle forum: Ford - Reply 3}.
 \newblock
   \urlprefix\url{http://www.kaggle.com/c/stayalert/forums/t/295/ford/1743#post%
@@ -71,6 +78,10 @@ Kaggle.com (2011).
 Labs, Y. (2011).
 \newblock {KDD Cup 2011}.
 \newblock \urlprefix\url{http://kddcup.yahoo.com/}.
+
+\bibitem[{M{\o}rup(2011)}]{meetings-morten}
+M{\o}rup, M. (2011).
+\newblock Meetings with morten m{\o}rup.
 
 \bibitem[{Netflix(2011)}]{netflix_leaderboard}
 Netflix (2011).

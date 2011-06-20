@@ -4,6 +4,7 @@ import json
 import random
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from src.utils2 import c_ex as c, get_path
 import src.dataloaders as d
@@ -13,16 +14,14 @@ from src.logistic import fit_logistic_regression
 path = get_path(__file__) + '/..'
 
 D = d.trainingset_extended()
-# Try with 10000 first rows. Gives auc around 0.98!
-#D = D[:10000,:]
 
 cols = c('sde5', 'v11', 'e9')
 
 a = range(int(D.shape[0]))
 random.shuffle(a)
 
-C = 10000
-num_bins = 4
+C = 1000000
+num_bins = 10
 bin_size = int(np.ceil(len(a)/num_bins))
 bins = [a[i*bin_size:(i+1)*bin_size] for i in range(num_bins)]
 
@@ -51,5 +50,3 @@ def get_result():
         [wl, auc, b, C, num_bins, D.shape[0], __file__]
     ))
     return save_data
-
-# 'sessions/17-recreating-winning-entry/scripts/inferences_features_cv.py'

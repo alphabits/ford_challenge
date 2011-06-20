@@ -17,25 +17,25 @@ A common way to obtain a classification rule is by the Bayes classification rule
     \]
     and then the Bayes classification rule is defined by
     \begin{definition}\label{def:bayes-rule}
-        Let $\alpha\in[0,\infty[$. The Bayes classification rule $f^*$ is given by
+        The Bayes classification rule $f^*$ is given by
         \[
             f^*(\ve{x}) = \begin{cases}
-                1 & \text{if}\quad \alpha p_1(\ve{x})>p_0(\ve{x}) \\
+                1 & \text{if}\quad p_1(\ve{x})>p_0(\ve{x}) \\
                 0 & \text{else}
             \end{cases}
         \]
     \end{definition}
-    Since $p_0(\ve{x})=1-p_1(\ve{x})$, the Bayes classification rule can be written
+    Since $p_0(\ve{x})=1-p_1(\ve{x})$, the Bayes classification rule can also be written
     \[
         f^*(\ve{x}) = \begin{cases}
-            1 & \text{if}\quad p_1(\ve{x}) > \frac{1}{1+\alpha} \\
+            1 & \text{if}\quad p_1(\ve{x}) > \frac{1}{2} \\
             0 & \text{else}
         \end{cases}
     \]
     By the Bayes classification rule we have got a theoretical classification rule. In practice the posterior class probabilities $p_0(\ve{x})$ and $p_1(\ve{x})$ are unknown, so the trainingset must be used to find some approximation for these probabilities. The problem of approximating a probability distribution from a given data set is a classic statistical problem. The next section gives one way to solve this problem.
 
 \section{Parametric models and maximum likelihood}\label{sec:parametric-models-and-likelihood}
-Two distinct ways to approximate the probability distribution $\Ptx$ is using either a parametric or a non-paramtric approach. The focus in this report is on a paramtric approach. The distribution $\Ptx$, is therefore approximated by a distribution $\PtxHat$ restricted to a class of distributions
+Two distinct ways to approximate the probability distribution $\Ptx$ is using either a parametric or a non-paramtric approach. The focus in this report is on the paramtric approach. The distribution $\Ptx$, is therefore approximated by a distribution $\PtxHat$ restricted to a class of distributions
 \[
     \mathcal{F} = \Bigl\{\,f(t|\ve{x},\ve{w})\,\Bigr\}
 \]
@@ -51,7 +51,7 @@ The approximation $\PtxHat$ of the posterior class probability is restricted to 
     \]
     and the log-likelihood function is defined by $\ell(\ve{w})$ = $\log\mathcal{L(\ve{w})}$.
 \end{definition}
-It is worth noticing that the definition of the likelihood function assumes that the $t_i$'s are independent random variables. An assumption that in the case of \TFC\ may be a bit questionable. \par
+It is worth noticing that the definition of the likelihood function assumes that the $t_i$'s are independent random variables. An assumption that in the case of \TFC\ may be a bit questionable.\mytodo{Elaborate this point.} \par
 Given the definition of the likelihood function, the maximum likelihood estimator is now defined by
 \begin{definition}
     The maximum likelihood estimator $\mle$ is the value of $\ve{w}$ that maximizes $\mathcal{L}(\ve{w})$.
@@ -78,7 +78,7 @@ can be written
     \log \frac{p_0}{1-p_0} &= \Lx
 \end{align*}
 And therefore the parametric form in \eqref{eq:log-def}, comes from the assumptions that the log-odds of $p_0$ is linear in the input vector $\ve{x}$. \par
-Now to find an expression for the likelihood function, the probability of getting the data in the trainingset must be expressed. With $p_i=P(t=0|\ve{x}_i)$ the likelihood function can be written as
+Now to find an expression for the likelihood function, the probability of getting the data in the trainingset must be expressed. With $p_i=P(t=0|\ve{x}_i)$ the likelihood function can be written as\mytodo{Mention the Bernoulli distribution}
 \[
     \mathcal{L}(\ve{w}) = \prod_{i=1}^n p_i^{t_i}(1-p_i)^{1-t_i}
 \]
@@ -96,7 +96,7 @@ gives that
     &= \sum_{i=1}^n t_i(1-p_i)\ve{x}_i - (1-t_i)p_i\ve{x}_i \\
     &= \sum_{i=1}^n (t_i-p_i)\ve{x}_i
 \end{align*}
-The maximum likelihood estimator can now be found by solving $\frac{\partial\ell(\ve{w})}{\partial\ve{w}}=0$, but since $p_i$ isn't linear wrt. $\ve{w}$ the equation must be solved numerically. An effective algorithm called iterative reweighted least squares can solve this problem \citep[p.207]{bishop}.
+The maximum likelihood estimator can now be found by solving $\frac{\partial\ell(\ve{w})}{\partial\ve{w}}=0$, but since $p_i$ isn't linear wrt. $\ve{w}$ the equation must be solved numerically. An effective algorithm called iterative reweighted least squares can solve this problem \citep[p.207]{bishop}.\mytodo{Show that the Hessian is Negative Semi Definite and therefore an unique maximum exists}
 
 \subsection{The decision boundary}
 An important property of a classification method is how complicated data sets the method is able to separate in the appropriate classes. The decision boundary of a classification method gives some imformation about how well it separates input data. The decision boundary is the set of points in the input space that lays at the boundary between input points that are classified as class 0 and input points that classify as class 1.
@@ -125,9 +125,7 @@ Although the logistic regression has a limited complexity, its ability to separa
 \[
     \ve{x}_e = [x_1, \dots, x_d, x_1^2, \dots, x_d^2]
 \]
-This gives nonlinear decision boundaries in the original input space, which increases the number of datasets that can be separated. Notice that the decision boundary is still linear in the extended $2d$-dimensional inputspace. Also there still exists datasets that can't be separated by a linear classifier, no matter what feature transformations are introduced\mytodo{Morten: Is this correct? Where can I find a theorem stating this?}
-
-\subsection{Regularization}
+This gives nonlinear decision boundaries in the original input space, which increases the number of datasets that can be separated. Notice that the decision boundary is still linear in the extended $2d$-dimensional inputspace. Instead of introducing transformed, non-linear features in the logistic regression, other methods exists, that have the non-linearity build-in. One example of such a model is the Neural Network.
 
 
 \section{Feed Forward Neural Network}\label{sec:feed-forward-neural-network}
