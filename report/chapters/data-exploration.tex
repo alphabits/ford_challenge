@@ -7,7 +7,7 @@ Here I describe the various data exploration techniques I have used. Lots of nic
 \section{Calculating common statistics}\label{sec:summary-statistics}
 To start the data exploration, four common statistics, namely the mean, min, max and standard deviation, of every feature across the whole dataset was calculated. The standard deviation was calculated as (with $n$ equal the total number of rows in the dataset, and $x_i$ equal to the $i$'th value of any of the features)
 \[
-    s = \sqrt{\frac{\sum_{i=1}^n (x_i-\bar{x})^2}{n}}
+    s = \sqrt{\frac{\sum_{i=1}^n (x_i-\bar{x})^2}{n-1}}
 \]
 The source code for the calculations can be found in \appref{source-common-statistics} and all results in \appref{result-common-statistics}. Most results did not tell that much, but a few results stood out. These are shown in table~\ref{tbl:summary-stats-highlights}.
 \begin{table}
@@ -153,8 +153,18 @@ This is a normal, unconstrained maximization problem. Taking the derivative with
     2\ve{\Sigma}\ve{w}_1 - 2\alpha\ve{w}_1 &= 0 \myimp \\
     \ve{\Sigma}\ve{w}_1 &= \alpha\ve{w}_1
 \end{align*}
-which is true exactly when $\ve{w}_1$ is an eigenvector of $\ve{\Sigma}$ and $\alpha$ is the corresponding eigenvalue.
-Giver det mening på binære variable?
+which is true exactly when $\ve{w}_1$ is an eigenvector of $\ve{\Sigma}$ and $\alpha$ is the corresponding eigenvalue. When $\alpha$ is an eigenvalue for $\ve{\Sigma}$, what needs to be maximized is
+\[
+    \varop{z_1} = \ve{w}_1^T\ve{\Sigma}\ve{w}_1 = \alpha\ve{w}_1^T\ve{w}_1 = \alpha
+\]
+and therefore the eigenvector with the largest eigenvalue is selected as $\ve{w}_1$ and is called the first principal component. The second principal component should also maximize variance, be of unit length and be orthogonal to $\ve{w}_1$. By introducing another Lagrange multiplier to handle the orthogonallity constraint and maximizing the expression for maximum variance, it is shown that the second principal component will be the eigenvector with the second highest eigenvalue. This procedure can be repeated and the end result is that the principal components are given as the eigenvectors of $\ve{\Sigma}$, sorted by the value of the corresponding eigenvalues. It can be shown that the proportion of the total variation explained by the first $k$ principal components is given by
+\[
+    \frac{\lambda_1+\lambda_2 +\dots + \lambda_k}{\lambda_1 + \lambda_2 + \dots + \lambda_k + \dots + \lambda_d}
+\]
+where $\lambda_i$ is the eigenvalue of the $i$'th eigenvector sorted by the eigenvalue.
+
+\subsection{Result}
+A Pricipal component analysis was done on the dataset
 
 \section{Conclusions}
 

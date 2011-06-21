@@ -83,9 +83,9 @@ Now to find an expression for the likelihood function, the probability of gettin
     \mathcal{L}(\ve{w}) = \prod_{i=1}^n p_i^{t_i}(1-p_i)^{1-t_i}
 \]
 which gives the log-likelihood function
-\[
+\begin{equation}\label{eq:log-like-logistic}
     \ell(\ve{w}) = \sum_{i=1}^n t_i\log p_i + (1-t_i)\log(1-p_i)
-\]
+\end{equation}
 The maximum of the log-likelihood function gives the maximum likelihood estimator of $\ve{w}$, so the derivative of $\ell$ wrt. $\ve{w}$ need to be derived. Using the fact that
 \[
     \frac{\partial p_i(\ve{w})}{\partial \ve{w}} = p_i(1-p_i)\ve{x}_i
@@ -129,58 +129,68 @@ This gives nonlinear decision boundaries in the original input space, which incr
 
 
 \section{Feed Forward Neural Network}\label{sec:feed-forward-neural-network}
-The Neural Network originated from an attempt to create a mathematical model of information processing in the human brain \citep[p.226]{bishop}. But the Neural Network turned out to be useful in many pratical applications, and it is now seen as a standard statistical model \citep[p.392]{hastie09}.
+The Neural Network originated from an attempt to create a mathematical model of information processing in the human brain \citep[p.226]{bishop}. But the Neural Network turned out to be useful in many pratical applications, and it is now seen as a standard statistical model \citep[p.392]{hastie09}. \par
+A neural network is made up of one or more layers and each layer consists of one or more perceptrons. The perceptron is the basic building block of a neural network and it is described next
+
+\subsection{Perceptron}
+A perceptron consists of one or more inputs $\ve{x}$ with corresponding weights $\ve{w}$ and an activation function $f$. The activation function is assumed to be differentiable. The output from the perceptron is then
+\[
+    y = f(\ve{w}^T\ve{x} + w_0)
+\]
+The intercept value $w_0$ is added to make the model more flexible. It can be seen as the weight of an extra input that is always 1.
+As a stand alone unit, the perceptron can implement linear classification methods, as eg. logistic regression. To emulate the behavior of a logistic regression, the activation function is chosen as
+\[
+    f(x) = \frac{1}{1+e^{-x}}
+\]
+Now the output of the perceptron is modelled as the posterior class probability $P(t=0|\ve{x})$, which gives
+\[
+    P(t=0|\ve{x}) = \frac{1}{1+e^{-(\ve{w}^T\ve{x}+w_0)}}
+\]
+If this expression is compared with equation \eqref{eq:log-def} it is seen that the two are identical. An error function can now be defined exactly as the log-likelihood in the logistic regression (see equation \eqref{eq:log-like-logistic}) and a maximum weight vector can be found. \par
+The perceptron by itself isn't much more complex than the logistic regression, and the decision boundary is still linear in the input space. The non-linearity is achieved when more than one perceptron is combined in a network.
+
 \subsection{Model complexity}
 
 
 
 \section{Measuring classifier performance}\label{sec:classifier-performance}
-When a classifier has been trained, an estimate of the classifiers expected performance on future inputs, should be calculated. To calculate this astimate, it needs to be specified exactly what is meant by a classifiers performance. For that a loss function is defined
-\begin{definition}
-    Let $t_0$ be the true class of a corresponding input $\ve{x}_0$, and $f$ be a classification rule. The loss function
-    \[
-        L(t_0, f(\ve{x}_0))
-    \]
-    then gives the cost of making the prediction $f(\ve{x})$, when the true class is $t_0$.
-\end{definition}
-The common way to define the loss function is by
-\begin{equation}\label{eq:loss-function}
-    L(t, y) = \begin{cases}
-        1 & \text{if}\quad t\neq y \\
-        0 & \text{else}
-    \end{cases}
-\end{equation}
-This assumes that the cost of predicting class 0 when the truth is class 1, and visa versa is the same. In many applications this may be questionable. In \TFC\ the cost of predicting alert, when the truth is not-alert, might be a more severe error, than the other way around; although it depends on what the Ford classifier is used for. In the rest of this section, the loss function given in \eqref{eq:loss-function} is assumed. \par
-When a loss function has been defined, what would be interesting to know, is the expected loss on future data for a classification rule $f$.
-\[
-    \Err = \expop [L(t, f(\ve{x}))]
-\]
-where $t$ and $\ve{x}$ is random variables and the expectation is taken on their joint distribution. The expected loss isn't normally known so it needs to be estimated somehow. For that the average loss over a dataset for a given classification rule can be used. For an arbitrary dataset $\mathcal{D}=\{(\ve{x}_i, t_i)\}, i=1\dots n$, classification rule $f$ and loss function $L$, the average loss is calculated by
-\[
-    \overline{\text{err}} = \frac{1}{n}\sum_{i=1}^n L(t_i, f(\ve{x}_i))
-\]
-
-\subsection{Splitting the dataset}\label{sec:splitting-dataset}
-It is extremely important that the dataset used to calculate the average loss, isn't in anyway overlapping with the dataset that was used to train the classifier. If there is a large dataset available for a classification task, the dataset should ideally be split into three separate datasets\footnote{Loosely based on \citet[p.222]{hastie09}}
-\begin{itemize}
-    \item The traning set $\mathcal{T}$ - This dataset is used to train models. More specifically the training set is used to find the maximum likelihood estimator, for a parametric model
-    \item The validation set $\mathcal{V}$ - This dataset is used for model selection.  As mentioned in section~\ref{sec:logistic-complexity}, the complexity of classification methods can be altered to make the method fit the training data better. The validation set gives an estimate of how well models of different complexity levels, predicts future datapoints.
-    \item The publication set $\mathcal{P}$ - This dataset is used, when the final model has been selected, and an estimate of the performance of this model. 
-\end{itemize}
-There is not a general rule for how many percent of the original dataset that should be assigned to each of the three datasets. In \citet[p.222]{hastie09}, a split of 50\% for training and 25\% for bot validation and publication, is suggested.
-\begin{Exa}
-    In \TFC\ a dataset of 500 trials is given. Following the suggestion by \citet{hastie09}, the dataset is split in a training set of 250 trials and a validation set and publication set of both 125 trials. It is then decided to train a logistic regression model to classify drivers. The complexity of the model is increased by including various feature transformations. The average loss of the different models is calculated on the validation set, and the models with the lowest average loss is selected. Finally the average loss over the publication loss is used as an independent estimate of the expected loss on future data.
-\end{Exa}
-The above method of making three distinct datasets out of the original, is only possible, when the original dataset is large. And even with a large dataset, it may seem a bit wasteful to only have tested the final model against 50\% of the original dataset\mytodo{Does this make sense?}. A way to circumvent this problem is by using cross validation.
+When a classifier has been trained on a training dataset, some estimate of the classifier performance, on future datasets, needs to be estimated. To be able to estimate the performance, it first needs to be defined exactly how the performance is measured. This can be done in many ways. For the Ford Challenge a measure called AUC-score was used and this measure will be explained in the following section. But even though a measure has been chosen there still needs to be found a way to estimate the expected measure-score on future datasets, for the classifier. An emperical way to do this, is called cross validation.
 
 \subsection{Cross validation}
-Cross validation is a technique to squeeze out more information of a dataset, than by splitting the dataset in three parts as described in section~\ref{sec:splitting-dataset}\mytodo{Is this right? I have troubles defining cross validation? Is it only a technique for model selection? When assesing performance on test/publication set cross validation could be used?}
-Recommendation of 5- or 10-fold cross validation \citep[p.243]{hastie09}
-\subsection{AUC}\label{sec:theory:auc}
-Mentioning critiques of AUC?
+One straight forward way to get an estimate of the expected performance on future datasets for a classification method, would be to measure the classifiers performance on the dataset used to train the classifier. The problem is that this will give an overly optimistic estimate, since the classifier has been trained to take into account some of the inevitable noise in the trainingset. To get a better estimate of the classifier performance, the complete dataset is split into smaller dataset, such that the same dataset is never used for both training and estimation of performance. This is the core idea in cross validation. Split the dataset to avoid using the same dataset for training and estimation. \par
+The easiest way to split a dataset is to split it in two parts: a trainingset and a validationset. The classifier can then be trained on the traningset and its performance is estimated on the validationset. Although this technique works it use the dataset only once, and only one estimate of the performance is produced. This mean that the variability in the estimate can't be estimated. A more effective way to split a dataset is a technique called $K$-fold cross validation
+
+\subsubsection{$K$-fold cross validation}
+In $K$-fold cross validation the dataset is split into $K$-parts. Then each part is selected as validationset once and all other parts are the trainingset. The classifier is then trained on $\frac{K-1}{K}$ of the dataset and validated on the last $\frac{1}{K}$ of the dataset. This way $K$ estimates of the classifier performance is calculated, and these can be used to both estimate the expected classifier performance and the variablility in this estimate.
+
+\subsubsection{Leave-one-out cross validation}
+This method is just a special case of $K$-fold where $K$ is selected as the same as the total number of rows in the dataset. This means that each row in the dataset is used once as validationset and all the other rows than the current validationrow is used for training. For a dataset of size $n$, this gives $n$ estimates of the data and almost all the data is used for training in each iteration. The problem is that the method is computational demanding isnce the classifier must be trained $n$ times on a dataset of size $n-1$.
+
+
+\subsection{Managing the dataset}
+When starting out a new classification project a dataset is provided. Typically this dataset is split into two parts
+\begin{itemize}
+    \item {\bfseries Trainingset} - This dataset is used in the rest of the data modelling phase. At any moment in the data modelling phase where different calssification model must be compared the trainingset will be split in smaller trainingset(s) and a validationset. Possibly by $K$-fold cross validation.
+    \item {\bfseries Publicationset} - This dataset is kept isolated from the data modelling phase, and is only used when the final classification method has been chosen. At this moment the performance of the final classification method is estimated, by splitting the publication dataset in a trainingset and a validationset, and then measuring performance of this validationset. The splitting can be done by $K$-fold cross validation to get $K$ estimates of the final performance.
+\end{itemize}
 
 
 \section{Model selection}
-\subsection{Over- and underfitting}
+As mentioned in the section about logistic regression and neural networks, the complexity of a model can be tweaked in different ways. A natural question is how complex the model should be chosen. Should the complexity be as high as is computational possible? Or should the complexity be kept as low as possible? As is often the case, the answer is that the complexity should be somewhere between low and high and it is due to the concept of over- and underfitting. \par
+If the model complexity is made is high as is computational possible, it will probably suffer from what is called overfitting. This means that the model has learned so many details from the training data, that it has adapted to the noise in the training data. Although this gives a great performance on the trainingset, it also means that the model will perform worse on future datasets. That is, the generalization of the model gets worse, when the fit to the trainingdata gets to high. \par
+At the opposite end of the scale is a model that is too simple. When a model is to simple it can't adapt to the patterns in the training dataset, that is shared with the future dataset. That way the model will not fit neither the trainingset nor any future datasets. \par
+One way to determine the right level of complexity is by using cross validation. By training and then estimating performance of models of different complexity levels, the complexity level that achieves the highest performance can be selected.
+
 \subsection{Forward feature selection}
+One way to tweak model complexity, that is independent of the classification model used, is feature selection. In feature selection a subset of the whole set of features is selected for the classification model. Since the performance can depend on combinations of features, all possible subset of features should ideally be tested to find the optimal subset. For any high-dimensional input space this is not possible.
+\begin{Exa}
+    For the Ford Challenge the input data is 30-dimensional. This gives $2^30\approx10^9$ unique subsets to test. Since the model must be trained for each unique subset this is not a feasible solution.
+\end{Exa}
+Instead of trying every combination of features, differen heuristics exists, that find a solution that is better than many alternatives. But optimallity isn't guaranteed. One such heuristic is the forward feature selection. The procedure is simple. Start with a model that consists of no features and a set of candidate features that could be included in the model. Add the first candidate to the model and test performance. Then exchange the first candidate with the next and test performance, etc. The candidate that gives the best performance is removed from the candidate set and permanently added to the model. Recursively apply this procedure until the performance is no longer improved by adding features. \par
+The forward feature selection is a greedy algorithm that at each stage selects the feature that gives the best performance. This do not guarantee an optimal performance but the worst case algorithmic complexity is (with $d$ features in the candidate set)
+\[
+    \sum_{i=1}^d i = \frac{d(d-1)}{2}
+\]
+The algorithmic complexity is therefore reduced from an exponential $O(2^d)$ to a polynomial $O(d^2)$.
+
 \subsection{Regularization}

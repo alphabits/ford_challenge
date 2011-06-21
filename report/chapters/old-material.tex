@@ -1,0 +1,43 @@
+\section{Old measuring performance}
+\begin{definition}
+    Let $t_0$ be the true class of a corresponding input $\ve{x}_0$, and $f$ be a classification rule. The loss function
+    \[
+        L(t_0, f(\ve{x}_0))
+    \]
+    then gives the cost of making the prediction $f(\ve{x})$, when the true class is $t_0$.
+\end{definition}
+The common way to define the loss function is by
+\begin{equation}\label{eq:loss-function}
+    L(t, y) = \begin{cases}
+        1 & \text{if}\quad t\neq y \\
+        0 & \text{else}
+    \end{cases}
+\end{equation}
+This assumes that the cost of predicting class 0 when the truth is class 1, and visa versa is the same. In many applications this may be questionable. In \TFC\ the cost of predicting alert, when the truth is not-alert, might be a more severe error, than the other way around; although it depends on what the Ford classifier is used for. In the rest of this section, the loss function given in \eqref{eq:loss-function} is assumed. \par
+When a loss function has been defined, what would be interesting to know, is the expected loss on future data for a classification rule $f$.
+\[
+    \Err = \expop [L(t, f(\ve{x}))]
+\]
+where $t$ and $\ve{x}$ is random variables and the expectation is taken on their joint distribution. The expected loss isn't normally known so it needs to be estimated somehow. For that the average loss over a dataset for a given classification rule can be used. For an arbitrary dataset $\mathcal{D}=\{(\ve{x}_i, t_i)\}, i=1\dots n$, classification rule $f$ and loss function $L$, the average loss is calculated by
+\[
+    \overline{\text{err}} = \frac{1}{n}\sum_{i=1}^n L(t_i, f(\ve{x}_i))
+\]
+
+\subsection{Splitting the dataset}\label{sec:splitting-dataset}
+It is extremely important that the dataset used to calculate the average loss, isn't in anyway overlapping with the dataset that was used to train the classifier. If there is a large dataset available for a classification task, the dataset should ideally be split into three separate datasets\footnote{Loosely based on \citet[p.222]{hastie09}}
+\begin{itemize}
+    \item The traning set $\mathcal{T}$ - This dataset is used to train models. More specifically the training set is used to find the maximum likelihood estimator, for a parametric model
+    \item The validation set $\mathcal{V}$ - This dataset is used for model selection.  As mentioned in section~\ref{sec:logistic-complexity}, the complexity of classification methods can be altered to make the method fit the training data better. The validation set gives an estimate of how well models of different complexity levels, predicts future datapoints.
+    \item The publication set $\mathcal{P}$ - This dataset is used, when the final model has been selected, and an estimate of the performance of this model. 
+\end{itemize}
+There is not a general rule for how many percent of the original dataset that should be assigned to each of the three datasets. In \citet[p.222]{hastie09}, a split of 50\% for training and 25\% for bot validation and publication, is suggested.
+\begin{Exa}
+    In \TFC\ a dataset of 500 trials is given. Following the suggestion by \citet{hastie09}, the dataset is split in a training set of 250 trials and a validation set and publication set of both 125 trials. It is then decided to train a logistic regression model to classify drivers. The complexity of the model is increased by including various feature transformations. The average loss of the different models is calculated on the validation set, and the models with the lowest average loss is selected. Finally the average loss over the publication loss is used as an independent estimate of the expected loss on future data.
+\end{Exa}
+The above method of making three distinct datasets out of the original, is only possible, when the original dataset is large. And even with a large dataset, it may seem a bit wasteful to only have tested the final model against 50\% of the original dataset\mytodo{Does this make sense?}. A way to circumvent this problem is by using cross validation.
+
+\subsection{Cross validation}
+Cross validation is a technique to squeeze out more information of a dataset, than by splitting the dataset in three parts as described in section~\ref{sec:splitting-dataset}\mytodo{Is this right? I have troubles defining cross validation? Is it only a technique for model selection? When assesing performance on test/publication set cross validation could be used?}
+Recommendation of 5- or 10-fold cross validation \citep[p.243]{hastie09}
+\subsection{AUC}\label{sec:theory:auc}
+Mentioning critiques of AUC?
