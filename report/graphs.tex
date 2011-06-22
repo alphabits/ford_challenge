@@ -1,0 +1,127 @@
+\documentclass[12pt]{article}
+\linespread{1}
+
+\usepackage{geometry} % see geometry.pdf on how to lay out the page. There's lots.
+\usepackage[utf8]{inputenc}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx,float}
+\usepackage{pstricks}
+\usepackage{pst-node}
+\usepackage{pst-tree}
+\usepackage{wrapfig}
+\usepackage{caption}
+\usepackage{multirow}
+\usepackage{fouriernc}
+\usepackage[scaled]{beramono}
+\usepackage{listings}
+\lstset {                 % A rudimentary config that shows off some features.
+    language=Python,
+    basicstyle=\footnotesize\ttfamily, % Without beramono, we'd get cmtt, the teletype font.
+    commentstyle=\textit, % cmtt doesn't do italics. It might do slanted text though.
+    keywordstyle=\bfseries,
+    framextopmargin=10pt,
+    framexbottommargin=10pt,
+    framexleftmargin=10pt,
+    framexrightmargin=10pt,
+    xleftmargin=10pt,
+    xrightmargin=10pt,
+    backgroundcolor=\color{mygray},
+    frame=single,
+    tabsize=4            % Or whatever you use in your editor, I suppose.
+}
+% \usepackage[charter]{mathdesign}
+% \usepackage{lmodern}
+\usepackage[normalem]{ulem}
+\geometry{a4paper} % or letter or a5paper or ... etc
+% \geometry{landscape} % rotated page geometry
+
+\usepackage{url}
+\usepackage{natbib}
+\renewcommand\bibsection{}
+\bibliographystyle{plain}
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+% See the ``Article customise'' template for come common customisations
+
+\newtheorem{mydef}{Definition}
+\newtheorem{saet}{Sætning}
+\newtheorem{eks}{Eksempel}
+
+\newcommand\myimp{\quad\Leftrightarrow\quad}
+\newcommand\half{\frac{1}{2}}
+\newcommand\myvec[1]{\mathbf{#1}}
+\newcommand\mymod[1]{\ (\text{mod }#1)}
+\newcommand\myreal{\mathbb{R}}
+\newcommand\mynatural{\mathbb{N}}
+\newcommand\myint{\text{int}}
+\newcommand\norm[1]{||\,#1\,||}
+\newcommand\arr[1]{\langle#1\rangle}
+\newcommand\vrb[1]{\texttt{\small#1}}
+\newcommand\floor[1]{\lfloor#1\rfloor}
+\newcommand\ceil[1]{\lceil#1\rceil}
+\newcommand\mytr[1]{\small\Tr{#1}}
+
+\usepackage{fancyvrb}
+\DefineShortVerb{\@}
+
+\usepackage{tabulary}
+\newcolumntype{y}{>{\centering\arraybackslash}R}
+
+\usepackage{color}
+\definecolor{mygray}{RGB}{230,230,230}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{\small\textit{Hjemmeopgave 2 - 02105 Algoritmer og datastrukturer - Anders Hørsted (s082382)}}
+\rhead{\thepage}
+\chead{}
+\lfoot{}\cfoot{}\rfoot{}
+
+\title{Hjemmeopgave 2}
+\author{Anders Hørsted (s082382) -- Hold 1 -- 10-03-2011\\\small 02105 Algoritmer og datastrukturer}
+%\author{}
+\date{} % delete this line to display the current date
+
+%%% BEGIN DOCUMENT
+\begin{document}
+    \begin{figure}[htbp]
+        \centering
+            \psset{treenodesize=.2cm,levelsep=25pt} 
+            \pstree{\mytr{$n$}}{% 
+                \pstree{\mytr{$n-1$}}{% 
+                    \pstree[linestyle=dashed]{\mytr{$n-2$}}{% 
+                        \pstree[linestyle=dashed]{\mytr{$n-k$}}{% 
+                            \mytr{$1$}
+                            \Tn
+                        }
+                        \mytr{ }
+                    }
+                    \pstree[linestyle=dashed]{\mytr{$n-3$}}{% 
+                        \mytr{ }
+                        \mytr{ }
+                    }
+                }
+                \pstree{\mytr{$n-2$}}{% 
+                    \pstree[linestyle=dashed]{\mytr{$n-3$}}{% 
+                        \mytr{ }
+                        \mytr{ }
+                    }
+                    \pstree[linestyle=dashed]{\mytr{$n-4$}}{% 
+                        \mytr{ }
+                        \mytr{$n-2k$}
+                    }
+                }
+            }
+        \caption{Træ over operationer udført ved rekursiv beregning af $F_n$}
+        \label{fig:fibotree}
+    \end{figure}
+\end{document}

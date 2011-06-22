@@ -87,16 +87,29 @@ which gives the log-likelihood function
     \ell(\ve{w}) = \sum_{i=1}^n t_i\log p_i + (1-t_i)\log(1-p_i)
 \end{equation}
 The maximum of the log-likelihood function gives the maximum likelihood estimator of $\ve{w}$, so the derivative of $\ell$ wrt. $\ve{w}$ need to be derived. Using the fact that
-\[
+\begin{equation}\label{eq:sigmoid-derivative}
     \frac{\partial p_i(\ve{w})}{\partial \ve{w}} = p_i(1-p_i)\ve{x}_i
-\]
+\end{equation}
 gives that
 \begin{align*}
-    \frac{\partial \ell(\ve{w})}{\ve{w}} &= \sum_{i=1}^n t_i \frac{1}{p_i}p_i(1-p_i)\ve{x}_i + (1-t_i)\frac{1}{1-p_i}(-p_i)(1-p_i)\ve{x}_i \\
+    \frac{\partial \ell(\ve{w})}{\partial\ve{w}} &= \sum_{i=1}^n t_i \frac{1}{p_i}p_i(1-p_i)\ve{x}_i + (1-t_i)\frac{1}{1-p_i}(-p_i)(1-p_i)\ve{x}_i \\
     &= \sum_{i=1}^n t_i(1-p_i)\ve{x}_i - (1-t_i)p_i\ve{x}_i \\
     &= \sum_{i=1}^n (t_i-p_i)\ve{x}_i
 \end{align*}
-The maximum likelihood estimator can now be found by solving $\frac{\partial\ell(\ve{w})}{\partial\ve{w}}=0$, but since $p_i$ isn't linear wrt. $\ve{w}$ the equation must be solved numerically. An effective algorithm called iterative reweighted least squares can solve this problem \citep[p.207]{bishop}.\mytodo{Show that the Hessian is Negative Semi Definite and therefore an unique maximum exists}
+To make sure it is a maximum the second derivative wrt. $\ve{w}$ must be found. Again using \eqref{eq:sigmoid-derivative}, the Hessian of the log-likelihood is found as
+\begin{align*}
+    \ve{H} = \frac{\partial^2\ell(\ve{w})}{\partial\ve{w}\partial\ve{w}^T} = - \sum_{i=1}^n p_i(1-p_i)\ve{x}_i\ve{x}_i^T
+\end{align*}
+which can be rewritten as an matrix equation, by introducing the matrices $\ve{X}$ and $\ve{P}$. $\ve{X}$ is an $n\times d$ matrix with the $i$'th row being $\ve{x}_i$ and $\ve{P}$ is an $n\times n$ diagonal matrix with $p_i(1-p_i)$ in the diagonal. The Hessian can then be written
+\[
+    \ve{H} = \ve{X}^T\ve{P}\ve{X}
+\]
+For any non-zero $d$-dimensional column vector $\ve{u}$, let $\ve{u}_x = \ve{X}\ve{u}$. Then $\ve{u}_x^T = \ve{u}^T\ve{X}^T$ and therefore
+\begin{align*}
+    \ve{u}^T\ve{H}\ve{u} = \ve{u}_x^T\ve{P}\ve{u}_x
+\end{align*}
+Since $0<p_i(1-p_i)<1$, $\ve{P}$ is a diagonal matrix with positive elements, so $\ve{u}_x^T\ve{P}\ve{u}_x=\ve{u}^T\ve{H}\ve{u}>0$. Therefore the Hessian is  positive definite and $-\ve{H}$ is negative definite. From this it is seen that it is indeed a maximum that is found and that it is a concave optimization problem, so a single global maximum exists. \par
+The maximum likelihood estimator can now be found by solving $\frac{\partial\ell(\ve{w})}{\partial\ve{w}}=0$, but since $p_i$ isn't linear wrt. $\ve{w}$ the equation must be solved numerically. An effective algorithm called iterative reweighted least squares can solve this problem \citep[p.207]{bishop}.
 
 \subsection{The decision boundary}
 An important property of a classification method is how complicated data sets the method is able to separate in the appropriate classes. The decision boundary of a classification method gives some imformation about how well it separates input data. The decision boundary is the set of points in the input space that lays at the boundary between input points that are classified as class 0 and input points that classify as class 1.
@@ -121,7 +134,7 @@ An important property of a classification method is how complicated data sets th
 The classification methods with linear decision boundaries, defines a family of classification methods with simple analytical and computational properties \citep[p.179]{bishop}. This simplicity comes at the cost of the models having a limited capability to separate complex data sets. 
 
 \subsection{Model complexity}\label{sec:logistic-complexity}
-Although the logistic regression has a limited complexity, its ability to separate complex datasets can be increased by introducing feature transformations. Instead of just fitting the logistic regression to the $d$-dimensional input $\ve{x}=[x_1, x_2, \dots, x_d]$, the squared transformations of the elements $x_i$ are added to the input. This gives the $2d$-dimensional input 
+Although the logistic regression has a limited complexity, its ability to separate complex datasets can be increased by introducing feature transformations. Instead of just fitting the logistic regression to the $d$-dimensional input $\ve{x}=[x_1, x_2, \dots, x_d]$, eg. the squared transformations of the elements $x_i$ can be added to the input. This gives the $2d$-dimensional input 
 \[
     \ve{x}_e = [x_1, \dots, x_d, x_1^2, \dots, x_d^2]
 \]
@@ -146,11 +159,34 @@ Now the output of the perceptron is modelled as the posterior class probability 
 \[
     P(t=0|\ve{x}) = \frac{1}{1+e^{-(\ve{w}^T\ve{x}+w_0)}}
 \]
-If this expression is compared with equation \eqref{eq:log-def} it is seen that the two are identical. An error function can now be defined exactly as the log-likelihood in the logistic regression (see equation \eqref{eq:log-like-logistic}) and a maximum weight vector can be found. \par
-The perceptron by itself isn't much more complex than the logistic regression, and the decision boundary is still linear in the input space. The non-linearity is achieved when more than one perceptron is combined in a network.
+Compared with the logistic regression model in equation \eqref{eq:log-def} it is seen that the two are identical. An error function can now be defined exactly as the log-likelihood in the logistic regression (see equation \eqref{eq:log-like-logistic}) and a maximum weight vector can be found. \par
+The perceptron by itself isn't much more complex than the logistic regression, and the decision boundary is still linear in the input space. The non-linearity is achieved when multiple perceptrons are combined in a network.
+
+\subsection{Neural Network for binary classification}
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=110mm]{media/neural-network.pdf}
+    \caption{Neural network}
+    \label{fig:neural-network}
+\end{figure}
+In a neural network multiple perceptrons are combined, such that the output of one perceptron becomes the input of another perceptron. A lot of different network architectures exists but here the focus will be on feedforward networks with one hidden layer. \par
+In a feedforward network the perceptrons can be divided into layers where the output of all perceptrons goes to a perceptron in the layer ``above''. The first layer is called the input layer and it consists of $D+1$ perceptrons, one for each feature in the input data, plus an intercept perceptron. The output of the input layer becomes input in the hidden layer, and each such connection has attached a weight $w_{hi}$. The hidden layer have $H+1$ perceptrons including an intercept perceptron. The output from the hidden layer, then becomes input to the output layer and each connection also has a weight $v_{1h}$. The output of the $i$'th perceptron in the input layer is $x_i$. The output of the $h$'th perceptron in the hidden layer is $z_h$ and is given by
+\[
+z_h = \sigma(\ve{w}_h^T\ve{x}+w_{h0}) = \frac{1}{1+e^{-(\ve{w}_h^T\ve{x}+w_{h0})}}
+\]
+Here $\sigma$ is the sigmoid function that is the activation function of each perceptron in the hidden layer. This is a common choice as activation function in the hidden layer, but other functions could have been used. The output of the hidden layer is sent to the output layer. Since the focus is on binary classification, the output layer consists of only one perceptron $y$. Since the output is modelled as the conditional probability $P(t=0|\ve{x})$, the sigmoid is also used as activation function for the output layer. The output can therefore be written
+\[
+    y = \sigma(\ve{v}_1^T\ve{z}+v_{10}) = \frac{1}{1+e^{-(\ve{v}_1^T\ve{z}+v_{10})}}
+\]
+From these expression it may be seen that the decision boundary is no longer linear in the output. To get a better sense for this, the output can also be written
+\[
+    y = \sigma\left(\sum_{h=1}^H v_{1h}\,\sigma\left(\sum_{i=1}^D w_{hi}x_i + w_{h0}\right)+v_{10}\right)
+\]
+The increased complexity of the neural network comes at a price though. Finding the weights that maximizes the log-likelihood is no longer a concave problem, in fact many maxima exists\footnote{See \citet[p.237]{bishop} for a description of how many, and \citet[p.297]{duda01} for a couple of graphs of the likelihood function}, and there are no guarantees that the global maximum will be found. Fortunately an efficient algorithm called backpropagation\footnote{See \citet[p.249]{alpaydin10} for an explanation of the backpropagation algorithm.} exists, that efficiently finds at least a local maximum.
+
 
 \subsection{Model complexity}
-
+In section~\ref{sec:logistic-complexity} it was described how the complexity of the logistic regression model, could be increased by adding transformed features. This can also be done in a neural network, but some other options exists as well. First of all different activation functions can be chosen for the different layers. In binary classification it is common to use the sigmoid function in the output layer, but the activation functions in the hidden layer can be freely chosen, and this may affect the complexity of the model. Another option is to increase the number of perceptrons in the hidden layer. As more perceptrons are added, the complexity rises with it. In fact it can be shown that any continous function can be approximated arbitrarily well by a network with one hidden layer, as long as enough perceptrons are added (see \citet[p.287]{duda01}).
 
 
 \section{Measuring classifier performance}\label{sec:classifier-performance}
@@ -158,39 +194,37 @@ When a classifier has been trained on a training dataset, some estimate of the c
 
 \subsection{Cross validation}
 One straight forward way to get an estimate of the expected performance on future datasets for a classification method, would be to measure the classifiers performance on the dataset used to train the classifier. The problem is that this will give an overly optimistic estimate, since the classifier has been trained to take into account some of the inevitable noise in the trainingset. To get a better estimate of the classifier performance, the complete dataset is split into smaller dataset, such that the same dataset is never used for both training and estimation of performance. This is the core idea in cross validation. Split the dataset to avoid using the same dataset for training and estimation. \par
-The easiest way to split a dataset is to split it in two parts: a trainingset and a validationset. The classifier can then be trained on the traningset and its performance is estimated on the validationset. Although this technique works it use the dataset only once, and only one estimate of the performance is produced. This mean that the variability in the estimate can't be estimated. A more effective way to split a dataset is a technique called $K$-fold cross validation
+The easiest way to split a dataset is to split it in two parts: a trainingset and a validationset. The classifier can then be trained on the traningset and its performance is estimated on the validationset. Although this technique works it use the dataset only once, and only one estimate of the performance is produced. This means that the variability in the estimate can't be estimated. If the validationset is large, it can be split in smaller subsets, and the performance can then be tested on each subset. This is the procedure used for this report, since the competition dataset had plenty of datarows. If only a small dataset exists a set of estimates can still be calculated by using $K$-fold cross validation. 
 
 \subsubsection{$K$-fold cross validation}
-In $K$-fold cross validation the dataset is split into $K$-parts. Then each part is selected as validationset once and all other parts are the trainingset. The classifier is then trained on $\frac{K-1}{K}$ of the dataset and validated on the last $\frac{1}{K}$ of the dataset. This way $K$ estimates of the classifier performance is calculated, and these can be used to both estimate the expected classifier performance and the variablility in this estimate.
+In $K$-fold cross validation the dataset is split into $K$-parts. Then each part is selected as validationset once and all other parts are the trainingset. The classifier is then trained on the $K-1$ trainingsets and then validated on the validationset. This way $K$ estimates of the classifier performance is calculated, and these can be used to both estimate the expected classifier performance and the variablility in this estimate. It is worth noticing that this is not exactly the same as splitting a large validationset and estimate performance on each part. In that procedure only one model is trained on the validationset, while $K$ different models are trained in $K$-fold cross validation.
 
 \subsubsection{Leave-one-out cross validation}
-This method is just a special case of $K$-fold where $K$ is selected as the same as the total number of rows in the dataset. This means that each row in the dataset is used once as validationset and all the other rows than the current validationrow is used for training. For a dataset of size $n$, this gives $n$ estimates of the data and almost all the data is used for training in each iteration. The problem is that the method is computational demanding isnce the classifier must be trained $n$ times on a dataset of size $n-1$.
+This method is just a special case of $K$-fold cross validation where $K$ is selected as the same as the total number of rows in the dataset. This means that each row in the dataset is used once as validationset and all the other rows than the current validationrow is used for training. For a dataset of size $n$, this gives $n$ estimates of the classifier performance and almost all the data is used for training in each iteration. The problem is that the method is computational demanding since the classifier must be trained $n$ times on a dataset of size $n-1$.
 
 
-\subsection{Managing the dataset}
-When starting out a new classification project a dataset is provided. Typically this dataset is split into two parts
-\begin{itemize}
-    \item {\bfseries Trainingset} - This dataset is used in the rest of the data modelling phase. At any moment in the data modelling phase where different calssification model must be compared the trainingset will be split in smaller trainingset(s) and a validationset. Possibly by $K$-fold cross validation.
-    \item {\bfseries Publicationset} - This dataset is kept isolated from the data modelling phase, and is only used when the final classification method has been chosen. At this moment the performance of the final classification method is estimated, by splitting the publication dataset in a trainingset and a validationset, and then measuring performance of this validationset. The splitting can be done by $K$-fold cross validation to get $K$ estimates of the final performance.
-\end{itemize}
-
+\subsection[Confidence interval of estimated performance]{Confidence interval of estimated performance\protect\footnote{Section based on \citet[p.232-233]{johnson05}}}\label{sec:statistics-on-performance}
+When $k$ measures of the performance of a model have been calculated, a confidence interval for the true value of the expected performance can be found. The $k$ measures are seen as a sample from the population of performance scores on future datasets, and this population is assumed normal distributed. For a small sample ($k<30$) with sample mean $m$ and sample standard deviation $s$, a $95\%$ confidence interval for the true mean $\mu$ can be found as
+\[
+    m-t_{0.025,k-1}\cdot\frac{s}{\sqrt{n}} < \mu < m+t_{0.025,k-1}\cdot\frac{s}{\sqrt{n}}
+\]
+where the value of $t_{0.025,k-1}$ can be found in a statistical table or in software as eg. \fn{R}. In this report the sample size will be $k=10$, which gives $t_{0.025,9}=2.2622$.
 
 \section{Model selection}
 As mentioned in the section about logistic regression and neural networks, the complexity of a model can be tweaked in different ways. A natural question is how complex the model should be chosen. Should the complexity be as high as is computational possible? Or should the complexity be kept as low as possible? As is often the case, the answer is that the complexity should be somewhere between low and high and it is due to the concept of over- and underfitting. \par
-If the model complexity is made is high as is computational possible, it will probably suffer from what is called overfitting. This means that the model has learned so many details from the training data, that it has adapted to the noise in the training data. Although this gives a great performance on the trainingset, it also means that the model will perform worse on future datasets. That is, the generalization of the model gets worse, when the fit to the trainingdata gets to high. \par
-At the opposite end of the scale is a model that is too simple. When a model is to simple it can't adapt to the patterns in the training dataset, that is shared with the future dataset. That way the model will not fit neither the trainingset nor any future datasets. \par
-One way to determine the right level of complexity is by using cross validation. By training and then estimating performance of models of different complexity levels, the complexity level that achieves the highest performance can be selected.
+If the model complexity is made as high as is computational possible, it will probably suffer from what is called overfitting. This means that the model has learned so many details from the training data, that it has adapted to the noise in the training data. Although this gives a great performance on the trainingset, it also means that the model will perform worse on future datasets. That is, the generalization of the model gets worse, when the fit to the trainingdata gets too high\footnote{See \citet[p.220]{hastie09} for a good illustration of overfitting.}. \par
+At the opposite end of the scale is a model that is too simple. When a model is to simple it can't adapt to the patterns in the training dataset, that is shared with the future dataset. That way the model will neither fit the trainingset nor any future datasets. \par
+One way to determine the right level of complexity is by using cross validation. By training models at different complexity levels and comparing their estimated performance, the right complexity can be chosen for the model.
 
 \subsection{Forward feature selection}
 One way to tweak model complexity, that is independent of the classification model used, is feature selection. In feature selection a subset of the whole set of features is selected for the classification model. Since the performance can depend on combinations of features, all possible subset of features should ideally be tested to find the optimal subset. For any high-dimensional input space this is not possible.
 \begin{Exa}
-    For the Ford Challenge the input data is 30-dimensional. This gives $2^30\approx10^9$ unique subsets to test. Since the model must be trained for each unique subset this is not a feasible solution.
+    For the Ford Challenge the input data is 30-dimensional. This gives $2^{30}\approx10^9$ unique subsets to test. Since the model must be trained for each unique subset this is not a feasible solution.
 \end{Exa}
-Instead of trying every combination of features, differen heuristics exists, that find a solution that is better than many alternatives. But optimallity isn't guaranteed. One such heuristic is the forward feature selection. The procedure is simple. Start with a model that consists of no features and a set of candidate features that could be included in the model. Add the first candidate to the model and test performance. Then exchange the first candidate with the next and test performance, etc. The candidate that gives the best performance is removed from the candidate set and permanently added to the model. Recursively apply this procedure until the performance is no longer improved by adding features. \par
-The forward feature selection is a greedy algorithm that at each stage selects the feature that gives the best performance. This do not guarantee an optimal performance but the worst case algorithmic complexity is (with $d$ features in the candidate set)
+Instead of trying every combination of features, different heuristics exists, that find a solution that is better than many alternatives. But optimallity isn't guaranteed. One such heuristic is the forward feature selection. The procedure is simple. Start with a model that consists of no features and a set of candidate features that could be included in the model. Add the first candidate to the model and test performance. Then exchange the first candidate with the next and test performance, etc. The candidate that gives the best performance is removed from the candidate set and permanently added to the model. Recursively apply this procedure until the performance is no longer improved by adding features. \par
+The forward feature selection is a greedy algorithm that at each stage selects the feature that gives the largest performance improvement. This do not guarantee an optimal performance but the worst case algorithmic complexity is (with $d$ features in the candidate set)
 \[
     \sum_{i=1}^d i = \frac{d(d-1)}{2}
 \]
-The algorithmic complexity is therefore reduced from an exponential $O(2^d)$ to a polynomial $O(d^2)$.
+The algorithmic complexity is therefore reduced from exponential $O(2^d)$ to polynomial $O(d^2)$.
 
-\subsection{Regularization}

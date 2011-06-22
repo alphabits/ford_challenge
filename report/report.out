@@ -36,15 +36,15 @@
 \BOOKMARK [2][]{subsection.4.3.2}{4.3.2 Model complexity}{section.4.3}
 \BOOKMARK [1][]{section.4.4}{4.4 Feed Forward Neural Network}{chapter.4}
 \BOOKMARK [2][]{subsection.4.4.1}{4.4.1 Perceptron}{section.4.4}
-\BOOKMARK [2][]{subsection.4.4.2}{4.4.2 Model complexity}{section.4.4}
+\BOOKMARK [2][]{subsection.4.4.2}{4.4.2 Neural Network for binary classification}{section.4.4}
+\BOOKMARK [2][]{subsection.4.4.3}{4.4.3 Model complexity}{section.4.4}
 \BOOKMARK [1][]{section.4.5}{4.5 Measuring classifier performance}{chapter.4}
 \BOOKMARK [2][]{subsection.4.5.1}{4.5.1 Cross validation}{section.4.5}
 \BOOKMARK [3][]{subsubsection.4.5.1.1}{4.5.1.1 K-fold cross validation}{subsection.4.5.1}
 \BOOKMARK [3][]{subsubsection.4.5.1.2}{4.5.1.2 Leave-one-out cross validation}{subsection.4.5.1}
-\BOOKMARK [2][]{subsection.4.5.2}{4.5.2 Managing the dataset}{section.4.5}
+\BOOKMARK [2][]{subsection.4.5.2}{4.5.2 Confidence interval of estimated performance}{section.4.5}
 \BOOKMARK [1][]{section.4.6}{4.6 Model selection}{chapter.4}
 \BOOKMARK [2][]{subsection.4.6.1}{4.6.1 Forward feature selection}{section.4.6}
-\BOOKMARK [2][]{subsection.4.6.2}{4.6.2 Regularization}{section.4.6}
 \BOOKMARK [0][]{chapter.5}{5 Recreating winning approach}{part.2}
 \BOOKMARK [1][]{section.5.1}{5.1 The winning approach}{chapter.5}
 \BOOKMARK [2][]{subsection.5.1.1}{5.1.1 Classification method}{section.5.1}
@@ -56,7 +56,24 @@
 \BOOKMARK [3][]{subsubsection.6.1.1.1}{6.1.1.1 Statistics on the AUC-score}{subsection.6.1.1}
 \BOOKMARK [2][]{subsection.6.1.2}{6.1.2 Testing performance on the top 3 features}{section.6.1}
 \BOOKMARK [3][]{subsubsection.6.1.2.1}{6.1.2.1 Statistics on the AUC-score}{subsection.6.1.2}
-\BOOKMARK [0][]{chapter.7}{7 Other classification methods}{part.2}
+\BOOKMARK [0][]{chapter.7}{7 Neural Network}{part.2}
+\BOOKMARK [1][]{section.7.1}{7.1 The winning model features}{chapter.7}
+\BOOKMARK [2][]{subsection.7.1.1}{7.1.1 inference-features - 8 hidden units - 3 iterations}{section.7.1}
+\BOOKMARK [3][]{subsubsection.7.1.1.1}{7.1.1.1 Statistics on the AUC-score}{subsection.7.1.1}
+\BOOKMARK [2][]{subsection.7.1.2}{7.1.2 inference-features - 8 hidden units - 5 iterations}{section.7.1}
+\BOOKMARK [3][]{subsubsection.7.1.2.1}{7.1.2.1 Statistics on the AUC-score}{subsection.7.1.2}
+\BOOKMARK [2][]{subsection.7.1.3}{7.1.3 inference-features - 20 hidden units - 3 iterations}{section.7.1}
+\BOOKMARK [3][]{subsubsection.7.1.3.1}{7.1.3.1 Statistics on the AUC-score}{subsection.7.1.3}
+\BOOKMARK [2][]{subsection.7.1.4}{7.1.4 inference-features - 20 hidden units - 5 iterations}{section.7.1}
+\BOOKMARK [3][]{subsubsection.7.1.4.1}{7.1.4.1 Statistics on the AUC-score}{subsection.7.1.4}
+\BOOKMARK [2][]{subsection.7.1.5}{7.1.5 forward-selection - 8 hidden units - 3 iterations}{section.7.1}
+\BOOKMARK [3][]{subsubsection.7.1.5.1}{7.1.5.1 Statistics on the AUC-score}{subsection.7.1.5}
+\BOOKMARK [2][]{subsection.7.1.6}{7.1.6 forward-selection - 8 hidden units - 5 iterations}{section.7.1}
+\BOOKMARK [3][]{subsubsection.7.1.6.1}{7.1.6.1 Statistics on the AUC-score}{subsection.7.1.6}
+\BOOKMARK [2][]{subsection.7.1.7}{7.1.7 forward-selection - 20 hidden units - 3 iterations}{section.7.1}
+\BOOKMARK [3][]{subsubsection.7.1.7.1}{7.1.7.1 Statistics on the AUC-score}{subsection.7.1.7}
+\BOOKMARK [2][]{subsection.7.1.8}{7.1.8 forward-selection - 20 hidden units - 5 iterations}{section.7.1}
+\BOOKMARK [3][]{subsubsection.7.1.8.1}{7.1.8.1 Statistics on the AUC-score}{subsection.7.1.8}
 \BOOKMARK [-1][]{part.3}{III Workflow and discussion}{}
 \BOOKMARK [0][]{chapter.8}{8 Workflow and tools}{part.3}
 \BOOKMARK [0][]{chapter.9}{9 Discussion}{part.3}

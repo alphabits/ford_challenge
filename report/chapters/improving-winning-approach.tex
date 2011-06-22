@@ -1,7 +1,7 @@
 \chapter{Improving the winning approach}
 In this chapter it is examined whether the winning approach can be improved or not. The classification method will still be logistic regression, but it is tried to improve the results, by doing feature selection across all features. Two feature selection techniques are tried. First a forward selection is performed, on a subset of the whole trainingset, and then a $L^1$ regularization. 
 
-\section{Forward selection}
+\section{Forward selection}\label{sec:forward-selection}
 A forward selection is performed to find the features that gives the best classification. The logistic regression model starts out with no features, and then the feature that improves the performance the most is added to the regression model. This is repeated until the performance is no longer increased. The features, that the forward selection chooses between are all the features; both the original, and the running mean and running standard deviation. This gives a total of 90 features to choose between. Since all candidates for features to add to the model, must be tested in every iteration, a worst case scenario is that a total of
 \[
     \sum_{i=1}^{90} i = \frac{90*89}{2} = 4005
@@ -27,7 +27,7 @@ logistic regression fittings must be done. Since a standard library (scikits.lea
 A total of 48 features out of the 90 features was selected. The AUC that is achieved, when all 48 features are in the model is quite high (0.8857). The 10000 datarows for the trainingset and the 5000 datarows of the validationset was chosen uniformly across the whole trainingset\mytodo{Find good names for the different datasets}, so there is no reason to believe that any connection between the trainingset and the validationset, makes the AUC score artificially high. It is worth noticing that the top two features (\fn{V11}, \fn{E9}) are also used in the winning model. To get a better idea of the precise performance of the model with the 48 selected features, the model is now trained on the trainingset and the performance is tested on the testset.
 
 \subsection{Testing performance on the original testset}
-By forward selection a model with 48 features have been selected. The AUC score achieved when the 48'th feature was added was 0.8857. But this score was achieved on a small validationset of 5000 rows. The model with 48 features was trained on the trainingset and the resulting model was then tested on 10 separate parts of the testset. The source code is almost identical with the source code used to recreate the winning approach, and this can be found in \appref{source-recreate-winner}. The results can be seen in table~\ref{tbl:forward-selection-full-results}, and they are a bit surprising. \par
+By forward selection a model with 48 features have been selected. The AUC score achieved when the 48'th feature was added was 0.8857. But this score was achieved on a small validationset of 5000 rows. The model with 48 features was trained on the trainingset and the resulting model was then tested on 10 separate parts of the testset. The source code is almost identical with the source code used to recreate the winning approach, and this can be found in \appref{source-recreate-winner}. The results can be seen in table~\ref{tbl:forward-selection-full-results}. \par
 \begin{table}
     \centering
     {\sffamily\small
@@ -54,9 +54,9 @@ First the sample mean and sample standard deviation are calculated
 \[
     m = 0.8936 \quad\quad\text{and}\quad\quad s = 0.003366
 \]
-which gives the 95\% confidence interval
+which gives that
 \[
-    95\%\:\text{CI} = [0.8912, 0.8960]
+    \CI{0.8912}{0.8960}
 \]
 
 \subsection{Testing performance on the top 3 features}
@@ -92,5 +92,5 @@ First the sample mean and sample standard deviation are calculated
 \]
 which gives the 95\% confidence interval
 \[
-    95\%\:\text{CI} = [0.8278, 0.8358]
+    \CI{0.8278}{0.8358}
 \]

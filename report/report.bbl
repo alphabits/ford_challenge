@@ -1,4 +1,4 @@
-\begin{thebibliography}{18}
+\begin{thebibliography}{19}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\urlprefix}{URL }
@@ -50,6 +50,11 @@ David (2011).
   \urlprefix\url{http://www.kaggle.com/c/stayalert/forums/t/328/methods-tips-f%
 rom-non-top-3-participants/1967#post1967}.
 
+\bibitem[{Duda et~al.(2001)Duda, Hart, and Stork}]{duda01}
+Duda, R.~O., Hart, P.~E., and Stork, D.~G. (2001).
+\newblock \emph{Pattern Classification}.
+\newblock John Wiley {\&} Sons, Inc.
+
 \bibitem[{Hastie et~al.(2009)Hastie, Tibshirani, and Friedman}]{hastie09}
 Hastie, T., Tibshirani, R., and Friedman, J. (2009).
 \newblock \emph{The Elements of Statistical Learning}.
@@ -81,7 +86,7 @@ Labs, Y. (2011).
 
 \bibitem[{M{\o}rup(2011)}]{meetings-morten}
 M{\o}rup, M. (2011).
-\newblock Meetings with morten m{\o}rup.
+\newblock {Meetings with Morten M{\o}rup}.
 
 \bibitem[{Netflix(2011)}]{netflix_leaderboard}
 Netflix (2011).

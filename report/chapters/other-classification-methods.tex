@@ -1,48 +1,255 @@
 \chapter{Neural Network}
-Here I describe some alternatives to the logistic regression used by Inference. Hoping to get a result or two from SVM or Neural Network.
+In this chapter the logistic regression models from the previous chapters, are tried to be improved. Specifically a neural network is trained on the features of winning model as well as on the top 3 features from the forward selection in section~\ref{sec:forward-selection}. It wasn't possible to train a neural network on all 48 features from the feature selection, due to limited computational resources. Instead it was tested how the number of hidden units as well as the number of iterations of the optimization algorithm, affected the performance. For each model training a random subset of 100000 rows from the trainingset was used.
 
 \section{The winning model features}
-First a neural network with 3 hidden units with Sigmoid activation functions, was trained on the 3 features used by the winning method.
+In this section the features of winning model are used as input for neural networks with various numbers of hidden units, and trained with a different number of optimization iterations.
+
+
+\subsection{inference-features - 8 hidden units - 3 iterations}
 \begin{table}
     \centering
     {\sffamily\small
         \begin{tabularx}{30mm}{ l R }
             Run & AUC \\\hline
             1 & 0.8132 \\
-            2 & 0.8074 \\
-            3 & 0.8116 \\
-            4 & 0.8040 \\
-            5 & 0.7959 \\
-            6 & 0.8070 \\
-            7 & 0.7975 \\
-            8 & 0.8046 \\
-            9 & 0.8035 \\
-            10 & 0.8006 \\\hline
+2 & 0.8074 \\
+3 & 0.8116 \\
+4 & 0.8040 \\
+5 & 0.7959 \\
+6 & 0.8070 \\
+7 & 0.7975 \\
+8 & 0.8046 \\
+9 & 0.8035 \\
+10 & 0.8006 \\\hline
         \end{tabularx}
     }
-    \caption{Results from testing a neural network model on 10 separate parts of the testset. The neural network received the three features from the winning model as input.}
-\end{table}
+    \caption{inference-features - 8 hidden units - 3 iterations}
+\end{table} 
+\subsubsection{Statistics on the AUC-score}
+First the sample mean and sample standard deviation are calculated
+\[
+    m = 0.8045 \quad\quad\text{and}\quad\quad s = 0.005583
+\]
+which gives the 95\% confidence interval
+\[
+    \CI{0.8005}{0.8085}
+\]
 
 
-\section{The top 3 features of feature selection}
+\subsection{inference-features - 8 hidden units - 5 iterations}
+\begin{table}
+    \centering
+    {\sffamily\small
+        \begin{tabularx}{30mm}{ l R }
+            Run & AUC \\\hline
+            1 & 0.8060 \\
+2 & 0.8087 \\
+3 & 0.8048 \\
+4 & 0.8032 \\
+5 & 0.8068 \\
+6 & 0.8025 \\
+7 & 0.8046 \\
+8 & 0.8060 \\
+9 & 0.8070 \\
+10 & 0.8020 \\\hline
+        \end{tabularx}
+    }
+    \caption{inference-features - 8 hidden units - 5 iterations}
+\end{table} 
+\subsubsection{Statistics on the AUC-score}
+First the sample mean and sample standard deviation are calculated
+\[
+    m = 0.8052 \quad\quad\text{and}\quad\quad s = 0.002150
+\]
+which gives the 95\% confidence interval
+\[
+    \CI{0.8036}{0.8067}
+\]
+
+
+\subsection{inference-features - 20 hidden units - 3 iterations}
+\begin{table}
+    \centering
+    {\sffamily\small
+        \begin{tabularx}{30mm}{ l R }
+            Run & AUC \\\hline
+            1 & 0.7989 \\
+2 & 0.8073 \\
+3 & 0.7995 \\
+4 & 0.8053 \\
+5 & 0.8052 \\
+6 & 0.8046 \\
+7 & 0.8080 \\
+8 & 0.8042 \\
+9 & 0.8103 \\
+10 & 0.8060 \\\hline
+        \end{tabularx}
+    }
+    \caption{inference-features - 20 hidden units - 3 iterations}
+\end{table} 
+\subsubsection{Statistics on the AUC-score}
+First the sample mean and sample standard deviation are calculated
+\[
+    m = 0.8049 \quad\quad\text{and}\quad\quad s = 0.003525
+\]
+which gives the 95\% confidence interval
+\[
+    \CI{0.8024}{0.8075}
+\]
+
+
+\subsection{inference-features - 20 hidden units - 5 iterations}
+\begin{table}
+    \centering
+    {\sffamily\small
+        \begin{tabularx}{30mm}{ l R }
+            Run & AUC \\\hline
+            1 & 0.8010 \\
+2 & 0.8017 \\
+3 & 0.8072 \\
+4 & 0.8033 \\
+5 & 0.8027 \\
+6 & 0.8131 \\
+7 & 0.8064 \\
+8 & 0.7991 \\
+9 & 0.8050 \\
+10 & 0.8029 \\\hline
+        \end{tabularx}
+    }
+    \caption{inference-features - 20 hidden units - 5 iterations}
+\end{table} 
+\subsubsection{Statistics on the AUC-score}
+First the sample mean and sample standard deviation are calculated
+\[
+    m = 0.8042 \quad\quad\text{and}\quad\quad s = 0.003966
+\]
+which gives the 95\% confidence interval
+\[
+    \CI{0.8014}{0.8071}
+\]
+
+
+\subsection{forward-selection - 8 hidden units - 3 iterations}
 \begin{table}
     \centering
     {\sffamily\small
         \begin{tabularx}{30mm}{ l R }
             Run & AUC \\\hline
             1 & 0.8286 \\
-            2 & 0.8336 \\
-            3 & 0.8345 \\
-            4 & 0.8354 \\
-            5 & 0.8272 \\
-            6 & 0.8344 \\
-            7 & 0.8370 \\
-            8 & 0.8339 \\
-            9 & 0.8385 \\
-            10 & 0.8320 \\\hline
+2 & 0.8336 \\
+3 & 0.8345 \\
+4 & 0.8354 \\
+5 & 0.8272 \\
+6 & 0.8344 \\
+7 & 0.8370 \\
+8 & 0.8339 \\
+9 & 0.8385 \\
+10 & 0.8320 \\\hline
         \end{tabularx}
     }
-    \caption{Results from testing a neural network model on 10 separate parts of the testset. The neural network received the three features from the winning model as input.}
-\end{table}
+    \caption{forward-selection - 8 hidden units - 3 iterations}
+\end{table} 
+\subsubsection{Statistics on the AUC-score}
+First the sample mean and sample standard deviation are calculated
+\[
+    m = 0.8335 \quad\quad\text{and}\quad\quad s = 0.003463
+\]
+which gives the 95\% confidence interval
+\[
+    \CI{0.8310}{0.8360}
+\]
 
-\subsection{Extending the network}
+
+\subsection{forward-selection - 8 hidden units - 5 iterations}
+\begin{table}
+    \centering
+    {\sffamily\small
+        \begin{tabularx}{30mm}{ l R }
+            Run & AUC \\\hline
+            1 & 0.8301 \\
+2 & 0.8301 \\
+3 & 0.8332 \\
+4 & 0.8381 \\
+5 & 0.8320 \\
+6 & 0.8411 \\
+7 & 0.8290 \\
+8 & 0.8340 \\
+9 & 0.8325 \\
+10 & 0.8355 \\\hline
+        \end{tabularx}
+    }
+    \caption{forward-selection - 8 hidden units - 5 iterations}
+\end{table} 
+\subsubsection{Statistics on the AUC-score}
+First the sample mean and sample standard deviation are calculated
+\[
+    m = 0.8336 \quad\quad\text{and}\quad\quad s = 0.003800
+\]
+which gives the 95\% confidence interval
+\[
+    \CI{0.8308}{0.8363}
+\]
+
+
+\subsection{forward-selection - 20 hidden units - 3 iterations}
+\begin{table}
+    \centering
+    {\sffamily\small
+        \begin{tabularx}{30mm}{ l R }
+            Run & AUC \\\hline
+            1 & 0.8373 \\
+2 & 0.8432 \\
+3 & 0.8443 \\
+4 & 0.8395 \\
+5 & 0.8382 \\
+6 & 0.8441 \\
+7 & 0.8377 \\
+8 & 0.8382 \\
+9 & 0.8431 \\
+10 & 0.8285 \\\hline
+        \end{tabularx}
+    }
+    \caption{forward-selection - 20 hidden units - 3 iterations}
+\end{table} 
+\subsubsection{Statistics on the AUC-score}
+First the sample mean and sample standard deviation are calculated
+\[
+    m = 0.8394 \quad\quad\text{and}\quad\quad s = 0.004759
+\]
+which gives the 95\% confidence interval
+\[
+    \CI{0.8360}{0.8428}
+\]
+
+
+\subsection{forward-selection - 20 hidden units - 5 iterations}
+\begin{table}
+    \centering
+    {\sffamily\small
+        \begin{tabularx}{30mm}{ l R }
+            Run & AUC \\\hline
+            1 & 0.8181 \\
+2 & 0.8203 \\
+3 & 0.8230 \\
+4 & 0.8169 \\
+5 & 0.8227 \\
+6 & 0.8206 \\
+7 & 0.8209 \\
+8 & 0.8188 \\
+9 & 0.8223 \\
+10 & 0.8159 \\\hline
+        \end{tabularx}
+    }
+    \caption{forward-selection - 20 hidden units - 5 iterations}
+\end{table} 
+\subsubsection{Statistics on the AUC-score}
+First the sample mean and sample standard deviation are calculated
+\[
+    m = 0.8199 \quad\quad\text{and}\quad\quad s = 0.002463
+\]
+which gives the 95\% confidence interval
+\[
+    \CI{0.8182}{0.8217}
+\]
+
+

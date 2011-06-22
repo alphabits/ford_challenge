@@ -12,21 +12,35 @@ import src.dataloaders as d
 
 path = get_path(__file__) + '/..'
 
-D = get_random_subset(d.trainingset_extended(), 100000)
+
+num_bins = 10
+hidden_units = 12
+learningrate = 0.04
+max_epochs = 8
+continue_epochs = 2
+training_size = 100000
+feature_set = 'winner'
+
+if feature_set == 'winner':
+    features = ['sde5', 'v11', 'e9']
+elif feature_set == 'forward':
+    features = ['sde1', 'v11', 'e9']
+else:
+    raise Exception('Unknown feature set')
+
+
+if training_size == 'all':
+    D = d.trainingset_extended()
+    training_size = int(D.shape[0])
+else:
+    D = get_random_subset(d.trainingset_extended(), training_size)
 T = d.testset_extended()
 
-#cols = c('sde5', 'v11', 'e9')
-cols = c('sde1', 'v11', 'e9')
+cols = c(*features)
 
 Xt = T[:, cols]
 yt = T[:, c.isalert]
 
-num_bins = 10
-
-hidden_units = 5
-learningrate = 0.04
-max_epochs = 8
-continue_epochs = 2
 
 bins = get_bins(T.shape[0], num_bins)
 
@@ -51,10 +65,11 @@ def save_result(save_path):
 def get_result():
     save_data = dict(zip(
         ['auc', 'num_bins', 'dataset_size', 'generator', 'fpr', 'tpr',
-         'hidden_units', 'learningrate', 'max_epochs', 'continue_epochs'], 
+         'hidden_units', 'learningrate', 'max_epochs', 'continue_epochs',
+         'training_size', 'features'], 
         [auc, num_bins, D.shape[0], __file__, [a.tolist() for a in fpr], 
          [a.tolist() for a in tpr], hidden_units, learningrate, max_epochs,
-         continue_epochs]
+         continue_epochs, training_size, features]
     ))
     return save_data
 
