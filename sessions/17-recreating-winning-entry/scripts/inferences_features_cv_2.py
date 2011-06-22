@@ -1,7 +1,6 @@
 from __future__ import division
 
 import json
-import random
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,19 +13,10 @@ from src.logistic import _fit_logistic_regression,\
 
 path = get_path(__file__) + '/..'
 
-with open(path+'/data/forward-selection-results-2-for-docs.json') as f:
-    _tmp = json.load(f)
-    features = _tmp['labels_chosen']
-
-# Controls how many of the 48
-# features from feature selection
-# that are included in the log reg.
-features = features[:3]
-
 D = d.trainingset_extended()
 T = d.testset_extended()
 
-cols = c(*features)
+cols = c('sde5', 'v11', 'e9')
 
 Xt = T[:, cols]
 yt = T[:, c.isalert]

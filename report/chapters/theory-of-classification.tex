@@ -51,7 +51,7 @@ The approximation $\PtxHat$ of the posterior class probability is restricted to 
     \]
     and the log-likelihood function is defined by $\ell(\ve{w})$ = $\log\mathcal{L(\ve{w})}$.
 \end{definition}
-It is worth noticing that the definition of the likelihood function assumes that the $t_i$'s are independent random variables. An assumption that in the case of \TFC\ may be a bit questionable.\mytodo{Elaborate this point.} \par
+It is worth noticing that the definition of the likelihood function assumes that the $t_i$'s are independent random variables. An assumption that in the case of \TFC\ may be a bit questionable. This is due to the sequential nature of the Ford Challenge dataset, which makes it very likely that datarows that are close to each other in time, are not independent.\par
 Given the definition of the likelihood function, the maximum likelihood estimator is now defined by
 \begin{definition}
     The maximum likelihood estimator $\mle$ is the value of $\ve{w}$ that maximizes $\mathcal{L}(\ve{w})$.
@@ -78,7 +78,7 @@ can be written
     \log \frac{p_0}{1-p_0} &= \Lx
 \end{align*}
 And therefore the parametric form in \eqref{eq:log-def}, comes from the assumptions that the log-odds of $p_0$ is linear in the input vector $\ve{x}$. \par
-Now to find an expression for the likelihood function, the probability of getting the data in the trainingset must be expressed. With $p_i=P(t=0|\ve{x}_i)$ the likelihood function can be written as\mytodo{Mention the Bernoulli distribution}
+Now to find an expression for the likelihood function, the probability of getting the data in the trainingset must be expressed. For a given $\ve{x}$ the class will be class 0 with probability $P(t=0|\ve{x})$. If class 0 is defined as a ``success'' then $t$ given $\ve{x}$ is Bernoulli distributed with probability $P(t=0|\ve{x})$. With $p_i=P(t=0|\ve{x}_i)$ the likelihood function can be written as
 \[
     \mathcal{L}(\ve{w}) = \prod_{i=1}^n p_i^{t_i}(1-p_i)^{1-t_i}
 \]

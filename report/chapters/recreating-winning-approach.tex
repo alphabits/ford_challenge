@@ -4,14 +4,14 @@ This is the first chapter in the modelling part. In this chapter, the classifica
 \section{The winning approach}
 The competition winner has described his approach in \citet{inference_winning_approach}, which will just be called ``the paper'' in the rest of this section. The main points in the paper will be described in this section. \par
 In the paper two key observations are mentioned. First of all, the winner observed that in most of the trials, the driver was either alert most of the time, or not alert for most of the time. Secondly the winner observed that there was a mismatch between the AUC-scores achieved on the trainingset and on the testset. Since it wasn't possible to get access to the testset of the competition, the second observation isn't of any direct use for this report. The two observations though, gives an explanation of why the winner chose the model he did. \par
-The fact that most trials was either alert-trials or not-alert-trials, the winner thought it would make sense to calculate aggregated features within trials. He therefore included the mean and the standard deviation of all features, aggregated backwards, within a trial. As a standard the mean features wasprefixed ``m'' and the standard deviation ``sd''. 
+Since most trials was either alert-trials or not-alert-trials, the winner thought it would make sense to calculate aggregated features within trials. He therefore included the mean and the standard deviation of all features, aggregated backwards, within a trial. As a standard the mean features was prefixed ``m'' and the standard deviation ``sd''. 
 \begin{Exa}
     In the $k$'th observation of trial $t$, the value of feature \fn{mP6}, is the mean of feature \fn{P6}, for observation $0,1,2,\dots,k-1$ in trial $t$
 \end{Exa}
 The fact that there was a mismatch between the trainingset and testset of the competition, made the winner focus on simple models, since he expected that the trainingset wasn't capturing all aspects of the testset, and extrapolation was therefore needed.
 
 \subsection{Classification method}
-The method used by the winner was a logistic regression, trained on only the three features \fn{sdE5}, \fn{V11} and \fn{E9}. The three features was selected ``... based on diagnostics of the logistic regression ...'' \citep[p.3]{inference_winning_approach}. The final model was a logistic regression with the following weights
+The method used by the winner was a logistic regression, trained on the three features \fn{sdE5}, \fn{V11} and \fn{E9}. The three features was selected ``... based on diagnostics of the logistic regression ...'' \citep[p.3]{inference_winning_approach}. The final model was a logistic regression with the following weights
 \[
     \log\frac{P(t=0|\ve{x})}{P(t=1|\ve{x})} = -392.4317\cdot\text{sdE5} + 0.2209\cdot\text{V11} + 3.6544\cdot\text{E9}
 \]
@@ -20,38 +20,43 @@ The method used by the winner was a logistic regression, trained on only the thr
     \includegraphics[width=100mm]{media/fig2-inference-paper.pdf}
     \caption{Reproduction of figure 2 in \citet{inference_winning_approach}. The models that achieves a Test AUC higher than 0.8492 are using future observations to predict the \fn{IsAlert} feature, which wasn't allowed in the competition. See \citet{inference_winning_approach} for more information.}
 \end{figure}
-The winner do not mention any intercept parameter, although it seems unlikely that no intercept was included in the model \citep{meetings-morten}. Based on the above parameters, the winner achieved an AUC-score of 0.8492 on the testset. As mentioned in the previous section, the AUC-score of the testset differed from the AUC-score on the trainingset. In figure 2 in \citet{inference_winning_approach}  it is seen that an AUC-score of 0.8492 on the testset, corresponded to a AUC-score of $0.82\pm0.01$ on the trainingset. Since only the trainingset is available for this report, the goal is to acieve an AUC-score of approximately $0.82\pm0.01$.
+The winner do not mention any intercept parameter, although it seems unlikely that no intercept was included in the model \citep{meetings-morten}. Based on the above parameters, the winner achieved an AUC-score of 0.8492 on the testset. As mentioned in the previous section, the AUC-score of the testset differed from the AUC-score on the trainingset. In figure~\ref{fig:auc-score-inference-paper} (a reproduction of a figure in \citet{inference_winning_approach}) it is seen that an AUC-score of 0.8492 on the testset, corresponded to a AUC-score of $0.82\pm0.01$ on the trainingset. Since only the trainingset is available for this report, the goal is to acieve an AUC-score of approximately $0.82\pm0.01$.
 
 \section{Recreating the winning approach}
-It is now time to recreate the logistic regression of the winner. A 10-fold cross validation method is used. The trainingset is therefore split in 10 parts, and one part is repeatedly used as validationset while the other 9 parts, are used to train the logistic regression. This gives 10 estimates of the true AUC-score, and 10 different parameter vectors. The results can be seen in table~\ref{tbl:recreate-results} and the source code used to calculate the results can be found in \appref{source-recreate-winner} \par
+It is now time to recreate the logistic regression of the winner. Using the same features as the winner a logistic regression is trained on the trainingset. This resulted in the following model 
+\begin{equation}\label{eq:winner-recreated}
+    \log\frac{P(t=0|\ve{x})}{P(t=1|\ve{x})} = -87.2753\cdot\text{sdE5} + 0.2244\cdot\text{V11} + 3.6545\cdot\text{E9} - 5.3645 
+\end{equation}
+The model is much like the winning model. The highest deviation from the winning model is in the weight of feature \fn{sdE5}. To make it possible to calculate a confidence interval for the AUC-score of the new model, the testset is split in 10 parts, and an AUC-score is calculated for each part. The results can be seen in table~\ref{tbl:recreate-results} and the source code used to calculate the results can be found in \appref{source-recreate-winner} \par
 \begin{table}
+    \centering
     {\sffamily\small
-    \begin{tabularx}{\textwidth}{ l R R R R R }
-        Run & sdE5 & V11 & E9 & Intercept & AUC \\\hline
-        1 & -87.2063 & 0.2239 & 3.6578 & -5.3642 & 0.8051 \\
-        2 & -353.2778 & 0.2157 & 3.6969 & -4.9869 & 0.8185 \\
-        3 & -87.4096 & 0.2246 & 3.6644 & -5.3763 & 0.8048 \\
-        4 & -352.1050 & 0.2159 & 3.6960 & -4.9905 & 0.8208 \\
-        5 & -86.9788 & 0.2231 & 3.6455 & -5.3440 & 0.8097 \\
-        6 & -87.1768 & 0.2239 & 3.6487 & -5.3539 & 0.8060 \\
-        7 & -87.1603 & 0.2244 & 3.6575 & -5.3666 & 0.8074 \\
-        8 & -87.3095 & 0.2245 & 3.6618 & -5.3736 & 0.8078 \\
-        9 & -353.1568 & 0.2150 & 3.6951 & -4.9778 & 0.8177 \\
-        10 & -87.3047 & 0.2245 & 3.6461 & -5.3590 & 0.8095 \\\hline
-    \end{tabularx}
+        \begin{tabularx}{30mm}{ l R }
+        Run & AUC \\\hline
+        1 & 0.8082 \\
+        2 & 0.8050 \\
+        3 & 0.8114 \\
+        4 & 0.8088 \\
+        5 & 0.8063 \\
+        6 & 0.8020 \\
+        7 & 0.8128 \\
+        8 & 0.8116 \\
+        9 & 0.8057 \\
+        10 & 0.8104 \\
+        \end{tabularx}
     }
-    \caption{Results of running a 10-fold cross validation logistic regression, on the features used by the winner.}
+    \caption{Results of calculating the AUC-score for the model in equation~\eqref{eq:winner-recreated}, for 10 parts of the testset.}
     \label{tbl:recreate-results}
 \end{table}
-From the results table it is seen that the single best run is the fourth run, that gives the model
-\[
-    \log\frac{P(t=0|\ve{x})}{P(t=1|\ve{x})} = -352.1050\cdot\text{sdE5} + 0.2159\cdot\text{V11} + 3.6960\cdot\text{E9} - 4.9905
-\]
-This model achieves an AUC-score of 0.8208 on the validationset. From the results, it is also seen that there are two distinct patterns in the parameters, that are given by the logistic regression. On 7 out of the 10 runs the weight of the \fn{sdE5} feature is about 87 and on the rest of the runs it is 352-353. The runs with a \fn{sdE5}  weight around 352-353 are consistently giving better AUC-scores than the other runs. The three runs with the \fn{sdE5} feature of 352-353, all have feature weights that is close to the weights used in the winning model. The AUC-scores achieved by theese three models also comes close to the AUC-scores of the winner.
+From the results table it is seen that the AUC-score achieved by the model lays in the interval [0.805;0.813] which is very close to the goal of $0.82\pm0.1$. To get a better idea of the results of the model, summary statistics and a confidence interval are calculated.
 
 \subsection{Statistics on the AUC score}
-From the results of the 10-fold cross validation logistic regression, 10 AUC scores was obtained. If it is assumed that the 10 AUC scores are a sample from the population of all AUC scores on unknown datasets, a confidence interval for the AUC score can be calculated. The mean $\widehat{\mu}$ and standard deviation $\widehat{\sigma}$ of the AUC score are calculated as
+The 10 calculated AUC-scores can be seen as a sample from the population of all AUC-scores on all (possible) future datasets. If the AUC-score futher is assumed normal distributed, a confidence interval can be obtained by using the t-distribution. But first the sample mean and sample variance are calculated as
 \[
-\widehat{\mu} = 0.8107 \quad\quad\text{and}\quad\quad \widehat{\sigma} = 0.005980
+    m = 0.8082 \quad\quad\text{and}\quad\quad s = 0.003456
 \]
-\mytodo{Calculate confidence interval for AUC estimate}
+To calculate a 95\% confidence interval the value of $t_{0.975,9}=2.2622$ is looked up an then the confidence interval is given by
+\begin{align*}
+    95\%\:\text{CI} &= [0.8082-2.2622\frac{0.003456}{\sqrt{10}}, 0.8082+2.2622\frac{0.003456}{\sqrt{10}}]\\
+    &= [0.8058, 0.8107]
+\end{align*}

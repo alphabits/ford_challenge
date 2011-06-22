@@ -1,6 +1,10 @@
+from __future__ import division
+
 import os
+import random
 
 import numpy as np
+from scipy.stats import t
 
 from src.utils_common import nz, get_path, bool_to_color, sigmoid, \
         get_test_and_training_data, roc_curve
@@ -35,6 +39,28 @@ class LabelIndex(object):
 
 c = LabelIndex(L)
 c_ex = LabelIndex(L_ex)
+
+
+def confidence_interval_t_distribution(estimates):
+    l = len(estimates)
+    t_value = t.ppf(0.975, l-1)
+    m = estimates.mean()
+    std = estimates.std(ddof=1)
+    statistic = t_value*std/np.sqrt(l)
+    low = m - statistic
+    high = m + statistic
+    return low, high, statistic
+
+def get_bins(dataset_size, num_bins):
+    a = range(int(dataset_size))
+    random.shuffle(a)
+    bin_size = int(np.ceil(dataset_size/num_bins))
+    return [a[i*bin_size:(i+1)*bin_size] for i in range(num_bins)]
+
+def get_random_subset(data, subset_size):
+    a = range(int(data.shape[0]))
+    random.shuffle(a)
+    return data[a[:subset_size], :]
 
 
 def create_extended_dataset(D):

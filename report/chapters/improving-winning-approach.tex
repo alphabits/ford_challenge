@@ -1,8 +1,8 @@
 \chapter{Improving the winning approach}
-In this chapter it is examined whether the winning approach can be improved or not. The classification method will still be logistic regression, but it is tried to improve the results, by doing feature selection across all features. Two feature selection techniques are tried. First a forward selection is performed, on a subset of the whole trainingset, and then a $L^1$ regularization. Finally the performance is tried to be improved by substituting the running features, by other features.
+In this chapter it is examined whether the winning approach can be improved or not. The classification method will still be logistic regression, but it is tried to improve the results, by doing feature selection across all features. Two feature selection techniques are tried. First a forward selection is performed, on a subset of the whole trainingset, and then a $L^1$ regularization. 
 
 \section{Forward selection}
-A forward selection is now performed to find the features that gives the best classification. The logistic regression model starts out with no features, and then the feature that improves the performance the most is added to the regression model. This is repeated until the performance is no longer increased. The features, that the forward selection chooses between are all the features; both the original, and the running mean and running standard deviation. This gives a total of 90 features to choose between. Since all candidates for features to add to the model, must be tested in every iteration, a worst case scenario is that a total of
+A forward selection is performed to find the features that gives the best classification. The logistic regression model starts out with no features, and then the feature that improves the performance the most is added to the regression model. This is repeated until the performance is no longer increased. The features, that the forward selection chooses between are all the features; both the original, and the running mean and running standard deviation. This gives a total of 90 features to choose between. Since all candidates for features to add to the model, must be tested in every iteration, a worst case scenario is that a total of
 \[
     \sum_{i=1}^{90} i = \frac{90*89}{2} = 4005
 \]
@@ -24,49 +24,73 @@ logistic regression fittings must be done. Since a standard library (scikits.lea
     }\label{tbl:forward-selection}
     \caption{The first five and the last two features added in the forward selection.}
 \end{table}
-A total of 48 features out of the 90 features was selected. This is more features than expected\mytodo{Is it?} and the AUC that is achieved, when all 48 features are in the model is quite high (0.8857). The 10000 datarows for the trainingset and the 5000 datarows of the validationset was chosen uniformly across the whole dataset\mytodo{Find good names for the different datasets}, so there is no reason to believe that any connection between the trainingset and the validationset, makes the AUC score artificially high. It is worth noticing that the top two features (\fn{V11}, \fn{E9}) are also used in the To get a better idea of the precise performance of the model with the 48 selected features, a 10-fold cross validation on the original testset is now performed.
+A total of 48 features out of the 90 features was selected. The AUC that is achieved, when all 48 features are in the model is quite high (0.8857). The 10000 datarows for the trainingset and the 5000 datarows of the validationset was chosen uniformly across the whole trainingset\mytodo{Find good names for the different datasets}, so there is no reason to believe that any connection between the trainingset and the validationset, makes the AUC score artificially high. It is worth noticing that the top two features (\fn{V11}, \fn{E9}) are also used in the winning model. To get a better idea of the precise performance of the model with the 48 selected features, the model is now trained on the trainingset and the performance is tested on the testset.
 
 \subsection{Testing performance on the original testset}
-By forward selection a model with 48 features have been selected. The AUC score achieved when the 48'th feature was added was 0.8857. But this score was achieved on a small validationset of 5000 rows. Now it is tested how the model performs on the original publicationset. Therefor a 10-fold cross validation is performed on the publicationset. The source code is almost identical with the source code used to recreate the winning approach, and this can be found in \appref{source-recreate-winner}. The results can be seen in table~\ref{tbl:forward-selection-full-results}, and they are a bit surprising. \par
+By forward selection a model with 48 features have been selected. The AUC score achieved when the 48'th feature was added was 0.8857. But this score was achieved on a small validationset of 5000 rows. The model with 48 features was trained on the trainingset and the resulting model was then tested on 10 separate parts of the testset. The source code is almost identical with the source code used to recreate the winning approach, and this can be found in \appref{source-recreate-winner}. The results can be seen in table~\ref{tbl:forward-selection-full-results}, and they are a bit surprising. \par
+\begin{table}
+    \centering
+    {\sffamily\small
+        \begin{tabularx}{30mm}{ l R }
+        Run & AUC \\\hline
+        1 & 0.8914 \\
+        2 & 0.8956 \\
+        3 & 0.8985 \\
+        4 & 0.8931 \\
+        5 & 0.8951 \\
+        6 & 0.8876 \\
+        7 & 0.8958 \\
+        8 & 0.8930 \\
+        9 & 0.8963 \\
+        10 & 0.8894 \\\hline
+        \end{tabularx}
+    }
+    \caption{Results from testing the model, with 48 features, on 10 different parts of the testset.}\label{tbl:forward-selection-fill-results}
+\end{table}
+The AUC score of the 10 runs falls in the interval [0.888,0.899], which is close to the 0.8857 that was achieved when running the forward selection (see table~\ref{tbl:forward-selection}).
+
+\subsubsection{Statistics on the AUC-score}
+First the sample mean and sample standard deviation are calculated
+\[
+    m = 0.8936 \quad\quad\text{and}\quad\quad s = 0.003366
+\]
+which gives the 95\% confidence interval
+\[
+    95\%\:\text{CI} = [0.8912, 0.8960]
+\]
+
+\subsection{Testing performance on the top 3 features}
+With a model with an AUC score of 0.89, the goal of improvement of the winner model, has been achieved. But this improvement was created by a much more complex model than the winning model, and one of the reasons the winning model was kept simple, was exactly the problem with models scoring high on validationsets, but low on the ford testset. To make a (maybe) more fair comparison, the performance of a model with the top 3 features from the feature selection is calculated. The procedure is exactly as with all 48 features and the new results are seen in table~\ref{tbl:forward-selection-top-3}\par
 \begin{table}
     \centering
     {\sffamily\small
 \begin{tabularx}{30mm}{ l R }
 Run & AUC \\\hline
-1 & 0.9290 \\
-2 & 0.9287 \\
-3 & 0.9297 \\
-4 & 0.9311 \\
-5 & 0.9348 \\
-6 & 0.9332 \\
-7 & 0.9332 \\
-8 & 0.9286 \\
-9 & 0.9327 \\
-10 & 0.9344 \\\hline
+1 & 0.8333 \\
+2 & 0.8291 \\
+3 & 0.8314 \\
+4 & 0.8264 \\
+5 & 0.8299 \\
+6 & 0.8362 \\
+7 & 0.8308 \\
+8 & 0.8438 \\
+9 & 0.8338 \\
+10 & 0.8234 \\\hline
 \end{tabularx}
     }
-    \caption{Results from running a 10-fold cross validation on the report testset, with the full 48 feature logistic regression model, selected by forward selection}\label{tbl:forward-selection-fill-results}
+    \caption{Results from calculating the AUC-score on 10 different parts of the report testset, with the top 3 features selected by forward selection.}\label{tbl:forward-selection-top-3}
 \end{table}
-The AUC score of the 10 runs falls in the interval [0.928,0.935], which is significantly above the 0.8857\mytodo{Morten: God forklaring? Måske forskellen på de to datasæts størrelse 10000/5000 vs. 109800/12200} that was achieved when running the forward selection (see table~\ref{tbl:forward-selection}). It would have been great if the model could have been tested on the original Ford testset, since there have been some talk in the Kaggle forum \citep{kaggle_forum_305_reply_4} about models, achieving AUC scores above 0.9, that still scored below 0.8 on the ford test set. Since it isn't possible to test the model on the ford testset, it can only be concluded that on the report testset, this model scored auc scores around 0.93\mytodo{Statistics}. \par
-With a model with an AUC score of 0.93, the goal of improvement of the winners model, has been achieved. But this improvement was created by a much more complex model than the winning model, and one of the reasons the winning model was kept simple, was exactly the problem with models scoring high on validationsets, but low on the ford testset. To make a (maybe) more fair comparison, the performance of a model with the top 3 features from the feature selection is calculated. The procedure is exactly as with all 48 features and the new results are seen in table~\ref{tbl:forward-selection-top-3}\par
-\begin{table}
-    \centering
-    {\sffamily\small
-\begin{tabularx}{30mm}{ l R }
-Run & AUC \\\hline
-1 & 0.8335 \\
-2 & 0.8373 \\
-3 & 0.8382 \\
-4 & 0.8326 \\
-5 & 0.8373 \\
-6 & 0.8339 \\
-7 & 0.8329 \\
-8 & 0.8325 \\
-9 & 0.8326 \\
-10 & 0.8318 \\\hline
-\end{tabularx}
-    }
-    \caption{Results from running a 10-fold cross validation on the report testset, with the top 3 features selected by forward selection}\label{tbl:forward-selection-top-3}
-\end{table}
-\mytodo{IMPORTANT: I have tested the forward selection models on the testset, but the original winner model on the trainingset. If I train the original on the testset I can't recreate his parameter weights. If I train the forward selection models on the trainingset I use the same dataset for feature selection and validation}\par
-\mytodo{To compare the performance of the top 3 forward selected features vs. the winning model, a statistical procedure would be great. There seem to be an improvement in the forward selected model, but it isn't clear cut.}
+The results hint at what seems to be a slight improvement of the winning model. Since two of the three features was shared between the winning model and this model, the improvement is achieved by substituting feature \fn{sdE5} from the winning model with feature \fn{sdE1} in this model. The parameters of the new model are given by
+\[
+    \log\frac{P(t=0|\ve{x})}{P(t=1|\ve{x})} = -0.0988\cdot\text{sdE1} + 0.2019\cdot\text{V11} + 3.6418\cdot\text{E9} - 4.2076 
+\]
+
+\subsubsection{Statistics on the AUC-score}
+First the sample mean and sample standard deviation are calculated
+\[
+    m = 0.8318 \quad\quad\text{and}\quad\quad s = 0.005572
+\]
+which gives the 95\% confidence interval
+\[
+    95\%\:\text{CI} = [0.8278, 0.8358]
+\]

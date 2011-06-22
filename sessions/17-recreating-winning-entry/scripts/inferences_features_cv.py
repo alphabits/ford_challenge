@@ -6,25 +6,22 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 
-from src.utils2 import c_ex as c, get_path
+from src.utils2 import c_ex as c, get_path, get_bins
 import src.dataloaders as d
 from src.logistic import fit_logistic_regression
 
 
 path = get_path(__file__) + '/..'
 
-#D = d.trainingset_extended()
-D = d.testset_extended()
+D = d.trainingset_extended()
+#D = d.testset_extended()
 
 cols = c('sde5', 'v11', 'e9')
 
-a = range(int(D.shape[0]))
-random.shuffle(a)
-
 C = 1000000
+
 num_bins = 10
-bin_size = int(np.ceil(len(a)/num_bins))
-bins = [a[i*bin_size:(i+1)*bin_size] for i in range(num_bins)]
+bins = get_bins(D.shape[0], num_bins)
 
 X = D[:, cols]
 y = D[:, c.isalert]

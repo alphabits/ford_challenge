@@ -3,8 +3,8 @@ import json
 from src.utils2 import get_path
 
 path = get_path(__file__)+'/../..'
-#json_path = path+'/sessions/18-forward-selection/data/all-features-for-report.json'
-json_path = path+'/sessions/18-forward-selection/data/top-3-features-for-report.json'
+#json_path = path+'/sessions/25-neural-network/data/inference-features.json'
+json_path = path+'/sessions/25-neural-network/data/forward-selection-features.json'
 
 
 with open(json_path, 'r') as f:

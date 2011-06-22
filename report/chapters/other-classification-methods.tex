@@ -1,2 +1,48 @@
-\chapter{Other classification methods}
+\chapter{Neural Network}
 Here I describe some alternatives to the logistic regression used by Inference. Hoping to get a result or two from SVM or Neural Network.
+
+\section{The winning model features}
+First a neural network with 3 hidden units with Sigmoid activation functions, was trained on the 3 features used by the winning method.
+\begin{table}
+    \centering
+    {\sffamily\small
+        \begin{tabularx}{30mm}{ l R }
+            Run & AUC \\\hline
+            1 & 0.8132 \\
+            2 & 0.8074 \\
+            3 & 0.8116 \\
+            4 & 0.8040 \\
+            5 & 0.7959 \\
+            6 & 0.8070 \\
+            7 & 0.7975 \\
+            8 & 0.8046 \\
+            9 & 0.8035 \\
+            10 & 0.8006 \\\hline
+        \end{tabularx}
+    }
+    \caption{Results from testing a neural network model on 10 separate parts of the testset. The neural network received the three features from the winning model as input.}
+\end{table}
+
+
+\section{The top 3 features of feature selection}
+\begin{table}
+    \centering
+    {\sffamily\small
+        \begin{tabularx}{30mm}{ l R }
+            Run & AUC \\\hline
+            1 & 0.8286 \\
+            2 & 0.8336 \\
+            3 & 0.8345 \\
+            4 & 0.8354 \\
+            5 & 0.8272 \\
+            6 & 0.8344 \\
+            7 & 0.8370 \\
+            8 & 0.8339 \\
+            9 & 0.8385 \\
+            10 & 0.8320 \\\hline
+        \end{tabularx}
+    }
+    \caption{Results from testing a neural network model on 10 separate parts of the testset. The neural network received the three features from the winning model as input.}
+\end{table}
+
+\subsection{Extending the network}
