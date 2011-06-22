@@ -5,7 +5,9 @@ In this chapter the logistic regression models from the previous chapters, are t
 In this section the features of winning model are used as input for neural networks with various numbers of hidden units, and trained with a different number of optimization iterations.
 
 
-\subsection{inference-features - 8 hidden units - 3 iterations}
+\subsection{3 hidden units - 8 iterations}
+The basic setting for the network training was a network with 3 hidden units and 8 weight optimization iterations. It is worth noticing that 8 iterationsisn't many iterations, but the trainingset was large (100000 rows) and the computational resources few. \par
+A network was trained for the basic settings and the performance was then tested on the testset. The results from the validation are shown in table~\ref{tbl:inference-3-hidden-8-epochs} \par
 \begin{table}
     \centering
     {\sffamily\small
@@ -23,8 +25,11 @@ In this section the features of winning model are used as input for neural netwo
 10 & 0.8006 \\\hline
         \end{tabularx}
     }
-    \caption{inference-features - 8 hidden units - 3 iterations}
-\end{table} 
+    \caption{Results from training a neural network with 3 hidden units for 8 iterations on the features of the winning model}
+    \label{tbl:inference-3-hidden-8-epochs}
+\end{table}
+The results of the neural network is close to the results achieved by the logistic regression in section~\ref{sec:recreating-winner}, although the network seems to be doing a bit worse. A confidence interval is calculated to get an better idea.
+
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
 \[
@@ -34,9 +39,11 @@ which gives the 95\% confidence interval
 \[
     \CI{0.8005}{0.8085}
 \]
+this is seen to overlap with the confidence interval of the logistic regression calculated in section~\ref{sec:recreating-winner-statistics}
 
 
-\subsection{inference-features - 8 hidden units - 5 iterations}
+\subsection{5 hidden units - 8 iterations}
+The number of hidden units is increased from 3 to 5. The features are still from the winning model and the number of iterations is still 8. Training and then testing the network gives the results seen in table~\ref{tbl:inference-5-hidden-8-epochs}.\par
 \begin{table}
     \centering
     {\sffamily\small
@@ -54,8 +61,10 @@ which gives the 95\% confidence interval
 10 & 0.8020 \\\hline
         \end{tabularx}
     }
-    \caption{inference-features - 8 hidden units - 5 iterations}
+    \caption{inference-features - 5 hidden units - 8 iterations}
+    \label{tbl:inference-5-hidden-8-epochs}
 \end{table} 
+No obvious improvements in the AUC score is achieved by raising the number of hidden units. The AUC-score is still a little above 0.8. The usual statistics are calculated on the results.
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
 \[
@@ -65,9 +74,11 @@ which gives the 95\% confidence interval
 \[
     \CI{0.8036}{0.8067}
 \]
+which overlap with the confidence interval of the network with 3 hidden units.
 
 
-\subsection{inference-features - 20 hidden units - 3 iterations}
+\subsection{3 hidden units - 20 iterations}
+Instead of raising the number of hidden units, the number of iterations is increased from 8 to 20. The hidden units are returned to 3. As usual the results are gathered in a table, namely table~\ref{tbl:inference-3-hidden-20-epochs}. \par
 \begin{table}
     \centering
     {\sffamily\small
@@ -85,8 +96,10 @@ which gives the 95\% confidence interval
 10 & 0.8060 \\\hline
         \end{tabularx}
     }
-    \caption{inference-features - 20 hidden units - 3 iterations}
+    \caption{inference-features - 3 hidden units - 20 iterations}
+    \label{tbl:inference-3-hidden-20-epochs}
 \end{table} 
+No increase in performance is seen and maybe the number of iterations is simply to low for any effect to be seen. For completeness the usual statistics are calculated.
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
 \[
@@ -98,7 +111,9 @@ which gives the 95\% confidence interval
 \]
 
 
-\subsection{inference-features - 20 hidden units - 5 iterations}
+
+\subsection{5 hidden units - 20 iterations}
+For completeness a network was also trained with 5 hidden units and a total of 20 iterations. The results can be seen in table~\ref{tbl:inference-5-hidden-20-epochs}
 \begin{table}
     \centering
     {\sffamily\small
@@ -116,8 +131,10 @@ which gives the 95\% confidence interval
 10 & 0.8029 \\\hline
         \end{tabularx}
     }
-    \caption{inference-features - 20 hidden units - 5 iterations}
+    \caption{inference-features - 5 hidden units - 20 iterations}
+    \label{tbl:inference-5-hidden-20-epochs}
 \end{table} 
+Again a consistent performance around the 0.8 is achieved. Not much to declare and the statistics gives no surprises.
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
 \[
@@ -129,7 +146,11 @@ which gives the 95\% confidence interval
 \]
 
 
-\subsection{forward-selection - 8 hidden units - 3 iterations}
+\section{The forward selection features}
+The focus is now turned to the top 3 features selected by forward selection in section~\ref{sec:forward-selection}. The same 4 combinations ($[3,5]\times [8,20]$) of hidden units and number of iterations are tested on the forward selection features. When a logistic regression model was trained on the forward selection features (see section~\ref{sec:top-3-feature-selection}) an increased performance, compared to the winning model features, was observed. It is hoped that the same increase is seen in the neural network models.
+
+\subsection{3 hidden units - 8 iterations}
+First a network with 3 hidden units is trained for 8 iterations. The results are shown in table~\ref{tbl:forward-3-hidden-8-epochs}.\par
 \begin{table}
     \centering
     {\sffamily\small
@@ -147,8 +168,9 @@ which gives the 95\% confidence interval
 10 & 0.8320 \\\hline
         \end{tabularx}
     }
-    \caption{forward-selection - 8 hidden units - 3 iterations}
+    \caption{forward-selection - 3 hidden units - 8 iterations}
 \end{table} 
+As hoped for the performance is increased compared to the winning models features. Compared to the performance of the logistic regression on the forward selected features no noticeable difference is observed.
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
 \[
@@ -160,7 +182,9 @@ which gives the 95\% confidence interval
 \]
 
 
-\subsection{forward-selection - 8 hidden units - 5 iterations}
+
+\subsection{5 hidden units - 8 iterations}
+The results for the network model with 5 hidden units trained for 8 iterations are shown in table~\ref{tbl:forward-5-hidden-8-epochs}. \par
 \begin{table}
     \centering
     {\sffamily\small
@@ -178,8 +202,10 @@ which gives the 95\% confidence interval
 10 & 0.8355 \\\hline
         \end{tabularx}
     }
-    \caption{forward-selection - 8 hidden units - 5 iterations}
+    \caption{forward-selection - 5 hidden units - 8 iterations}
+    \label{tbl:forward-5-hidden-8-epochs}
 \end{table} 
+The performance is more or less identical with the performance for 3 hidden units. It may be due to the fact that 8 iterations are not enough training for the additional complexity to show up. Or maybe there is just not much more structure to be learned in the data.
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
 \[
@@ -191,7 +217,8 @@ which gives the 95\% confidence interval
 \]
 
 
-\subsection{forward-selection - 20 hidden units - 3 iterations}
+\subsection{forward-selection - 3 hidden units - 20 iterations}
+The network returns to 3 hidden unit, but is now trained for 20 iterations. The results are shown in table~\ref{tbl:forward-3-hidden-20-epochs} \par
 \begin{table}
     \centering
     {\sffamily\small
@@ -209,8 +236,10 @@ which gives the 95\% confidence interval
 10 & 0.8285 \\\hline
         \end{tabularx}
     }
-    \caption{forward-selection - 20 hidden units - 3 iterations}
+    \caption{3 hidden units - 20 iterations}
+    \label{tbl:forward-3-hidden-20-epochs}
 \end{table} 
+From the results it is seen that the performance is increased i little compared to the previous two runs. The difference isn't clear cut though, so a confidence interval may give a clearer picture of how the performances compares.
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
 \[
@@ -220,9 +249,11 @@ which gives the 95\% confidence interval
 \[
     \CI{0.8360}{0.8428}
 \]
+It is seen that the confidence interval just barely overlaps with the confidence intervals from the 2 previous run. It seems as if this network performs slightly better than the previous two networks.
 
 
-\subsection{forward-selection - 20 hidden units - 5 iterations}
+\subsection{forward-selection - 5 hidden units - 20 iterations}
+The last neural network test is for a network with 5 hidden units, that are trained for 20 iterations. As a slight increase in performance was observed when the training was run for 20 iterations, similar good performance may be expected from this test. The results are shown in table~\ref{tbl:forward-5-hidden-20-epochs}. \par
 \begin{table}
     \centering
     {\sffamily\small
@@ -240,8 +271,10 @@ which gives the 95\% confidence interval
 10 & 0.8159 \\\hline
         \end{tabularx}
     }
-    \caption{forward-selection - 20 hidden units - 5 iterations}
+    \caption{5 hidden units - 20 iterations}
+    \label{tbl:forward-5-hidden-20-epochs}
 \end{table} 
+As is seen from the results, the performance have decreased noticeably and is the worst of all the networks trained on the forward selected features. Either the optimization got stuck in a local minimum or the network has been overfitted to the trainingdata. Overfitting could make sense, since this network has more complexity and have had more time to fit this complexity to the trainingset. It is worth noticing though, that no similar decrease in performance was observed in the networks trained on the winning features.
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
 \[
@@ -251,5 +284,5 @@ which gives the 95\% confidence interval
 \[
     \CI{0.8182}{0.8217}
 \]
-
+The right endpoint of this interval is about 0.01 below the lowest left endpoint of the confidence intervals, for the tests on the networks trained on the feature selected features.
 

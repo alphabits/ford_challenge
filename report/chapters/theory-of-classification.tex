@@ -190,9 +190,45 @@ In section~\ref{sec:logistic-complexity} it was described how the complexity of 
 
 
 \section{Measuring classifier performance}\label{sec:classifier-performance}
-When a classifier has been trained on a training dataset, some estimate of the classifier performance, on future datasets, needs to be estimated. To be able to estimate the performance, it first needs to be defined exactly how the performance is measured. This can be done in many ways. For the Ford Challenge a measure called AUC-score was used and this measure will be explained in the following section. But even though a measure has been chosen there still needs to be found a way to estimate the expected measure-score on future datasets, for the classifier. An emperical way to do this, is called cross validation.
+When a classifier has been trained on a training dataset, some estimate of the classifier performance, on future datasets, needs to be estimated. To be able to estimate the performance, it first needs to be defined exactly how the performance is measured. This can be done in many ways. For the Ford Challenge a measure called AUC-score was used.
+
+\subsection[AUC]{AUC\protect\footnote{This section is loosely based on \citet[p.296-301]{kumar06}}}
+The AUC-score is the area under the Receiver Operating Characteristic (ROC) curve for a classifier, so to explain the AUC-score, an introduction of the ROC curve is needed. The ROC curve is based on four measures of the performance of a binary classifier. Assume that one of the two classes of the classifier have been labeled as ``positive''. Then the four measures are:
+\begin{itemize}
+    \item True positives (TP) - The number of positive samples that was correctly classified as positive.
+    \item False negative (FN) - The number of positive samples that was incorrectly classified as negative.
+    \item False positive (FP) - The number of negative samples that was incorrectly classified as positive.
+    \item True negative (TN) - The number of negative samples that was correctly classified as negative.
+\end{itemize}
+From these four measures it is easy to calculate the true positive rate (TPR) and false positive rate (FPR) as
+\[
+\text{TPR} = \frac{\text{TP}}{\text{TP}+\text{FN}}\quad\quad\text{and}\quad\quad \text{FPR} = \frac{\text{FN}}{\text{TN}+\text{FP}}
+\]
+Based on the TPR and FPR measures an ROC curve can be calculated.
+
+\subsubsection{ROC}
+The ROC curve assumes that the classifier outputs continous-valued output and that the ordering of the output corresponds to the classifiers ranking of the inputs connection with the ``positive'' class. This is exactly the case when an estimate of the posterior class probability $P(t=0|\ve{x})$ is the output of a classifier. \par
+To generate the ROC curve for a classifier on a specific trainingset, all rows in the trainingset are predicted by the classifier. Then the rows are ordered by these predictions. A threshold parameter is set equal to the highest prediction and all rows with a prediction lower than or equal to the threshold is predicted to belong to the negative class. For this threshold all rows are predicted as as negative, and therefore both TPR=0 and FPR=0 and therefore the point (0,0) is plotted on the ROC curve. The threshold is now set as the next lowest prediction and TPR and FPR are recalculated and the point (FPR, TPR) is plotted on the ROC curve. This is repeated until the threshold is equal to the lowest prediction, at which point all rows are classified as positive, and therefore the point (1,1) is plotted. The curve generated is the ROC curve which plots the true positive rate as a function of the false positive rate. \par
+Two extreme examples will clarify what a ROC curve for a good classifier and a bad classifier looks like. If a classifier predicts all rows correctly it will rank all positive rows higher than the negative. As the threshold is lowered the TPR will rise to 1, while the FPR remains at 0. When TPR have reached 1, the FPR starts to go towards 1. The ROC curve for a perfect classifier therefore starts at (0,0), steeply rises to (0,1) and then goes to (1,1). \par
+If the classifier on the other hand is just randomly making prediction the behaviour is different. When the ROC curve is generated the threshold at any time during the generation divides the dataset such that $p\cdot 100\%$ of the dataset is classified as positive. For a classifier that makes random prediction on a dataset with $n_+$ positive rows and $n_-$ negative rows, it would be expected that $pn_+$ rows will be classified positive and $pn_-$ as negative. This gives TPR$=(pn_+)/n_+=p$ and FPR$=(pn_-)/n_-=p$. So for all thresholds a point near $(p,p)$ is expected and as $p$ is updated every time the threshold is updated, the result is the straight line from $(0,0)$ to $(1,1)$. \par
+Based on the observations in the previous paragraph it is seen that good classifiers have an area under the ROC curve close to 1, while bad classifiers have areas around 0.5. This is used to measure the performance of different classifiers. When a classfier has been trained it makes prediction on a testset and the area under the ROC curve is calculated. \par
+Some properties of the AUC score makes it appealing to use. It is a single number and no parameters are chosen by the person calculating the AUC, which means that different people, calculating the AUC of the same classifier on the same dataset should get the same value. Some problems with the AUC score exists though.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=110mm]{media/roc.pdf}
+    \caption{Some examples of ROC curves. Although $C_2$ achieves a slightly higher AUC, $C_1$ may be prefered as discussed section~\ref{sec:auc-critique}}\label{fig:example-rocs}
+\end{figure}
+
+\subsection{Critiques of AUC}\label{sec:auc-critique}
+The AUC for a classifier is calculated by letting the threshold value change from the lowest to the highest prediction. When a final model is chosen this threshold is set to a specific value, which means that the AUC score is influenced by behavior of the classifier that may never be of pratical interest. Take for example the ROC curves in figure~\ref{fig:example-rocs}. The classifier $C_2$ achieves the highest AUC, but $C_2$ performs worse than $C_1$ when FPR$<0.35$. In a pratical application a false positive rate above 0.35 may be totally unacceptable and then $C_1$ would be the prefered classifier. One obvious solution to this problem would be to only calculate the AUC for FPR$<0.35$, but this introduces a parameter that must be subjectively chosen, thus losing one of the advantages of the AUC. \par
+A more profound critique of the AUC score claims that the relative cost of making a wrong positive prediction compared with the cost of a wrong negative prediction, depends on which classifier method the AUC is calculated for. See the paper \citet{hand09} for an indepth discussion. \par
+The competition winner also mentions that the AUC score might be inapropriate for \TFC\ \citep[p.5]{inference_winning_approach}
+
+
+
 
 \subsection{Cross validation}
+But even though a measure has been chosen there still needs to be found a way to estimate the expected measure-score on future datasets, for the classifier. An emperical way to do this, is called cross validation. \par
 One straight forward way to get an estimate of the expected performance on future datasets for a classification method, would be to measure the classifiers performance on the dataset used to train the classifier. The problem is that this will give an overly optimistic estimate, since the classifier has been trained to take into account some of the inevitable noise in the trainingset. To get a better estimate of the classifier performance, the complete dataset is split into smaller dataset, such that the same dataset is never used for both training and estimation of performance. This is the core idea in cross validation. Split the dataset to avoid using the same dataset for training and estimation. \par
 The easiest way to split a dataset is to split it in two parts: a trainingset and a validationset. The classifier can then be trained on the traningset and its performance is estimated on the validationset. Although this technique works it use the dataset only once, and only one estimate of the performance is produced. This means that the variability in the estimate can't be estimated. If the validationset is large, it can be split in smaller subsets, and the performance can then be tested on each subset. This is the procedure used for this report, since the competition dataset had plenty of datarows. If only a small dataset exists a set of estimates can still be calculated by using $K$-fold cross validation. 
 

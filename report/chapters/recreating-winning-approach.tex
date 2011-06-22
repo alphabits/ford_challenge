@@ -22,7 +22,7 @@ The method used by the winner was a logistic regression, trained on the three fe
 \end{figure}
 The winner do not mention any intercept parameter, although it seems unlikely that no intercept was included in the model \citep{meetings-morten}. Based on the above parameters, the winner achieved an AUC-score of 0.8492 on the testset. As mentioned in the previous section, the AUC-score of the testset differed from the AUC-score on the trainingset. In figure~\ref{fig:auc-score-inference-paper} (a reproduction of a figure in \citet{inference_winning_approach}) it is seen that an AUC-score of 0.8492 on the testset, corresponded to a AUC-score of $0.82\pm0.01$ on the trainingset. Since only the trainingset is available for this report, the goal is to acieve an AUC-score of approximately $0.82\pm0.01$.
 
-\section{Recreating the winning approach}
+\section{Recreating the winning approach}\label{sec:recreating-winner}
 It is now time to recreate the logistic regression of the winner. Using the same features as the winner a logistic regression is trained on the trainingset. This resulted in the following model 
 \begin{equation}\label{eq:winner-recreated}
     \log\frac{P(t=0|\ve{x})}{P(t=1|\ve{x})} = -87.2753\cdot\text{sdE5} + 0.2244\cdot\text{V11} + 3.6545\cdot\text{E9} - 5.3645 
@@ -50,7 +50,7 @@ The model is much like the winning model. The highest deviation from the winning
 \end{table}
 From the results table it is seen that the AUC-score achieved by the model lays in the interval [0.805;0.813] which is very close to the goal of $0.82\pm0.1$. To get a better idea of the results of the model, summary statistics and a confidence interval are calculated.
 
-\subsection{Statistics on the AUC score}
+\subsection{Statistics on the AUC score}\label{sec:recreating-winner-statistics}
 As described in section~\ref{sec:statistics-on-performance} a 95\% confidence interval can be calculated from the sample mean and standard deviation. These are found as
 \[
     m = 0.8082 \quad\quad\text{and}\quad\quad s = 0.003456

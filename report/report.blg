@@ -14,69 +14,69 @@ A level-1 auxiliary file: chapters/appendices.aux
 The style file: anders.bst
 Database file #1: bibdb.bib
 Warning--entry type for "kaggle_forum_328_reply_2" isn't style-file defined
---line 36 of file bibdb.bib
+--line 65 of file bibdb.bib
 Warning--entry type for "kaggle_forum_327_reply_4" isn't style-file defined
---line 54 of file bibdb.bib
+--line 83 of file bibdb.bib
 Warning--entry type for "kaggle_forum_327_reply_1" isn't style-file defined
---line 64 of file bibdb.bib
+--line 93 of file bibdb.bib
 Warning--entry type for "kaggle_forum_268_reply_2" isn't style-file defined
---line 74 of file bibdb.bib
+--line 103 of file bibdb.bib
 Warning--entry type for "kaggle_forum_295_reply_3" isn't style-file defined
---line 84 of file bibdb.bib
+--line 113 of file bibdb.bib
 Warning--entry type for "kdd_cup_2011" isn't style-file defined
---line 94 of file bibdb.bib
+--line 123 of file bibdb.bib
 Warning--entry type for "kdd_cup_center" isn't style-file defined
---line 104 of file bibdb.bib
+--line 133 of file bibdb.bib
 Warning--entry type for "netflix_leaderboard" isn't style-file defined
---line 114 of file bibdb.bib
+--line 143 of file bibdb.bib
 Warning--entry type for "wiki:netflix_prize" isn't style-file defined
---line 124 of file bibdb.bib
+--line 153 of file bibdb.bib
 Warning--entry type for "kaggle_forum_317" isn't style-file defined
---line 297 of file bibdb.bib
+--line 326 of file bibdb.bib
 Warning--entry type for "kaggle_forum_266" isn't style-file defined
---line 306 of file bibdb.bib
+--line 335 of file bibdb.bib
 Warning--entry type for "kaggle_data" isn't style-file defined
---line 315 of file bibdb.bib
+--line 344 of file bibdb.bib
 Warning--empty journal in inference_winning_approach
-You've used 19 entries,
+You've used 22 entries,
             2850 wiz_defined-function locations,
-            674 strings with 7317 characters,
-and the built_in function-call counts, 7593 in all, are:
-= -- 633
-> -- 226
-< -- 17
-+ -- 93
-- -- 69
-* -- 406
-:= -- 1328
-add.period$ -- 56
-call.type$ -- 19
-change.case$ -- 114
-chr.to.int$ -- 16
-cite$ -- 20
-duplicate$ -- 596
-empty$ -- 603
-format.name$ -- 92
-if$ -- 1471
+            688 strings with 7654 characters,
+and the built_in function-call counts, 9092 in all, are:
+= -- 745
+> -- 274
+< -- 19
++ -- 111
+- -- 84
+* -- 496
+:= -- 1563
+add.period$ -- 65
+call.type$ -- 22
+change.case$ -- 132
+chr.to.int$ -- 19
+cite$ -- 23
+duplicate$ -- 720
+empty$ -- 739
+format.name$ -- 112
+if$ -- 1774
 int.to.chr$ -- 4
 int.to.str$ -- 1
-missing$ -- 118
-newline$ -- 103
-num.names$ -- 76
-pop$ -- 304
+missing$ -- 146
+newline$ -- 118
+num.names$ -- 88
+pop$ -- 368
 preamble$ -- 1
-purify$ -- 99
+purify$ -- 116
 quote$ -- 0
-skip$ -- 261
+skip$ -- 310
 stack$ -- 0
-substring$ -- 211
-swap$ -- 207
+substring$ -- 265
+swap$ -- 260
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 156
+type$ -- 177
 warning$ -- 1
-while$ -- 57
+while$ -- 67
 width$ -- 0
-write$ -- 235
+write$ -- 272
 (There were 13 warnings)

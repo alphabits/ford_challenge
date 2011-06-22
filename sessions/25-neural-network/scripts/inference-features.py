@@ -14,12 +14,12 @@ path = get_path(__file__) + '/..'
 
 
 num_bins = 10
-hidden_units = 12
+hidden_units = 3
 learningrate = 0.04
-max_epochs = 8
-continue_epochs = 2
+max_epochs = 40
+continue_epochs = 6
 training_size = 100000
-feature_set = 'winner'
+feature_set = 'forward'
 
 if feature_set == 'winner':
     features = ['sde5', 'v11', 'e9']

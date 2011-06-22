@@ -127,9 +127,7 @@ All combinations of the 20 features was plotted\footnote{Source code can be foun
 \end{figure}
 
 
-\section{Principal Component Analysis}
-
-\subsection[Theory]{Theory\protect\footnote{Theory section is based on \citet[p.113]{alpaydin10}}} % (fold)
+\section[Principal Component Analysis]{Principal Component Analysis\protect\footnote{Theory section is based on \citet[p.113]{alpaydin10}}}
 The idea in Principal Component Analysis (PCA) is to find a mapping from a $d$-dimensional input space, to a new $k$-dimensional space (with $k<d$), while keeping as much of the variation in the input data, as possible. To begin with let $k=1$. Then the subspace is identified by a $d$-dimensional vector $\ve{w}_1$, that without loss of generality is assumed to have length $\norm{\ve{w}_1}=1$. \par
 For any vector $\ve{x}$ in the input space, the projection onto $\ve{w}_1$ is given by
 \[
@@ -157,14 +155,29 @@ which is true exactly when $\ve{w}_1$ is an eigenvector of $\ve{\Sigma}$ and $\a
 \[
     \varop{z_1} = \ve{w}_1^T\ve{\Sigma}\ve{w}_1 = \alpha\ve{w}_1^T\ve{w}_1 = \alpha
 \]
-and therefore the eigenvector with the largest eigenvalue is selected as $\ve{w}_1$ and is called the first principal component. The second principal component should also maximize variance, be of unit length and be orthogonal to $\ve{w}_1$. By introducing another Lagrange multiplier to handle the orthogonallity constraint and maximizing the expression for maximum variance, it is shown that the second principal component will be the eigenvector with the second highest eigenvalue. This procedure can be repeated and the end result is that the principal components are given as the eigenvectors of $\ve{\Sigma}$, sorted by the value of the corresponding eigenvalues. It can be shown that the proportion of the total variation explained by the first $k$ principal components is given by
-\[
+and therefore the eigenvector with the largest eigenvalue is selected as $\ve{w}_1$ and is called the first principal component. The second principal component should also maximize variance, be of unit length and be orthogonal to $\ve{w}_1$. By introducing another Lagrange multiplier to handle the orthogonallity constraint and maximizing the expression for maximum variance, it is shown that the second principal component will be the eigenvector with the second highest eigenvalue. This procedure can be repeated and the end result is that the principal components are given as the eigenvectors of $\ve{\Sigma}$, sorted by the value of the corresponding eigenvalues. It can further be shown that the proportion of the total variation explained by the first $k$ principal components is given by
+\begin{equation}\label{eq:variance-explained}
     \frac{\lambda_1+\lambda_2 +\dots + \lambda_k}{\lambda_1 + \lambda_2 + \dots + \lambda_k + \dots + \lambda_d}
-\]
+\end{equation}
 where $\lambda_i$ is the eigenvalue of the $i$'th eigenvector sorted by the eigenvalue.
 
 \subsection{Result}
-A Pricipal component analysis was done on the dataset
-
-\section{Conclusions}
+A Pricipal component analysis was done on the dataset. First the data was normalized to avoid that the variance of some features dominated the total variance, and then a PCA was calculated for the whole dataset.\mytodo{Source Code}. To get an overview of the pricipal components a plot of the proportion of total variance  as a function of the number of principal components is plotted. The result can be seen in figure~\ref{fig:variance-explained}.\par
+\begin{figure}
+    \centering
+    \includegraphics[width=.5\textwidth]{../sessions/15-new-principal-components-analysis/plots/pca-variation-explained.pdf}
+    \caption{sldkfj}\label{fig:variance-explained}
+\end{figure}
+From the graph it is seen that 90\% of the variance can be explained by the first 16-17 principal components. This means that 90\% of the variance can be explained by a 16-dimensional dataset, instead of the original 30-dimensional dataset.\par
+A scatter plot of the first two principal components and another scatter plot of the three first principal components was created, each having 800 randomly selected datapoints from the dataset. Each point in the scatter plots was colored to show the class (alert/not-alert) of the datapoint. The plots are shown in figure~\ref{fig:pca-scatter-2d} and figure~\ref{fig:pca-scatter-3d}. Not much was concluded from the plots except that it looks as if a 1. principal component above 0 and a 2. principal component above 2, implies that the datapoint is in the class not-alert. This wasn't investigated further though.
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{../sessions/15-new-principal-components-analysis/plots/scatter-principal-components-800-points.pdf}
+    \caption{sldkfj}\label{fig:pca-scatter-2d}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[width=100mm,bb=90 20 500 380,clip]{../sessions/15-new-principal-components-analysis/plots/scatter-principal-components-3d-1-800points.pdf}
+    \caption{sldkfj}\label{fig:pca-scatter-3d}
+\end{figure}
 

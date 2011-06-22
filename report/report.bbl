@@ -1,4 +1,4 @@
-\begin{thebibliography}{19}
+\begin{thebibliography}{22}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\urlprefix}{URL }
@@ -55,6 +55,12 @@ Duda, R.~O., Hart, P.~E., and Stork, D.~G. (2001).
 \newblock \emph{Pattern Classification}.
 \newblock John Wiley {\&} Sons, Inc.
 
+\bibitem[{Hand(2009)}]{hand09}
+Hand, D.~J. (2009).
+\newblock {Measuring classifier performance: a coherent alternative to the area
+  under the ROC curve}.
+\newblock \emph{Machine Learning}, 77(1), 103--123.
+
 \bibitem[{Hastie et~al.(2009)Hastie, Tibshirani, and Friedman}]{hastie09}
 Hastie, T., Tibshirani, R., and Friedman, J. (2009).
 \newblock \emph{The Elements of Statistical Learning}.
@@ -73,6 +79,12 @@ Inference (2011{\natexlab{b}}).
 \newblock
   \urlprefix\url{http://www.kaggle.com/c/stayalert/forums/t/295/ford/1743#post%
 1743}.
+
+\bibitem[{Johnson(2005)}]{johnson05}
+Johnson, R.~A. (2005).
+\newblock \emph{{Miller and Freund's Probability and Statistics for
+  Engineers}}.
+\newblock Pearson Education, Inc.
 
 \bibitem[{Kaggle.com(2011)}]{kaggle_data}
 Kaggle.com (2011).
@@ -106,6 +118,11 @@ Rosanne (2011).
 \newblock
   \urlprefix\url{http://www.kaggle.com/c/stayalert/forums/t/327/top-two-teams-%
 with-same-auc/1957#post1957}.
+
+\bibitem[{Tan et~al.(2006)Tan, Steinbach, and Kumar}]{kumar06}
+Tan, P.-N., Steinbach, M., and Kumar, V. (2006).
+\newblock \emph{{Introduction to Data Mining}}.
+\newblock Pearson Education, Inc.
 
 \bibitem[{Wasserman(2004)}]{wasserman04}
 Wasserman, L.~A. (2004).

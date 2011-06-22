@@ -46,20 +46,32 @@ which gives the 95\%% confidence interval
 
 
 def get_title(model, epoch, num_hidden):
-    return r'%s - %s hidden units - %s iterations' % (model, epoch, num_hidden)
+    return r'%s - %s hidden units - %s iterations' % (model, num_hidden, epoch)
 
 
+def echo_result(model, epoch, num_hidden):
+    data = get_data(model_epoch, num_hidden)
+    auc = np.array(data['auc'])
+    low, high, _ = ci(auc)
+    title = get_title(model, epoch, num_hidden)
+    print r'\subsection{%s}' % (title,)
+    echo_auc_table(auc, title)
+    echo_statistics(auc)
+    print ''
+    print ''
 
-for model in ['inference-features', 'forward-selection']:
-    for epoch, num_hidden in product([8,20], [3,5]):
-        filename = '%s-%s-epochs-%s-hidden.json' % (model, epoch, num_hidden)
-        with open(root+'/sessions/25-neural-network/data/'+filename) as f:
-            data = json.load(f)
-        auc = np.array(data['auc'])
-        low, high, _ = ci(auc)
-        title = get_title(model, epoch, num_hidden)
-        print r'\subsection{%s}' % (title,)
-        echo_auc_table(auc, title)
-        echo_statistics(auc)
-        print ''
-        print ''
+def get_data(model, epoch, num_hidden):
+    filename = '%s-%s-epochs-%s-hidden.json' % (model, epoch, num_hidden)
+    with open(root+'/sessions/25-neural-network/data/'+filename) as f:
+        data = json.load(f)
+    return data
+
+
+def echo_all():
+    for model in ['inference-features', 'forward-selection']:
+        for epoch, num_hidden in product([8,20], [3,5]):
+            echo_result(model, epoch, num_hidden)
+
+
+if __name__ == '__main__':
+    echo_all()

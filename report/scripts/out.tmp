@@ -1,4 +1,4 @@
-\subsection{inference-features - 8 hidden units - 3 iterations}
+\subsection{inference-features - 3 hidden units - 8 iterations}
 \begin{table}
     \centering
     {\sffamily\small
@@ -16,7 +16,7 @@
 10 & 0.8006 \\\hline
         \end{tabularx}
     }
-    \caption{inference-features - 8 hidden units - 3 iterations}
+    \caption{inference-features - 3 hidden units - 8 iterations}
 \end{table} 
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
@@ -29,7 +29,7 @@ which gives the 95\% confidence interval
 \]
 
 
-\subsection{inference-features - 8 hidden units - 5 iterations}
+\subsection{inference-features - 5 hidden units - 8 iterations}
 \begin{table}
     \centering
     {\sffamily\small
@@ -47,7 +47,7 @@ which gives the 95\% confidence interval
 10 & 0.8020 \\\hline
         \end{tabularx}
     }
-    \caption{inference-features - 8 hidden units - 5 iterations}
+    \caption{inference-features - 5 hidden units - 8 iterations}
 \end{table} 
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
@@ -60,7 +60,7 @@ which gives the 95\% confidence interval
 \]
 
 
-\subsection{inference-features - 20 hidden units - 3 iterations}
+\subsection{inference-features - 3 hidden units - 20 iterations}
 \begin{table}
     \centering
     {\sffamily\small
@@ -78,7 +78,7 @@ which gives the 95\% confidence interval
 10 & 0.8060 \\\hline
         \end{tabularx}
     }
-    \caption{inference-features - 20 hidden units - 3 iterations}
+    \caption{inference-features - 3 hidden units - 20 iterations}
 \end{table} 
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
@@ -91,7 +91,7 @@ which gives the 95\% confidence interval
 \]
 
 
-\subsection{inference-features - 20 hidden units - 5 iterations}
+\subsection{inference-features - 5 hidden units - 20 iterations}
 \begin{table}
     \centering
     {\sffamily\small
@@ -109,7 +109,7 @@ which gives the 95\% confidence interval
 10 & 0.8029 \\\hline
         \end{tabularx}
     }
-    \caption{inference-features - 20 hidden units - 5 iterations}
+    \caption{inference-features - 5 hidden units - 20 iterations}
 \end{table} 
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
@@ -122,7 +122,7 @@ which gives the 95\% confidence interval
 \]
 
 
-\subsection{forward-selection - 8 hidden units - 3 iterations}
+\subsection{forward-selection - 3 hidden units - 8 iterations}
 \begin{table}
     \centering
     {\sffamily\small
@@ -140,7 +140,7 @@ which gives the 95\% confidence interval
 10 & 0.8320 \\\hline
         \end{tabularx}
     }
-    \caption{forward-selection - 8 hidden units - 3 iterations}
+    \caption{forward-selection - 3 hidden units - 8 iterations}
 \end{table} 
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
@@ -153,7 +153,7 @@ which gives the 95\% confidence interval
 \]
 
 
-\subsection{forward-selection - 8 hidden units - 5 iterations}
+\subsection{forward-selection - 5 hidden units - 8 iterations}
 \begin{table}
     \centering
     {\sffamily\small
@@ -171,7 +171,7 @@ which gives the 95\% confidence interval
 10 & 0.8355 \\\hline
         \end{tabularx}
     }
-    \caption{forward-selection - 8 hidden units - 5 iterations}
+    \caption{forward-selection - 5 hidden units - 8 iterations}
 \end{table} 
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
@@ -184,7 +184,7 @@ which gives the 95\% confidence interval
 \]
 
 
-\subsection{forward-selection - 20 hidden units - 3 iterations}
+\subsection{forward-selection - 3 hidden units - 20 iterations}
 \begin{table}
     \centering
     {\sffamily\small
@@ -202,7 +202,7 @@ which gives the 95\% confidence interval
 10 & 0.8285 \\\hline
         \end{tabularx}
     }
-    \caption{forward-selection - 20 hidden units - 3 iterations}
+    \caption{forward-selection - 3 hidden units - 20 iterations}
 \end{table} 
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
@@ -215,7 +215,7 @@ which gives the 95\% confidence interval
 \]
 
 
-\subsection{forward-selection - 20 hidden units - 5 iterations}
+\subsection{forward-selection - 5 hidden units - 20 iterations}
 \begin{table}
     \centering
     {\sffamily\small
@@ -233,7 +233,7 @@ which gives the 95\% confidence interval
 10 & 0.8159 \\\hline
         \end{tabularx}
     }
-    \caption{forward-selection - 20 hidden units - 5 iterations}
+    \caption{forward-selection - 5 hidden units - 20 iterations}
 \end{table} 
 \subsubsection{Statistics on the AUC-score}
 First the sample mean and sample standard deviation are calculated
