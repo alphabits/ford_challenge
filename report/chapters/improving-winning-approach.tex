@@ -2,6 +2,7 @@
 In this chapter it is examined whether the winning approach can be improved or not. The classification method will still be logistic regression, but it is tried to improve the results, by doing feature selection across all features. Two feature selection techniques are tried. First a forward selection is performed, on a subset of the whole trainingset, and then a $L^1$ regularization. 
 
 \section{Forward selection}\label{sec:forward-selection}
+\mytodo{Mention that it isn't standard to use AUC as error function for Forward selection}
 A forward selection is performed to find the features that gives the best classification. The logistic regression model starts out with no features, and then the feature that improves the performance the most is added to the regression model. This is repeated until the performance is no longer increased. The features, that the forward selection chooses between are all the features; both the original, and the running mean and running standard deviation. This gives a total of 90 features to choose between. Since all candidates for features to add to the model, must be tested in every iteration, a worst case scenario is that a total of
 \[
     \sum_{i=1}^{90} i = \frac{90*89}{2} = 4005

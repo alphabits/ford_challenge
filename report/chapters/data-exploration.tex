@@ -1,11 +1,20 @@
 \chapter{Data exploration}
-Here I describe the various data exploration techniques I have used. Lots of nice graphs. 
+In this chapter the dataset for the competition is explored. First some summary statistics are calculated and after that the datatype of the features are tried to be determined. Then outlier detection is attempted and some thoughts about what defines an outlier are presented. It is also attempted to find features that discriminates well between the alert and the not-alert datapoints. And finally a Principal Component Analysis of the data is calculated. 
 
 
-\section{A note about Test data, training data}
+\section{Overview of the datasets}
+When reading this report some confusion about the naming of different datasets may arise. In this section a short overview about the datasets is given. \par
+When The Ford Challenge was presented, two datasets was released.
+\begin{itemize}
+    \item The \mydef{Ford trainingset} - This is the dataset introduced in the previous section, and consists of 604,229 rows, 500 trials and 33 data columns. As the name suggests, this dataset was used to train models, when participating in the Ford Challenge
+    \item The \mydef{Ford testset} - This dataset consists of 120,841 rows, 100 trials and 33 data columns. But the column for the \fn{IsAlert} feature had no data. The task of the Ford Challenge was to predict the \fn{IsAlert} feature of this dataset. 
+\end{itemize}
+The evaluation of a participants prediction on the Ford testset was done by uploading the Ford testset, with the predictions in the \fn{IsAlert} column, to the kaggle.com website. Unfortunately the true \fn{IsAlert} feature of the Ford testset wasn't released after the competition ended, and therefore the Ford testset can't be used for calculations in this report. The Ford testset will play a role in some of the discussions though. \par
+Since a testset was needed\footnote{see section~\ref{sec:classifier-performance} for an explanation of why a testset is needed}, the Ford trainingset wassplit in two parts, namely the \mydef{report trainingset} and the \mydef{report testset}. The split was done by taking every fifth trial in the Ford trainingset and assign it to the report testset. All other trials was put in the report trainingset. The report trainingset and report testset are often just referred to as \mydef{the trainingset} and \mydef{the testset}.
+
 
 \section{Calculating common statistics}\label{sec:summary-statistics}
-To start the data exploration, four common statistics, namely the mean, min, max and standard deviation, of every feature across the whole dataset was calculated. The standard deviation was calculated as (with $n$ equal the total number of rows in the dataset, and $x_i$ equal to the $i$'th value of any of the features)
+To start the data exploration, four common statistics, namely the mean, min, max and standard deviation, of every feature across the whole dataset was calculated. The standard deviation was calculated as (with $n$ equal the total number of rows in the dataset, $x_i$ equal to the $i$'th value of any of the features, and $\bar{x}=\sum_{i=1}^n x_i$)
 \[
     s = \sqrt{\frac{\sum_{i=1}^n (x_i-\bar{x})^2}{n-1}}
 \]
@@ -19,13 +28,13 @@ The source code for the calculations can be found in \appref{source-common-stati
     \caption{Highlights from the results of the summary statistics. See~\appref{result-common-statistics} for all results.}
     \label{tbl:summary-stats-highlights}
 \end{table}
-The table shows that the features \fn{P8}, \fn{V7} and \fn{V9}, are zero throughout the whole dataset, and can be ignored. The features \fn{E9} and \fn {V5}, could be binary, but that is only speculation at the moment. Finally the feature \fn{P6} has a mean of 843.73 and a standard deviation of 2795.32, but its maximum is 228812.00, which is many, many standard deviations away from the mean. This could be a sign of some serious outliers, but it could as well be a single trial with a mean far from the other trials. Further investigation are needed to conclude anything here. Finally it is seen that the mean of the \fn{IsAlert} feature is only a little above 0.5, and therefore only a little over 50\% of the time are the drivers alert. This may be a bit surprising. \par
-The results of this first step have been to exclude a few features, and get some rough ideas about the shape of some other features. It is now time to resally get to know the different features.
+The table shows that the features \fn{P8}, \fn{V7} and \fn{V9}, are zero throughout the whole dataset, and can be ignored. The features \fn{E9} and \fn {V5}, could be binary, but that is only speculation at the moment. Finally the feature \fn{P6} has a mean of 843.73 and a standard deviation of 2795.32, but its maximum is 228812.00, which is many, many standard deviations away from the mean. This could be a sign of some serious outliers, but it could as well be a single trial with a mean far from the other trials. Further investigation is needed to conclude anything here. Finally it is seen that the mean of the \fn{IsAlert} feature is only a little above 0.5, and therefore only a little over 50\% of the time are the drivers alert.\par
+The results of this first step have been to exclude a few features, and get some rough ideas about the shape of some other features. It is now time to really get to know the different features.
 
 \section{Determining the datatype of features}
 Since Ford would not disclose any information about the different features, it is important to get a good picture of which features are discrete/categorical and which features are continous. A natural first step to learn the datatype of the features, is to calculate the number of unique values each feature takes.
 \subsection{Unique values}\label{sec:unique-values}
-It requires a little thought to pinpoint exactly what needs to be calculated. On one hand it is natural to calculate the number of unique values a feature takes across the whole dataset. On the other hand it could happen, that a discrete feature might have only (eg.) 3 unique value within any trial, but the values differ between various trials. This way we would have a feature with 1500 unique values across the whole dataset, but with max 3 unique values within any given trial. Therefore the number of unique values within a trial are calculated for every feature and every trial. Based on this result, the minimum and maximum number of unique values within a single trial, is calculated for every feature. The source code can be found in \appref{source-unique-values} and results are shown in table~\ref{tbl:result-unique-values}.\mytodo{The result table in appendix or in report?} \par
+It requires a little thought to pinpoint exactly what needs to be calculated. On one hand it is natural to calculate the number of unique values a feature takes across the whole dataset. On the other hand it could happen, that a discrete feature might have only (eg.) 3 unique value within any trial, but the values differ between various trials. This way we would have a feature with 1500 unique values across the whole dataset, but with max 3 unique values within any given trial. Therefore the number of unique values within a trial is calculated for every feature. Based on this result, the minimum and maximum number of unique values within a single trial, is calculated for every feature. The source code can be found in \appref{source-unique-values} and results are shown in table~\ref{tbl:result-unique-values}.\par
 \begin{table}
     {\small\sffamily
         \begin{python}
@@ -39,9 +48,9 @@ A couple of things should be noticed about the results. Almost all features have
 
 From table~\ref{tbl:result-unique-values} it is also seen, that only features \fn{P1}, \fn{P2} and \fn{V11} is consistently having lots of unique value, across all trials. It seems fair to call these features continous. Feature \fn{V1} have some trials where it takes on 969 different values, but it also have trials with only one unique value. Across the whole dataset it takes on 12374 unique values. This could be explained by feature \fn{V1} being continous in a small number of trials (about 15-30), and turned ``off" in all other trials. Further exploration will show whether it is true or not. \par
 
-Another interesting detail is that there are two pairs of features ((\fn{P3},\fn{P4}), (\fn{P6},\fn{P7})) in the results, that share exactly the same number of unique features. Both min and max and total. This indicates a possible relationship between the features, and later (section~\ref{sec:scatterplots}) it is shown that this is in fact true. \par
+Another interesting detail is that there are two pairs of features ((\fn{P3},\fn{P4}), (\fn{P6},\fn{P7})), that share exactly the same number of unique features. Both min and max and total. This indicates a possible relationship between the features, and later (section~\ref{sec:scatterplots}) it is shown that this is in fact true. \par
 
-A final remark about the number of unique values, is that feature \fn{E9} and \fn{V5} indeed are binary. Also if a limit of max 40 unique values within a single trial is set, as an indicator for categorical features, \fn{E3}, \fn{E7}, \fn{E8}, \fn{V3} and \fn{V10} are seen to be categorical. \par
+A final remark regarding the number of unique values, is that feature \fn{E9} and \fn{V5} indeed are binary. Also if a limit of max 40 unique values within a single trial is set as an indicator for categorical features, \fn{E3}, \fn{E7}, \fn{E8}, \fn{V3} and \fn{V10} are seen to be categorical. \par
 
 \subsection{Plotting some features}\label{sec:plotting-features}
 To get a more nuanced picture of the various features, it is now time to visualize the data. The first thing of interest is to plot every feature for a couple of trials, to see the structure of the features, and how much they vary between different trials. For a start some random plotting was done in the interactive ipython-shell\footnote{For details about the software setup used, see chapter~\ref{chp:tools}}. \par
@@ -55,15 +64,15 @@ Some selected plots from the interactive plotting session are shown i figure~\re
 \begin{itemize}
     \item A feature varies alot in structure between different trials
     \item Many features are constant in some trials (was already hinted at in section~\ref{sec:unique-values})
-    \item Some features deviates a lot from their ``normal" structure, in a few trials (more about that in section~\ref{sec:outlier-detection} about outliers).
-    \item The feature \fn{P2} looks like pure noise\mytodo{Is this right?}
-    \item The features \fn{E3}, \fn{E7}, \fn{E8}, \fn{V3} and \fn{V10} does indeed seems to be categorical features, although \fn{V3} do have some extra structure\mytodo{What do I mean? Plot categorical features?}
+    \item In a few trials some features deviates a lot from their ``normal'' structure,  (more about that in section~\ref{sec:outlier-detection} about outliers).
+    \item The feature \fn{P2} looks like white noise\mytodo{Is this right?}
+    \item The features \fn{E3}, \fn{E7}, \fn{E8}, \fn{V3} and \fn{V10} does indeed seem to be categorical features.
 \end{itemize}
-Apart from the observations above, a subjective conclusion from the plots of the features is that the data quality could be better. Since the data quality isn't perfect it is important to consider how outliers should be dealt with. This i what the next section is about.
+Apart from the observations above, a subjective conclusion from the plots of the features is that the data quality could be better. Since the data quality isn't perfect it is important to consider how outliers should be dealt with. This is what the next section is about.
 
 
 \section{Outlier detection}\label{sec:outlier-detection}
-The textbook approach for detecting outliers is to create boxplots of the different features, and then argue that data points outside the 95-percentile should be removed. Although this is a naive approach some useful information could be obtained from boxplots of the features. But i doesn't necessarily make sense to make boxplots of the features for the whole dataset. Some features have the same structure in different trials, but their mean varies. Eg. feature \fn{V11} in trials 29 and 35 have similar structure but the range in trial 29 is $[16.75, 19]$ and $[10,12.6]$ in trial 35 (see figure~\ref{fig:exploratory-feature-plots}). If a feature has a different mean in only a few trials, those datapoints could be seen as outliers, if we look at the feature across the whole dataset. Instead boxplots of the features for the 50 first trials are created. This also gives a visual idea about how feature means varies from trial to trial. 
+The textbook approach for detecting outliers is to create boxplots of the different features, and then argue that data points outside the 90-percentile should be removed. Although this is a naive approach some useful information could be obtained from boxplots of the features. But it doesn't necessarily make sense to make boxplots of the features for the whole dataset. Some features have the same structure in different trials, but their mean varies. Eg. feature \fn{V11} in trials 29 and 35 have similar structure but the range in trial 29 is $[16.75, 19]$ and $[10,12.6]$ in trial 35 (see figure~\ref{fig:exploratory-feature-plots}). If a feature has a different mean in only a few trials, those datapoints could be seen as outliers, if we look at the feature across the whole dataset. Instead boxplots of the features for the 50 first trials are created. This also gives a visual idea about how feature means varies from trial to trial. 
 \subsection{Making boxplots of features}
 The boxplots for 4 selected features are shown i figure~\ref{fig:boxplots}. All boxplots are in \appref{result-boxplots}, and the source code can be seen in \appref{source-boxplots}. \par
 \begin{figure}
@@ -79,56 +88,55 @@ The boxplots for 4 selected features are shown i figure~\ref{fig:boxplots}. All 
 From the boxplots a couple of things are of interest.
 \begin{itemize}
     \item For some features the trial mean varies a lot between different trials \mytodo{Remember to check with boxpots in appendix}
-    \item Within a single trial some features still have a lot of data points outside the 95 percentile. See eg. \fn{P1} in figure~\ref{fig:boxplots} \mytodo{Check the right name (percentile?)}
+    \item Within a single trial some features still have a lot of data points outside the 10- and 90-percentiles. See eg. \fn{P1} in figure~\ref{fig:boxplots}
 \end{itemize}
-As many features have datapoints outside the 95 percentile even within a single trial, the next step could be to categorize these datapoints as outliers. But inspection of some examples of specific features in specific trials, shows that it would be wrong to remove these ``outliers". Eg. feature \fn{V11} in trial 29 is plotted in figure~\ref{fig:exploratory-feature-plots} and seems to be perfectly normal. Careful inspection of the boxplot for feature \fn{V11} in trial 29 (figure~\ref{fig:boxplots}) shows that the feature has many outliers in this specific trial. \par
-The boxplots do not correctly identify the outliers in the dataset, and another method is therefore neede.
+As many features have datapoints outside the 10- and 90-percentile even within a single trial, the next step could be to categorize these datapoints as outliers. But inspection of some examples of specific features in specific trials, shows that it would be wrong to remove these ``outliers". Eg. feature \fn{V11} in trial 29 is plotted in figure~\ref{fig:exploratory-feature-plots} and seems to be perfectly normal. Careful inspection of the boxplot for feature \fn{V11} in trial 29 (figure~\ref{fig:boxplots}) shows that the feature has many outliers in this specific trial. \par
+The boxplots do not correctly identify the outliers in the dataset, and another method is therefore needed.
 
 \subsection{Making layered feature plots}
-Instead of trying to categorize single datapoints as outliers, it may make more sense to define a specific feature in a specific trial as an outlier. The fact that some features deviates a lot from their normal structure, in a few trials was already mentioned in section~\ref{sec:plotting-features} about exploratory plotting of features. Since the exploratory plotting was a rather unstructered process, a more thorough picture, of the structure of the different features across all trials, is needed. One way to get a better picture is by plotting all trials of a single feature, in a single plot. The graph of each trial is given a low opacity and then all 500 trials\mytodo{update number based on number of training trials} are plotted on top of each other. That way the common structure of a feature across trials are visualized, and possible outlier trials can be detected. Two examples of this plot type can be seen in figure~\ref{fig:layered-feature-plots}\footnote{Source code for the layered feature plots can be found in \appref{source-layered-feature-plots} and the results are in \appref{result-layered-feature-plots}} \par
+Instead of trying to categorize single datapoints as outliers, it may make more sense to define a specific feature in a specific trial as an outlier. The fact that some features deviates a lot from their normal structure, in a few trials was already mentioned in section~\ref{sec:plotting-features} about exploratory plotting of features. Since the exploratory plotting was a rather unstructered process, a more thorough picture, of the different features across all trials, is needed. One way to get a better picture is by plotting all trials of a single feature, in a single plot. The graph of each trial is given a low opacity and then all 400 trials in the trainingset are plotted on top of each other. That way the common structure of a feature across trials are visualized, and possible outlier trials can be detected. Two examples of this plot type can be seen in figure~\ref{fig:layered-feature-plots}\footnote{Source code for the layered feature plots can be found in \appref{source-layered-feature-plots} and the results are in \appref{result-layered-feature-plots}} \par
 \begin{figure}
     \centering
     \subfloat[]{\includegraphics[width=.5\textwidth]{../sessions/22-create-transparent-feature-plots/plots/naive_p6.png}\label{fig:layered-all-trials}}
     \subfloat[]{\includegraphics[width=.5\textwidth]{../sessions/22-create-transparent-feature-plots/plots/P6_20-trials.png}\label{fig:layered-20-trials}}
-    \caption{Layered feature plots of feature \fn{P6}. All 500 trials are shown on the left. A couple of possible outliers are seen. On the right only 20 randomly chosen trials are plotted}
+    \caption{Layered feature plots of feature \fn{P6}. All 500 trials are shown on the left. A couple of possible outliers are seen. On the right 20 randomly chosen trials are plotted}
     \label{fig:layered-feature-plots}
 \end{figure}
 From the layered feature plots it is confirmed that many features have some trials that seems to deviate from the normal pattern of the feature. Using feature \fn{P6} as an example, it is seen in figure~\ref{fig:layered-all-trials} that \fn{P6} in almost all trials lies within the range $[0,2000]$. But one trial have a max value larger than 200000. This behaviour was hinted in section~\ref{sec:summary-statistics} and now there is a visual confirmation. \par
-The question is, how should this ``outlier" trial of feature \fn{P6} be handled? One approach is to exclude the trial from the dataset. But as nothing about the origin of the dataset is known, it can't be justified with a commen sense argument, and if this trial is excluded then how is the line between outlier and normal drawn? There is a couple of other trials where the \fn{P6} feature has values as high as 20000, but should this be seen as outliers? And are there other ways a trial could be an outlier than the scale? In figure~\ref{fig:layered-20-trials} most trials have the same structure, but the trial with the lowest mean has a noticeable different shape than the other trials. It somehow has a baseline at the value 400 and then oscillates a a higher frequency than the other trials. Is this an outlier? If it is regarded as an outlier many other trials could possibly be classified as outliers, and we're are still only looking at one feature. If the same amount of cleaning is done for the other features, not much is left for the ``normal" dataset. \par
-
-The immediate conclusion is that the outlier detection easily becomes, either too all-encompassing or is done in an inconsistent manner. An alternative way to tackle the trials with datapoints with large values, could be to do some kind of variable transformation (eg. taking the log) of the feature. This could be a solution and the idea is investigated a little more in section~\ref{sec:recreating}.
+The question is, how should this ``outlier" trial of feature \fn{P6} be handled? One approach is to exclude the trial from the dataset. But as nothing about the origin of the dataset is known, it can't be justified with a commen sense argument, and if this trial is excluded then how is the line between outlier and normal drawn? There is a couple of other trials where the \fn{P6} feature has values as high as 20000, but should this be seen as outliers? And are there other ways a trial could be an outlier than the scale? In figure~\ref{fig:layered-20-trials} most trials have the same structure, but the trial with the lowest mean has a noticeable different shape than the other trials. It somehow has a baseline at the value 400 and then oscillates at a higher frequency than the other trials. Is this an outlier? If it is regarded as an outlier many other trials could possibly be classified as outliers, and we're are still only looking at one feature. If the same amount of cleaning is done for the other features, not much is left for the ``normal" dataset. \par
+The conclusion is that the outlier detection easily becomes, either too all-encompassing or is done in an inconsistent manner. An alternative way to tackle the trials with datapoints with large values, could be to do some kind of variable transformation (eg. taking the log) of the feature.
 
 \subsection{Features that are constant in a trial}
-Another type of potential outlier trials, are all the trials where one or more features are constant throughout the trial. This could be a sign of a failure in the measurement equipment, and then maybe the trial should be regarded as an outlier? A great example is the \fn{IsAlert} feature, that is the feature that should be predicted by the classifier. In 142 out of the 400 trials the \fn{IsAlert} feature is constant and in 127 of the trials with a constant value, the driver isn't alert. At first it may seem a bit odd, and indeed some of the contestants of The Ford Challenge revealed that they had excluded all trials where the \fn{IsAlert} feature was 0 throughout the trial (see \citet{kaggle_forum_328_reply_2}). But it is speculative to do, since the precise meaning of the \fn{IsAlert} feature isn't known, let alone the fact that, measurering human alertness with a binary variable is speculative by itself. \par
-As it seems to speculative to exclude features with constant values, this idea won't be pursued any further. Instead the focus changes from "finding features to get rid of" till "finding features that could be benificial for classification" as the next section is all about finding features that can discriminate between alert/not-alert drivers.
+Another type of potential outlier trials, are all the trials where one or more features are constant throughout the trial. This could be a sign of a failure in the measurement equipment, and then maybe the trial should be regarded as an outlier? A great example is the \fn{IsAlert} feature, that is the feature that should be predicted by the classifier. In 142 out of the 400 trials the \fn{IsAlert} feature is constant and in 127 of the trials with a constant value, the driver isn't alert. At first it may seem a bit odd, and indeed some of the contestants of The Ford Challenge revealed that they had excluded all trials where the \fn{IsAlert} feature was 0 throughout the trial (see \citet{kaggle_forum_328_reply_2}). But it is speculative to do, since the precise meaning of the \fn{IsAlert} feature isn't known, let alone the fact that, measuring human alertness with a binary variable is speculative by itself. \par
+As it seems too speculative to exclude features with constant values, this idea won't be pursued any further. Instead the focus changes from ``finding features to get rid of'' till ``finding features that could be benificial for classification'' as the next section is all about finding features that can discriminate between alert/not-alert drivers.
 
 
 \section{Finding possible discriminating features}
-In this section all features are examined in an attempt to find one or more features that are in some way correlated with the \fn{IsAlert} feature that should be predicted. 
-
-\subsection{Testing binary features}
-A tempting first attempt at finding a feature that can be used to predict the \fn{IsAlert} feature, is to look at the two binary features \fn{V5} and \fn{E9} and see if they are correlated with the predictor\mytodo{What is the \fn{IsAlert} feature called?}.
+In this section all features are examined in an attempt to find one or more features that are in some way correlated with the \fn{IsAlert} feature that should be predicted.
 
 \subsection{Scatterplots}\label{sec:scatterplots}
-A great way to visualize whether a pair of features can be used to discriminate between datapoints where the driver is alert and where he/she is not alert, is to create scatterplots of the possible pair of features. Since feature \fn{V7}, \fn{V9} and \fn{P8} are removed and feature \fn{E3}, \fn{E7}, \fn{E8}, \fn{E9}, \fn{V3}, \fn{V5} and \fn{V10} was found to be categorical, only 20 features are left for the scatterplots. Since the order of the two features in a scatterplot doesn't matter there is a total of 
+A great way to visualize whether a pair of features can be used to discriminate between two classes, is to create scatterplots of the possible pair of features. Since feature \fn{V7}, \fn{V9} and \fn{P8} are removed and feature \fn{E3}, \fn{E7}, \fn{E8}, \fn{E9}, \fn{V3}, \fn{V5} and \fn{V10} was found to be categorical, only 20 features are left for the scatterplots. Since the order of the two features in a scatterplot doesn't matter there is a total of 
 \[
     \begin{pmatrix}
         20 \\
         2
     \end{pmatrix} = 190\:\text{combinations}
 \]
-All combinations of the 20 features was plotted\footnote{Source code can be found in \appref{source-scatterplots} and the results in \appref{result-scatterplots}}, but no interesting results was found; at least not regarding feature pairs that could classify the \fn{IsAlert} feature. One interesting result was found though. As can be seen in figure~\ref{fig:scatterplots} the features pairs (\fn{P3}, \fn{P4}) and (\fn{P6}, \fn{P7}) both appear to have an arithmetic relationship. A quick calculation shows that \fn{P3} multiplied by \fn{P4} is $60000\pm0.2$ for all rows in the dataset, and likewise for \fn{P6} and \fn{P7}. We can therefore ignore one of the features from each pair.\mytodo{Am I sure? Details can't hide in the decimal difference?}
+All combinations of the 20 features was plotted\footnote{Source code can be found in \appref{source-scatterplots} and the results in \appref{result-scatterplots}}, but no interesting results was found; at least not regarding feature pairs that could classify the \fn{IsAlert} feature. One interesting result was found though. As can be seen in figure~\ref{fig:scatterplots} the feature pairs (\fn{P3}, \fn{P4}) and (\fn{P6}, \fn{P7}) both appear to have an arithmetic relationship. A quick calculation shows that \fn{P3} multiplied by \fn{P4} is $60000\pm0.2$ for all rows in the dataset, and likewise for \fn{P6} and \fn{P7}. We can therefore ignore one of the features from each pair.
 \begin{figure}
     \begin{tabularx}{\textwidth}{ X X }
         \includegraphics[width=.5\textwidth]{../sessions/24-writing-helper-scripts/plots/scatterplots/P3-P4.pdf} &
         \includegraphics[width=.5\textwidth]{../sessions/24-writing-helper-scripts/plots/scatterplots/P6-P7.pdf}
     \end{tabularx}
-    \caption{Scatterplots of the feature pairs (\fn{P3}, \fn{P4}) and (\fn{P6}, \fn{P7}). An arithmetic relationship between the features is clearly present}
+    \caption{Scatterplots of the feature pairs (\fn{P3}, \fn{P4}) and (\fn{P6}, \fn{P7}). An arithmetic relationship between the features is clearly present}\label{fig:scatterplots}
 \end{figure}
 
 
-\section[Principal Component Analysis]{Principal Component Analysis\protect\footnote{Theory section is based on \citet[p.113]{alpaydin10}}}
-The idea in Principal Component Analysis (PCA) is to find a mapping from a $d$-dimensional input space, to a new $k$-dimensional space (with $k<d$), while keeping as much of the variation in the input data, as possible. To begin with let $k=1$. Then the subspace is identified by a $d$-dimensional vector $\ve{w}_1$, that without loss of generality is assumed to have length $\norm{\ve{w}_1}=1$. \par
+\section{Principal Component Analysis}
+In this section the theory behind the Principal Component Analysis is introduced, and then a Principal Component Analysis is calculated on the whole dataset.
+
+\subsection[Theory]{Theory\protect\footnote{Theory section is based on \citet[p.113]{alpaydin10}}}
+The idea in Principal Component Analysis (PCA) is to find a mapping from a $d$-dimensional input space, to a new $k$-dimensional space (with $k<d$), while keeping as much of the variation in the input data, as possible. To begin with let $k=1$. Then the 1-dimensional subspace is identified by one $d$-dimensional basis vector $\ve{w}_1$. Without loss of generality it is assumed that $\norm{\ve{w}_1}=1$. \par
 For any vector $\ve{x}$ in the input space, the projection onto $\ve{w}_1$ is given by
 \[
     z_1 = \ve{w}_1^T \ve{x}
@@ -142,11 +150,11 @@ and we now wish to maximize the variance of $z_1$. By the definition of variance
     &= \ve{w}_1^T\expop{(\ve{x}-\ve{\mu})(\ve{x}-\ve{\mu})^T}\ve{w}_1 \\
     &= \ve{w}_1^T\ve{\Sigma}\ve{w}_1
 \end{align*}
-where $\ve{\Sigma} = \covop{\ve{x}}$. So to maximize the variance of $z_1$ is the same as maximizing $\ve{w}_1^T\ve{\Sigma}\ve{w}_1$, subject to the contraint that $\ve{w}_1^T\ve{w}_1=1$. By introducing a Lagrange multiplier $\alpha$, we get
+where $\ve{\Sigma} = \covop{\ve{x}}$. So maximizing the variance of $z_1$ is the same as maximizing $\ve{w}_1^T\ve{\Sigma}\ve{w}_1$, subject to the constraint that $\ve{w}_1^T\ve{w}_1=1$. By introducing a Lagrange multiplier $\alpha$, we get
 \[
-    \max_{\ve{w}_1} \ve{w}_1^T\ve{\Sigma}\ve{w}_1 - \alpha(\ve{w}_1^T\ve{w}_1 - 1)
+    \max_{\ve{w}_1}\:\ve{w}_1^T\ve{\Sigma}\ve{w}_1 - \alpha(\ve{w}_1^T\ve{w}_1 - 1)
 \]
-This is a normal, unconstrained maximization problem. Taking the derivative with respect to $\ve{w}_1$, and setting this equal to 0, gives
+This is a normal, unconstrained maximization problem. Taking the derivative with respect to $\ve{w}_1$, and setting this equal to 0, gives (using that $\ve{\Sigma}$ is symmetric)
 \begin{align*}
     2\ve{\Sigma}\ve{w}_1 - 2\alpha\ve{w}_1 &= 0 \myimp \\
     \ve{\Sigma}\ve{w}_1 &= \alpha\ve{w}_1
@@ -155,21 +163,21 @@ which is true exactly when $\ve{w}_1$ is an eigenvector of $\ve{\Sigma}$ and $\a
 \[
     \varop{z_1} = \ve{w}_1^T\ve{\Sigma}\ve{w}_1 = \alpha\ve{w}_1^T\ve{w}_1 = \alpha
 \]
-and therefore the eigenvector with the largest eigenvalue is selected as $\ve{w}_1$ and is called the first principal component. The second principal component should also maximize variance, be of unit length and be orthogonal to $\ve{w}_1$. By introducing another Lagrange multiplier to handle the orthogonallity constraint and maximizing the expression for maximum variance, it is shown that the second principal component will be the eigenvector with the second highest eigenvalue. This procedure can be repeated and the end result is that the principal components are given as the eigenvectors of $\ve{\Sigma}$, sorted by the value of the corresponding eigenvalues. It can further be shown that the proportion of the total variation explained by the first $k$ principal components is given by
+and therefore the eigenvector with the largest eigenvalue is selected as $\ve{w}_1$ and is called the first principal component. The second principal component should also maximize variance, be of unit length and be orthogonal to $\ve{w}_1$. By introducing another Lagrange multiplier to handle the orthogonallity constraint and maximizing the expression for maximum variance, it can be shown that the second principal component will be the eigenvector with the second highest eigenvalue. This procedure can be repeated and the end result is that the principal components are given as the eigenvectors of $\ve{\Sigma}$, sorted by the value of the corresponding eigenvalues. It can further be shown that the proportion of the total variation explained by the first $k$ principal components is given by
 \begin{equation}\label{eq:variance-explained}
     \frac{\lambda_1+\lambda_2 +\dots + \lambda_k}{\lambda_1 + \lambda_2 + \dots + \lambda_k + \dots + \lambda_d}
 \end{equation}
 where $\lambda_i$ is the eigenvalue of the $i$'th eigenvector sorted by the eigenvalue.
 
 \subsection{Result}
-A Pricipal component analysis was done on the dataset. First the data was normalized to avoid that the variance of some features dominated the total variance, and then a PCA was calculated for the whole dataset.\mytodo{Source Code}. To get an overview of the pricipal components a plot of the proportion of total variance  as a function of the number of principal components is plotted. The result can be seen in figure~\ref{fig:variance-explained}.\par
+A Pricipal Component Analysis was done on the dataset. First the data was normalized to avoid that the variance of some features dominated the total variance, and then a PCA was calculated for the whole dataset.\mytodo{Source Code}. To get an overview of the pricipal components, a plot of the proportion of total variance as a function of the number of principal components, was plotted. The result can be seen in figure~\ref{fig:variance-explained}.\par
 \begin{figure}
     \centering
-    \includegraphics[width=.5\textwidth]{../sessions/15-new-principal-components-analysis/plots/pca-variation-explained.pdf}
+    \includegraphics[width=.75\textwidth]{../sessions/15-new-principal-components-analysis/plots/pca-variation-explained.pdf}
     \caption{sldkfj}\label{fig:variance-explained}
 \end{figure}
 From the graph it is seen that 90\% of the variance can be explained by the first 16-17 principal components. This means that 90\% of the variance can be explained by a 16-dimensional dataset, instead of the original 30-dimensional dataset.\par
-A scatter plot of the first two principal components and another scatter plot of the three first principal components was created, each having 800 randomly selected datapoints from the dataset. Each point in the scatter plots was colored to show the class (alert/not-alert) of the datapoint. The plots are shown in figure~\ref{fig:pca-scatter-2d} and figure~\ref{fig:pca-scatter-3d}. Not much was concluded from the plots except that it looks as if a 1. principal component above 0 and a 2. principal component above 2, implies that the datapoint is in the class not-alert. This wasn't investigated further though.
+A scatter plot of the first two principal components and another scatter plot of the three first principal components was created, each having 800 randomly selected datapoints from the dataset. Each point in the scatter plots was colored to show the class (alert/not-alert) of the datapoint; with red indicating not-alert. The plots are shown in figure~\ref{fig:pca-scatter-2d} and figure~\ref{fig:pca-scatter-3d}. It looks as if a 1. principal component above 0 and a 2. principal component above 2, implies that the datapoint is in the class not-alert. This wasn't investigated further though.
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{../sessions/15-new-principal-components-analysis/plots/scatter-principal-components-800-points.pdf}

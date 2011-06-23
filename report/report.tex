@@ -64,6 +64,7 @@
 \newcommand\err{\overline{\text{err}}}
 \newcommand\mytr[1]{\small\Tr{#1}}
 \newcommand\CI[2]{\mathbb{P}(\mu_{AUC} \in [#1, #2]) = 95\%}
+\newcommand\folder[1]{{\ttfamily #1}}
 
 \renewcommand\thefootnote{\fnsymbol{footnote}}
 
@@ -183,17 +184,16 @@
 % Chapter 1, 2, ...
 %%%%%%%MAIN CHAPTERS INCLUDE%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\part{Introduction and data exploration}
+%\part{Introduction and data exploration}
 \include{chapters/introduction}
 \include{chapters/the-competition}
 \include{chapters/data-exploration}
-\part{Modelling}
+%\part{Modelling}
 \include{chapters/theory-of-classification}
 \include{chapters/recreating-winning-approach}
 \include{chapters/improving-winning-approach}
 \include{chapters/other-classification-methods}
-\part{Workflow and discussion}
-\include{chapters/toolset}
+%\part{Workflow and discussion}
 %\include{chapters/describing-the-workflow}
 \include{chapters/discussion}
 \include{chapters/conclusion}
@@ -204,6 +204,8 @@
 \newcounter{alphasect}
 \addtocounter{alphasect}{1}
 \renewcommand{\thechapter}{\Alph{alphasect}}
+\include{chapters/toolset}
+\addtocounter{alphasect}{1}
 \include{chapters/appendices}
 % Appendix A, B, ...
 %\include{Appendix1}

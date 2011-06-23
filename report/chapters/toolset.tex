@@ -6,35 +6,56 @@ In this chapter the workflow used while working on this project, is introduced. 
     \item All project related files should be managed by a version control system
     \item Anyone that wishes to work on my project should be able to start working on it, within an hour or two.
     \item My workflow should encourage me to write documentation of all the work done
-    \item Find machine learning software libraries that could be useful for many years into the future
+    \item Find machine learning software libraries that shows potential to become really great in the future.
 \end{itemize}
 Reflecting on well the different goals was achieved is the subject of the rest of this chapter.
 
 
 \section{Workflow}
-In this section the workflow that was used throughout this project will be described. A simple session concept, that turned out to work great, is introduced along with some suggestions for improvements.
+In this section the workflow that was used throughout this project will be described. A simple session concept, that turned out to work great, is introduced along with some suggestions for improvements. Documentation of the work done is an important part of a project, but it is always neglected, since it is pretty boring to write. A great tool to write documentation is introduced and it is seen how it naturally fits with the session concept.
+
+\subsection{The session concept}
+One of the problems when working with any scientific project, that produces some kind of output (data, plots etc.) is where to put all the stuff that is produced. And also where to write down all the notes about things to remember about the output produced (why is this plot extremely interesting etc.). An attempt to solve this problem is the idea of a (working) session. \par
+A session is just an amount of work done in a time period (usually continuous). Every session is given a unique number and a name so that it can easily be identified. In this project all sessions was represented as folders that was named '<sessionnumber>-<sessionname>'. All session folders is placed in the ``sessions'' folder in the root folder of this project (you can go to \url{https://github.com/alphabits/ford_challenge} to explore the root folder of this project). Anytime any work is done on this project it belongs to a session and all documentation, plots, data and source code generated in a session, can be found in that sessionfolder.
+\begin{Exa}
+    It is time to make forward selection of the features of \TFC\ dataset. Session number 18 is created and named ``Forward selection'', which means that a folder called {\ttfamily 18-forward-selection} is created in the {\ttfamily sessions}-folder. Inside the {\ttfamily 18-forward-selection} folder the folders \folder{plots, data, scripts} are created. In the folder of session 18 a textfile for documentation is created, and a few lines about the goal of the session is written. After a lot of debugging code, waiting on calculations to end etc. the forward selection has been created. Code and data produced are saved in the folders created for this, but the code and data are also included in the documentation using a tool named Sphinx.
+\end{Exa}
+
+\subsection{Documentation with Sphinx}
+As explained in the previous example documentation is a core part of the session. Two goals are achieved by writing the documentation. First of all by always starting a session by writing a couple of lines about the goals of the session, it helps you to define what you should be working on for the next hours. Secondly there is a place to look up details, when the report is written 3 months later, and all details about forward selection is forgotten. But the documentation is only written if it is easy to write and update, and if it is possible to easily create a nice representation of the documentation (eg. a html- or latex-document). A tool that can help create nice documentation is the library Sphinx (\url{http://sphinx.pocoo.org/}). Sphinx is a Python library that creates documentation from textfiles written in a format called reST (\url{http://docutils.sourceforge.net/rst.html}). The Sphinx program is called from the root folder of the project, and it then automatically scans all subfolder for reST-files, and then creates a complete website, with link between your documents. Latex code can be included in the documentation giving documentation with nice equations. All the source code developed in a session can be included in the documentation and it will automatically be syntax higlighted. Todo-boxes, notes etc. can also be included to make a more useful documentation.
+
+\subsection{How it worked in the real world}
+In the previous sections the session concept used for this project was introduced, and a tool to easily create useful documentation was briefly presented. But this was the sunny-side presentation. How did it work out when used in the project? \par
+First of all the concept of always working within a session worked out really well. At no time was it a problem to find the right place to save a plot or write a note. It is also worth noticing that the session concept is pretty flexible, so every meeting with my \mytodo{Vejleder?} was recorded as a session, and a dummy session called ``next meeting'' was always present to write down questions for the next meeting. When the meeting was over, answers to the questions was filled in. \par
+One thing that didn't work that well was the time registration of each session. All session documentation was started with a start time and end time for the session. The hope was to create a timeline of the project to include in the report or presentation. But to make this idea work most had to be done sequentially and that didn't happen. Especially in the last few weeks, many hours have been spend in old sessions, and this broke the idea of just saving a start and end time for a session.\par
+Also the session concept requires much discipline, and discipline is inversely proportional to the to the time left before deadline. Almost all work done in the last weeks is undocumented.\par
+All things considered the session concept was a success and it will be reused, and hopefully enhanced, in the next project to come.
 
 
-Git and GitHub
-The Session Concept
-Latex packages
-Python/NumPy/SciPy
-Sphinx/Documentation
-scikits.learn
-pybrain
-Automation/Fabric
-
-Things to look more into:
-C programming
-R
-
-
-Should be able to work on bith my mac and linux
-Anyone that wishes to work with my project, should be able to get up and running within an hour.
+\section{Version control}
+One of the stated goal of this project was to keep all files in version control. This was achieved. Using the version control system Git, and the free online GitServer-service called github, all project files are available online at \url{https://github.com/alphabits/ford_challenge}. Before this project my experience with version control systems was limited. But after this project, most future projects will probably be kept in a version control system. Two examples shows some of the benifits of version control.
+\begin{Exa}
+    It is 3am and the last few plots out of a total of 150 plots of features have just been created. The next meeting with the \mytodo{Bejleder} is at 9pm and these plots is the main focus of the meeting. Issuing the commands
+    \begin{lstlisting}[language=bash]
+    $ git commit -a -m "Created plots of features for 20 random trails"
+    $ git push origin master
+    \end{lstlisting}
+    uploads all files that have been updated or created, to the projects github page, including all the plots and documentation with some questions for the meeting. These files can then be browsed in the webinterface of github. 
+\end{Exa}
+\begin{Exa}
+    \mytodo{?????}
+\end{Exa}
 
 
+\section{NumPy/SciPy, scikits.learn and pybrain}
+A central decision for this project was to choose which scientific computation software to use. The most popular tool at DTU seems to be Matlab, and a machine learning library with all the functionallity needed for this project, have been developed at IMM. The problem with Matlab though, is that it isn't open-source. Since one of the goals listed at the beginning of the chapter was that any person should be able to start working on the project within an hour or two, this more or less implies that open-source software should be used. On a more personal note, I find the programming model of Matlab really clumsy and inflexible, and as soon as anything that doesn't naturally involves a matrix, needs to be done, the language is pretty much a hindrance. \par
+Instead of choosing Matlab, I decided to use Python\footnote{\url{http://xkcd.com/353/}}/NumPy\footnote{\url{http://numpy.scipy.org/}}/SciPy as the scientific computation platform. Python is a very popular programming language with a very simple syntax and NumPy/SciPy is a pretty mature scientific computation library for Python, with efficient array and matrix data types, which pretty much matches Matlab in functionallity\footnote{See \url{http://www.scipy.org/NumPy_for_Matlab_Users}}. Apart from NumPy/SciPy the plotting library matplotlib (\url{http://matplotlib.sourceforge.net/}) as well as the interactive console ipython (\url{http://ipython.scipy.org/moin/}), are needed to get a capable scientific computing environment. All these libraries combined gives an open-source environment with almost all the functionallity neede for this project. The few missing pieces is the machine learning specific libraries. For this the scikits.learn library (\url{http://scikit-learn.sourceforge.net/}) and the pybrain library (\url{http://pybrain.org/}) was installed. The scikits.learn library is pretty well documented and has a nice api, but it lacks a neural network implementation. Pybrain was therefore selected for the neural network training. 
 
-This chapter exists in a gray zone between the main report and the appendices. It isn't part of the main report, as the style changes, as more personal beliefs are expressed and reflection about the project are m
+\subsection{Comments on the choice of Python instead of Matlab}
+Matlab wasn't really an option at any time as I think that open source software should be used as much as possible. And since the requirements for this project could be fulfilled with the Python solution, there was little doubt about the decision. If the decision to use Python is evaluated with only this project in mind, the decision may very well have been wrong. Much time was used to find, install and learn libraries and the documentation was't always the best. But the cost declines with time, and I'm sure that when it is time to write my Bachelor, the decision will turn out to be the right. 
 
 
-Describing software used, workflow using github, writing sessions, evaluate my performance, mention the small improvement of roccurve method.
+\section{General reflections on the project}
+
+
+
