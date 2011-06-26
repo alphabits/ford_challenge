@@ -9,12 +9,12 @@ When The Ford Challenge was presented, two datasets was released.
     \item The \mydef{Ford trainingset} - This is the dataset introduced in the previous section, and consists of 604,229 rows, 500 trials and 33 data columns. As the name suggests, this dataset was used to train models, when participating in the Ford Challenge
     \item The \mydef{Ford testset} - This dataset consists of 120,841 rows, 100 trials and 33 data columns. But the column for the \fn{IsAlert} feature had no data. The task of the Ford Challenge was to predict the \fn{IsAlert} feature of this dataset. 
 \end{itemize}
-The evaluation of a participants prediction on the Ford testset was done by uploading the Ford testset, with the predictions in the \fn{IsAlert} column, to the kaggle.com website. Unfortunately the true \fn{IsAlert} feature of the Ford testset wasn't released after the competition ended, and therefore the Ford testset can't be used for calculations in this report. The Ford testset will play a role in some of the discussions though. \par
-Since a testset was needed\footnote{see section~\ref{sec:classifier-performance} for an explanation of why a testset is needed}, the Ford trainingset wassplit in two parts, namely the \mydef{report trainingset} and the \mydef{report testset}. The split was done by taking every fifth trial in the Ford trainingset and assign it to the report testset. All other trials was put in the report trainingset. The report trainingset and report testset are often just referred to as \mydef{the trainingset} and \mydef{the testset}.
+The evaluation of a participants prediction on the Ford testset was done by uploading the Ford testset, with the predictions in the \fn{IsAlert} column, to the kaggle.com website. Unfortunately the true \fn{IsAlert} feature of the Ford testset wasn't released until after the competition ended, and therefore the Ford testset can't be used for calculations in this report. The Ford testset will play a role in some of the discussions though. \par
+Since a testset was needed\footnote{See section~\ref{sec:classifier-performance} for an explanation of why a testset is needed}, the Ford trainingset wassplit in two parts, namely the \mydef{report trainingset} and the \mydef{report testset}. The split was done by taking every fifth trial in the Ford trainingset and assign it to the report testset\footnote{See \appref{source-splitting-data}}. All other trials was put in the report trainingset. The report trainingset and report testset are often just referred to as \mydef{the trainingset} and \mydef{the testset}.
 
 
 \section{Calculating common statistics}\label{sec:summary-statistics}
-To start the data exploration, four common statistics, namely the mean, min, max and standard deviation, of every feature across the whole dataset was calculated. The standard deviation was calculated as (with $n$ equal the total number of rows in the dataset, $x_i$ equal to the $i$'th value of any of the features, and $\bar{x}=\sum_{i=1}^n x_i$)
+To start the data exploration, four common statistics, namely the mean, min, max and standard deviation, of every feature across the whole dataset was calculated. The standard deviation was calculated as (with $n$ equal the total number of rows in the dataset, $x_i$ equal to the $i$'th value of any of the features, and $\bar{x}=\frac{1}{n}\sum_{i=1}^n x_i$)
 \[
     s = \sqrt{\frac{\sum_{i=1}^n (x_i-\bar{x})^2}{n-1}}
 \]
@@ -32,7 +32,7 @@ The table shows that the features \fn{P8}, \fn{V7} and \fn{V9}, are zero through
 The results of this first step have been to exclude a few features, and get some rough ideas about the shape of some other features. It is now time to really get to know the different features.
 
 \section{Determining the datatype of features}
-Since Ford would not disclose any information about the different features, it is important to get a good picture of which features are discrete/categorical and which features are continous. A natural first step to learn the datatype of the features, is to calculate the number of unique values each feature takes.
+Since Ford would not disclose any information about the different features, it is important to get a good picture of which features are discrete/categorical and which features are continuous. A natural first step to learn the datatype of the features, is to calculate the number of unique values each feature takes.
 \subsection{Unique values}\label{sec:unique-values}
 It requires a little thought to pinpoint exactly what needs to be calculated. On one hand it is natural to calculate the number of unique values a feature takes across the whole dataset. On the other hand it could happen, that a discrete feature might have only (eg.) 3 unique value within any trial, but the values differ between various trials. This way we would have a feature with 1500 unique values across the whole dataset, but with max 3 unique values within any given trial. Therefore the number of unique values within a trial is calculated for every feature. Based on this result, the minimum and maximum number of unique values within a single trial, is calculated for every feature. The source code can be found in \appref{source-unique-values} and results are shown in table~\ref{tbl:result-unique-values}.\par
 \begin{table}
@@ -44,15 +44,15 @@ It requires a little thought to pinpoint exactly what needs to be calculated. On
     \caption{The minimum and maximum number of unique values within the trials, for every feature in the dataset. Also the total number of unique values for each feature, across the whole dataset, are shown.}
     \label{tbl:result-unique-values}
 \end{table}
-A couple of things should be noticed about the results. Almost all features have som trials where they only take on one unique value. For categorical features, this could be perfectly normal, but for a continous feature it seems to be pretty unlikely to have only one value in a trial spanning two minutes. Is a feature, that in some trials seems continous, but then only have one value in other trials, just turned off in the latter trials? And how should the feature be handled in trials where it is ``off"?. This discussion is continued in section~\ref{sec:outlier-detection} about outlier detection. \par
+A couple of things should be noticed about the results. Almost all features have som trials where they only take on one unique value. For categorical features, this could be perfectly normal, but for a continuous feature it seems to be pretty unlikely to have only one value in a trial spanning two minutes. Is a feature, that in some trials seems continuous, but then only have one value in other trials, just turned off in the latter trials? And how should the feature be handled in trials where it is ``off"?. This discussion is continued in section~\ref{sec:outlier-detection} about outlier detection. \par
 
-From table~\ref{tbl:result-unique-values} it is also seen, that only features \fn{P1}, \fn{P2} and \fn{V11} is consistently having lots of unique value, across all trials. It seems fair to call these features continous. Feature \fn{V1} have some trials where it takes on 969 different values, but it also have trials with only one unique value. Across the whole dataset it takes on 12374 unique values. This could be explained by feature \fn{V1} being continous in a small number of trials (about 15-30), and turned ``off" in all other trials. Further exploration will show whether it is true or not. \par
+From table~\ref{tbl:result-unique-values} it is also seen, that only features \fn{P1}, \fn{P2} and \fn{V11} is consistently having lots of unique value, across all trials. It seems fair to call these features continuous. Feature \fn{V1} have some trials where it takes on 969 different values, but it also have trials with only one unique value. Across the whole dataset it takes on 12374 unique values. This could be explained by feature \fn{V1} being continuous in a small number of trials (about 15-30), and turned ``off" in all other trials. Further exploration will show whether it is true or not. \par
 
 Another interesting detail is that there are two pairs of features ((\fn{P3},\fn{P4}), (\fn{P6},\fn{P7})), that share exactly the same number of unique features. Both min and max and total. This indicates a possible relationship between the features, and later (section~\ref{sec:scatterplots}) it is shown that this is in fact true. \par
 
 A final remark regarding the number of unique values, is that feature \fn{E9} and \fn{V5} indeed are binary. Also if a limit of max 40 unique values within a single trial is set as an indicator for categorical features, \fn{E3}, \fn{E7}, \fn{E8}, \fn{V3} and \fn{V10} are seen to be categorical. \par
 
-\subsection{Plotting some features}\label{sec:plotting-features}
+\subsection{Plotting features}\label{sec:plotting-features}
 To get a more nuanced picture of the various features, it is now time to visualize the data. The first thing of interest is to plot every feature for a couple of trials, to see the structure of the features, and how much they vary between different trials. For a start some random plotting was done in the interactive ipython-shell\footnote{For details about the software setup used, see chapter~\ref{chp:tools}}. \par
 \begin{figure}[!hbtp]
     \centering
@@ -65,7 +65,7 @@ Some selected plots from the interactive plotting session are shown i figure~\re
     \item A feature varies alot in structure between different trials
     \item Many features are constant in some trials (was already hinted at in section~\ref{sec:unique-values})
     \item In a few trials some features deviates a lot from their ``normal'' structure,  (more about that in section~\ref{sec:outlier-detection} about outliers).
-    \item The feature \fn{P2} looks like white noise\mytodo{Is this right?}
+    \item The feature \fn{P2} looks like white noise
     \item The features \fn{E3}, \fn{E7}, \fn{E8}, \fn{V3} and \fn{V10} does indeed seem to be categorical features.
 \end{itemize}
 Apart from the observations above, a subjective conclusion from the plots of the features is that the data quality could be better. Since the data quality isn't perfect it is important to consider how outliers should be dealt with. This is what the next section is about.
@@ -87,7 +87,7 @@ The boxplots for 4 selected features are shown i figure~\ref{fig:boxplots}. All 
 \end{figure}
 From the boxplots a couple of things are of interest.
 \begin{itemize}
-    \item For some features the trial mean varies a lot between different trials \mytodo{Remember to check with boxpots in appendix}
+    \item For some features the trial mean varies a lot between different trials
     \item Within a single trial some features still have a lot of data points outside the 10- and 90-percentiles. See eg. \fn{P1} in figure~\ref{fig:boxplots}
 \end{itemize}
 As many features have datapoints outside the 10- and 90-percentile even within a single trial, the next step could be to categorize these datapoints as outliers. But inspection of some examples of specific features in specific trials, shows that it would be wrong to remove these ``outliers". Eg. feature \fn{V11} in trial 29 is plotted in figure~\ref{fig:exploratory-feature-plots} and seems to be perfectly normal. Careful inspection of the boxplot for feature \fn{V11} in trial 29 (figure~\ref{fig:boxplots}) shows that the feature has many outliers in this specific trial. \par
@@ -122,7 +122,7 @@ A great way to visualize whether a pair of features can be used to discriminate 
         2
     \end{pmatrix} = 190\:\text{combinations}
 \]
-All combinations of the 20 features was plotted\footnote{Source code can be found in \appref{source-scatterplots} and the results in \appref{result-scatterplots}}, but no interesting results was found; at least not regarding feature pairs that could classify the \fn{IsAlert} feature. One interesting result was found though. As can be seen in figure~\ref{fig:scatterplots} the feature pairs (\fn{P3}, \fn{P4}) and (\fn{P6}, \fn{P7}) both appear to have an arithmetic relationship. A quick calculation shows that \fn{P3} multiplied by \fn{P4} is $60000\pm0.2$ for all rows in the dataset, and likewise for \fn{P6} and \fn{P7}. We can therefore ignore one of the features from each pair.
+All combinations of the 20 features was plotted, but no interesting results was found; at least not regarding feature pairs that could classify the \fn{IsAlert} feature. One interesting result was found though. As can be seen in figure~\ref{fig:scatterplots} the feature pairs (\fn{P3}, \fn{P4}) and (\fn{P6}, \fn{P7}) both appear to have an arithmetic relationship. A quick calculation shows that \fn{P3} multiplied by \fn{P4} is $60000\pm0.2$ for all rows in the dataset, and likewise for \fn{P6} and \fn{P7}. We can therefore ignore one of the features from each pair.
 \begin{figure}
     \begin{tabularx}{\textwidth}{ X X }
         \includegraphics[width=.5\textwidth]{../sessions/24-writing-helper-scripts/plots/scatterplots/P3-P4.pdf} &
@@ -163,29 +163,29 @@ which is true exactly when $\ve{w}_1$ is an eigenvector of $\ve{\Sigma}$ and $\a
 \[
     \varop{z_1} = \ve{w}_1^T\ve{\Sigma}\ve{w}_1 = \alpha\ve{w}_1^T\ve{w}_1 = \alpha
 \]
-and therefore the eigenvector with the largest eigenvalue is selected as $\ve{w}_1$ and is called the first principal component. The second principal component should also maximize variance, be of unit length and be orthogonal to $\ve{w}_1$. By introducing another Lagrange multiplier to handle the orthogonallity constraint and maximizing the expression for maximum variance, it can be shown that the second principal component will be the eigenvector with the second highest eigenvalue. This procedure can be repeated and the end result is that the principal components are given as the eigenvectors of $\ve{\Sigma}$, sorted by the value of the corresponding eigenvalues. It can further be shown that the proportion of the total variation explained by the first $k$ principal components is given by
+and therefore the eigenvector with the largest eigenvalue is selected as $\ve{w}_1$ and is called the first principal component. The second principal component should also maximize variance, be of unit length and be orthogonal to $\ve{w}_1$. By introducing another Lagrange multiplier to handle the orthogonallity constraint and maximizing the expression for maximum variance, it can be shown that the second principal component will be the eigenvector with the second highest eigenvalue. This procedure can be repeated and the end result is that the principal components are given as the eigenvectors of $\ve{\Sigma}$, sorted by the value of the corresponding eigenvalues. It can further be shown that the proportion of variance explained by the first $k$ principal components is given by
 \begin{equation}\label{eq:variance-explained}
     \frac{\lambda_1+\lambda_2 +\dots + \lambda_k}{\lambda_1 + \lambda_2 + \dots + \lambda_k + \dots + \lambda_d}
 \end{equation}
 where $\lambda_i$ is the eigenvalue of the $i$'th eigenvector sorted by the eigenvalue.
 
 \subsection{Result}
-A Pricipal Component Analysis was done on the dataset. First the data was normalized to avoid that the variance of some features dominated the total variance, and then a PCA was calculated for the whole dataset.\mytodo{Source Code}. To get an overview of the pricipal components, a plot of the proportion of total variance as a function of the number of principal components, was plotted. The result can be seen in figure~\ref{fig:variance-explained}.\par
+A Principal Component Analysis was done on the dataset. First the data was normalized to avoid that the variance of some features dominated the total variance, and then a PCA was calculated for the whole dataset. To get an overview of the principal components, a plot of the proportion of total variance as a function of the number of principal components, was plotted. The result can be seen in figure~\ref{fig:variance-explained}.\par
 \begin{figure}
     \centering
     \includegraphics[width=.75\textwidth]{../sessions/15-new-principal-components-analysis/plots/pca-variation-explained.pdf}
-    \caption{sldkfj}\label{fig:variance-explained}
+    \caption{Plot of the proportion of total variance explained, as a function of the number of principal components.}\label{fig:variance-explained}
 \end{figure}
 From the graph it is seen that 90\% of the variance can be explained by the first 16-17 principal components. This means that 90\% of the variance can be explained by a 16-dimensional dataset, instead of the original 30-dimensional dataset.\par
 A scatter plot of the first two principal components and another scatter plot of the three first principal components was created, each having 800 randomly selected datapoints from the dataset. Each point in the scatter plots was colored to show the class (alert/not-alert) of the datapoint; with red indicating not-alert. The plots are shown in figure~\ref{fig:pca-scatter-2d} and figure~\ref{fig:pca-scatter-3d}. It looks as if a 1. principal component above 0 and a 2. principal component above 2, implies that the datapoint is in the class not-alert. This wasn't investigated further though.
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{../sessions/15-new-principal-components-analysis/plots/scatter-principal-components-800-points.pdf}
-    \caption{sldkfj}\label{fig:pca-scatter-2d}
+    \caption{Scatterplot of the first two principal components of the dataset}\label{fig:pca-scatter-2d}
 \end{figure}
 \begin{figure}
     \centering
     \includegraphics[width=100mm,bb=90 20 500 380,clip]{../sessions/15-new-principal-components-analysis/plots/scatter-principal-components-3d-1-800points.pdf}
-    \caption{sldkfj}\label{fig:pca-scatter-3d}
+    \caption{3d plot of the first three principal components if the dataset}\label{fig:pca-scatter-3d}
 \end{figure}
 

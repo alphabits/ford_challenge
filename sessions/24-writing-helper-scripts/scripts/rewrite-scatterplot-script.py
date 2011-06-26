@@ -7,6 +7,7 @@ import numpy as np
 from src.dataloaders import trainingset
 from src.utils2 import get_path, c, L
 
+
 L = list(L[4:])
 D = trainingset()
 
@@ -25,7 +26,6 @@ exclude = ['V7', 'V9', 'P8', 'E3', 'E7', 'E8', 'E9', 'V3', 'V5', 'V10']
 features = [f for f in L if f not in exclude]
 
 for f1, f2 in it.combinations(features, 2):
-#for f1, f2 in [['E4', 'E5']]:
     plt.title('Feature {0} vs {1} ({2} points)'.format(f1, f2, num_points), 
             {'size': 20})
     plt.legend((blue, red), ('Alert', 'Not Alert'))

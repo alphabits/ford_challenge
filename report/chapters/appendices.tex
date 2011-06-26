@@ -1,7 +1,14 @@
 \chapter{Appendices}
-A little introduction and then a new page
+In the following pages a subset of all the code, plots and data generated in this project is presented. As hundreds of plots have been created it was an impossible task to get them all included in the appendices. If some specific code or plot or data is missing, it can all be found at \githuburl{}. The sessions subfolder contains most of what could be interesting to look at.
 \vspace{\stretch{1}}
 \pagebreak
+
+\section{Splitting dataset} % (fold)
+\label{app:source-splitting-data}
+\githublisting{../}{src/create_test_and_training_data_set.py}
+% section  (end)
+
+\clearpage
 
 \section{Calculating common statistics - Code}\label{app:source-common-statistics}
 \lstinputlisting[caption=\githuburl{sessions/9-data-exploration/src/calculate_summary_statistics.py}]{../sessions/9-data-exploration/src/calculate_summary_statistics.py}
@@ -37,45 +44,76 @@ A little introduction and then a new page
 }
 % section Calculate unique values of features - Result (end)
 
+\clearpage
+
 \section{Creating boxplots - Code} % (fold)
 \label{app:source-boxplots}
-\mytodo{Include source code}
+\githublisting{../}{sessions/11-boxplots-scatterplots/scripts/create_boxplots.py}
 % section Creating boxplots - Code (end)
+
+\clearpage
 
 \section{Creating boxplots - Result} % (fold)
 \label{app:result-boxplots}
-\mytodo{Include boxplots}
+All boxplots can be found at \githuburl{sessions/11-boxplots-scatterplots/plots/boxplots}
 % section Creating boxplots - Result (end)
 
-\section{Creating layered featuer plots - Code} % (fold)
-\label{app:source-layered-feature-plots}
+\clearpage
 
+\section{Creating layered feature plots - Code} % (fold)
+\label{app:source-layered-feature-plots}
+\githublisting{../}{sessions/22-create-transparent-feature-plots/scripts/create_plots_random_trials.py}
+\githublisting{../}{sessions/22-create-transparent-feature-plots/scripts/create_naive_plots.py}
 % section Creating layered featuer plots - Code (end)
+
+\clearpage
 
 \section{Creating layered feature plots - Result} % (fold)
 \label{app:result-layered-feature-plots}
-
+\begin{figure}[hb]
+    \centering
+    \includegraphics[width=.9\textwidth]{media/layered-plots-sheet.pdf}
+    \caption{}
+\end{figure}
 % section Creating layered feature plots - Result (end)
+
+\clearpage
 
 \section{Scatterplots - Code} % (fold)
 \label{app:source-scatterplots}
 \githublisting{../}{sessions/24-writing-helper-scripts/scripts/rewrite-scatterplot-script.py}
 % section source-scatterplots (end)
 
+\clearpage
+
 \section{Scatterplots - Result} % (fold)
 \label{app:result-scatterplots}
-
+\begin{figure}[hb]
+    \centering
+    \includegraphics[width=.9\textwidth]{media/scatterplots-sheet.pdf}
+    \caption{}
+\end{figure}
 % section  (end)
+
+\clearpage
 
 \section{Recreating the winning approach - Code} % (fold)
 \label{app:source-recreate-winner}
-\githublisting{../}{sessions/17-recreating-winning-entry/scripts/inferences_features_cv.py}
+\githublisting{../}{sessions/17-recreating-winning-entry/scripts/inferences_features_cv_2.py}
+
+\section{Helper functions for logistic regression - Code} % (fold)
+\label{app:helper-logistic}
+\githublisting{../}{src/logistic.py}
 % section Recreating the winning approach - Code (end)
+
+\clearpage
 
 \section{Forward selection - Code} % (fold)
 \label{app:source-forward-selection}
 \githublisting{../}{sessions/18-forward-selection/scripts/forward_selection.py}
 % section  (end)
+
+\clearpage
 
 \section{Forward selection - Results} % (fold)
 \label{app:result-forward-selection}
@@ -145,3 +183,25 @@ sdE5 & 0.8858 \\
 \end{minipage}
 }
 % section  (end)
+
+\clearpage
+
+\section{Neural Network - Code} % (fold)
+\label{app:source-neural-network}
+\githublisting{../}{sessions/25-neural-network/scripts/inference-features.py}
+% section section name (end)
+
+
+\clearpage
+
+\section{Create extended dataset function - Code} % (fold)
+\label{sec:Create extended dataset function - Code}
+\lstinputlisting[caption={Function to create extended dataset. Part of the file \githuburl{src/utils2.py}}]{media/create_extended_dataset.py}
+% section Create extended dataset function - Code (end)
+
+\clearpage
+
+\section{Original timeschedule} % (fold)
+\label{app:timeschedule}
+\includegraphics[width=120mm]{media/timeschedule.pdf}
+% section Original timeschedule (end)

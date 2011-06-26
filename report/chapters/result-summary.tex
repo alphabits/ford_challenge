@@ -1,0 +1,24 @@
+\chapter{Result summary}
+In the previous three chapters logistic regression models and neural network models have been created, for the features from the winning model as well as for the features from the forward selection procedure. All the results will be collected in this short chapter, that only consists of the results summary table.
+
+\begin{table}
+    {\sffamily\small
+    \begin{tabularx}{\textwidth}{  l l r r R  }
+        \multicolumn{2}{l}{Method} & Mean & \B Std & CI \\\hline
+        \multirow{8}{*}[-5mm]{Neural Network}     
+& W 3 hidden 8 iter & \T\B 0.8045 & 0.005583 & [0.8005,0.8085]\\\cline{2-5}
+& W 5 hidden 8 iter & \T\B 0.8052 & 0.002150 & [0.8036,0.8067]\\\cline{2-5}
+& W 3 hidden 20 iter & \T\B 0.8049 & 0.003525 & [0.8024,0.8075]\\\cline{2-5}
+& W 5 hidden 20 iter & \T\B 0.8042 & 0.003966 & [0.8014,0.8071]\\\cline{2-5}
+& F 3 hidden 8 iter & \T\B 0.8335 & 0.003463 & [0.8310,0.8360]\\\cline{2-5}
+& F 5 hidden 8 iter & \T\B 0.8336 & 0.003800 & [0.8308,0.8363]\\\cline{2-5}
+& F 3 hidden 20 iter & \T\B 0.8394 & 0.004759 & [0.8360,0.8428]\\\cline{2-5}
+& F 5 hidden 20 iter & \T\B 0.8199 & 0.002463 & [0.8182,0.8217]\\\hline
+\multirow{3}{*}[-2mm]{Log.Reg.}
+& W & \T\B 0.8082 & 0.003456 & [0.8058,0.8107]\\\cline{2-5}
+& F top 3 & \T\B 0.8318 & 0.005572 & [0.8278,0.8358]\\\cline{2-5}
+& F all feat & \T\B 0.8936 & 0.003366 & [0.8912,0.8960]\\\hline
+\end{tabularx}
+    }
+    \caption{Summary of the results obtained in the previous three sections}
+\end{table}

@@ -19,7 +19,6 @@ trials = list(trd.trial_id_list)
 shuffle(trials)
 
 for feature, min, max in plots:
-#for feature in L[2:]:
     for tid in trials[:20]:
         v = trd.get_trial(tid).get_feature(feature).view()
         plt.plot(range(len(v)), v, 'b-', alpha=0.2)

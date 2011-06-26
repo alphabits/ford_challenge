@@ -12,13 +12,13 @@ for i in xrange(D.shape[0]):
     else:
         training_rows.append(i)
 
-TrD = np.zeros((len(training_rows), 34))
-TrD[:,1:] = D[training_rows,:]
-TrD[:,0] = np.array(training_rows)
+to_save = [
+    ('data/trainingset.npy', training_rows),
+    ('data/testset.npy', test_rows)
+]
 
-TsD = np.zeros((len(test_rows), 34))
-TsD[:,1:] = D[test_rows,:]
-TsD[:,0] = np.array(test_rows)
-
-np.save('data/trainingset.npy', TrD)
-np.save('data/testset.npy', TsD)
+for path, rows in to_save:
+    tmp = np.zeros((len(rows), 34))
+    tmp[:,1:] = D[rows,:]
+    tmp[:,0] = np.array(rows)
+    np.save(path, tmp)

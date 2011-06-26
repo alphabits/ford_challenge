@@ -18,7 +18,6 @@ for i in trials:
 
 font = {'weight': 'normal', 'size': 16}
 
-#for label in ['V1']:
 for label in L_clean:
     data = [d.get_trial(i).get_feature(label).view() for i in trials]
     plt.title('Boxplot of feature {0} in the trials {1}-{2}'.format(

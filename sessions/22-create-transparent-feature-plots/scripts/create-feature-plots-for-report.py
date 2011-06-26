@@ -16,14 +16,7 @@ plots = {
     'V2': [490,494,442]
 }
 
-'''
-plots = {
-    'V11': [2]
-}
-'''
-
 label_font = {'family': 'normal', 'weight': 'normal', 'size': 18}
-
 
 for feature, trials in plots.items():
     for tid in trials:

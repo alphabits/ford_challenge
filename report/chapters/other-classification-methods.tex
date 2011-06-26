@@ -1,12 +1,12 @@
 \chapter{Neural Network}
-In this chapter the logistic regression models from the previous chapters, are tried to be improved. Specifically a neural network is trained on the features of winning model as well as on the top 3 features from the forward selection in section~\ref{sec:forward-selection}. It wasn't possible to train a neural network on all 48 features from the feature selection, due to limited computational resources. Instead it was tested how the number of hidden units as well as the number of iterations of the optimization algorithm, affected the performance. For each model training a random subset of 100000 rows from the trainingset was used.
+In this chapter the logistic regression models from the previous chapters, are tried to be improved. Specifically a neural network is trained\footnote{See \appref{source-neural-network}} on the features of winning model as well as on the top 3 features from the forward selection in section~\ref{sec:forward-selection}. It wasn't possible to train a neural network on all 48 features from the feature selection, due to limited computational resources. Instead it was tested how the number of hidden units as well as the number of iterations of the optimization algorithm, affected the performance. For each model training a random subset of 100000 rows from the trainingset was used.
 
 \section{The winning model features}
 In this section the features of winning model are used as input for neural networks with various numbers of hidden units, and trained with a different number of optimization iterations.
 
 
 \subsection{3 hidden units - 8 iterations}
-The basic setting for the network training was a network with 3 hidden units and 8 weight optimization iterations. It is worth noticing that 8 iterationsisn't many iterations, but the trainingset was large (100000 rows) and the computational resources few. \par
+The basic setting for the network training was a network with 3 hidden units and 8 weight optimization iterations. It is worth noticing that 8 iterations isn't many iterations, but the trainingset was large (100000 rows) and the computational resources few. \par
 A network was trained for the basic settings and the performance was then tested on the testset. The results from the validation are shown in table~\ref{tbl:inference-3-hidden-8-epochs} \par
 \begin{table}
     \centering
@@ -61,7 +61,7 @@ The number of hidden units is increased from 3 to 5. The features are still from
 10 & 0.8020 \\\hline
         \end{tabularx}
     }
-    \caption{inference-features - 5 hidden units - 8 iterations}
+    \caption{Results from training a neural network with 5 hidden units for 8 iterations on the features of the winning model}
     \label{tbl:inference-5-hidden-8-epochs}
 \end{table} 
 No obvious improvements in the AUC score is achieved by raising the number of hidden units. The AUC-score is still a little above 0.8. The usual statistics are calculated on the results.
@@ -96,7 +96,7 @@ Instead of raising the number of hidden units, the number of iterations is incre
 10 & 0.8060 \\\hline
         \end{tabularx}
     }
-    \caption{inference-features - 3 hidden units - 20 iterations}
+    \caption{Results from training a neural network with 3 hidden units for 20 iterations on the features of the winning model}
     \label{tbl:inference-3-hidden-20-epochs}
 \end{table} 
 No increase in performance is seen and maybe the number of iterations is simply to low for any effect to be seen. For completeness the usual statistics are calculated.
@@ -131,7 +131,7 @@ For completeness a network was also trained with 5 hidden units and a total of 2
 10 & 0.8029 \\\hline
         \end{tabularx}
     }
-    \caption{inference-features - 5 hidden units - 20 iterations}
+    \caption{Results from training a neural network with 5 hidden units for 20 iterations on the features of the winning model}
     \label{tbl:inference-5-hidden-20-epochs}
 \end{table} 
 Again a consistent performance around the 0.8 is achieved. Not much to declare and the statistics gives no surprises.
@@ -147,7 +147,7 @@ which gives the 95\% confidence interval
 
 
 \section{The forward selection features}
-The focus is now turned to the top 3 features selected by forward selection in section~\ref{sec:forward-selection}. The same 4 combinations ($[3,5]\times [8,20]$) of hidden units and number of iterations are tested on the forward selection features. When a logistic regression model was trained on the forward selection features (see section~\ref{sec:top-3-feature-selection}) an increased performance, compared to the winning model features, was observed. It is hoped that the same increase is seen in the neural network models.
+The focus is now turned to the top 3 features selected by forward selection in section~\ref{sec:forward-selection}. The same 4 combinations ($[3,5]\times [8,20]$) of hidden units and number of iterations are tested on the forward selection features. When the logistic regression model was trained on the forward selection features (see section~\ref{sec:top-3-feature-selection}) an increased performance, compared to the winning model features, was observed. It is hoped that the same increase is seen in the neural network models.
 
 \subsection{3 hidden units - 8 iterations}
 First a network with 3 hidden units is trained for 8 iterations. The results are shown in table~\ref{tbl:forward-3-hidden-8-epochs}.\par
@@ -168,7 +168,8 @@ First a network with 3 hidden units is trained for 8 iterations. The results are
 10 & 0.8320 \\\hline
         \end{tabularx}
     }
-    \caption{forward-selection - 3 hidden units - 8 iterations}
+    \caption{Results from training a neural network with 3 hidden units for 8 iterations on the features from the forward selection}
+    \label{tbl:forward-3-hidden-8-epochs}
 \end{table} 
 As hoped for the performance is increased compared to the winning models features. Compared to the performance of the logistic regression on the forward selected features no noticeable difference is observed.
 \subsubsection{Statistics on the AUC-score}
@@ -202,7 +203,7 @@ The results for the network model with 5 hidden units trained for 8 iterations a
 10 & 0.8355 \\\hline
         \end{tabularx}
     }
-    \caption{forward-selection - 5 hidden units - 8 iterations}
+    \caption{Results from training a neural network with 5 hidden units for 8 iterations on the features from the forward selection}
     \label{tbl:forward-5-hidden-8-epochs}
 \end{table} 
 The performance is more or less identical with the performance for 3 hidden units. It may be due to the fact that 8 iterations are not enough training for the additional complexity to show up. Or maybe there is just not much more structure to be learned in the data.
@@ -217,7 +218,7 @@ which gives the 95\% confidence interval
 \]
 
 
-\subsection{forward-selection - 3 hidden units - 20 iterations}
+\subsection{3 hidden units - 20 iterations}
 The network returns to 3 hidden unit, but is now trained for 20 iterations. The results are shown in table~\ref{tbl:forward-3-hidden-20-epochs} \par
 \begin{table}
     \centering
@@ -236,7 +237,7 @@ The network returns to 3 hidden unit, but is now trained for 20 iterations. The 
 10 & 0.8285 \\\hline
         \end{tabularx}
     }
-    \caption{3 hidden units - 20 iterations}
+    \caption{Results from training a neural network with 3 hidden units for 20 iterations on the features from the forward selection}
     \label{tbl:forward-3-hidden-20-epochs}
 \end{table} 
 From the results it is seen that the performance is increased i little compared to the previous two runs. The difference isn't clear cut though, so a confidence interval may give a clearer picture of how the performances compares.
@@ -252,7 +253,7 @@ which gives the 95\% confidence interval
 It is seen that the confidence interval just barely overlaps with the confidence intervals from the 2 previous run. It seems as if this network performs slightly better than the previous two networks.
 
 
-\subsection{forward-selection - 5 hidden units - 20 iterations}
+\subsection{5 hidden units - 20 iterations}
 The last neural network test is for a network with 5 hidden units, that are trained for 20 iterations. As a slight increase in performance was observed when the training was run for 20 iterations, similar good performance may be expected from this test. The results are shown in table~\ref{tbl:forward-5-hidden-20-epochs}. \par
 \begin{table}
     \centering
@@ -271,7 +272,7 @@ The last neural network test is for a network with 5 hidden units, that are trai
 10 & 0.8159 \\\hline
         \end{tabularx}
     }
-    \caption{5 hidden units - 20 iterations}
+    \caption{Results from training a neural network with 5 hidden units for 20 iterations on the features from the forward selection}
     \label{tbl:forward-5-hidden-20-epochs}
 \end{table} 
 As is seen from the results, the performance have decreased noticeably and is the worst of all the networks trained on the forward selected features. Either the optimization got stuck in a local minimum or the network has been overfitted to the trainingdata. Overfitting could make sense, since this network has more complexity and have had more time to fit this complexity to the trainingset. It is worth noticing though, that no similar decrease in performance was observed in the networks trained on the winning features.

@@ -1,2 +1,11 @@
 \chapter{Conclusion}
-More bla, bla, bla.
+
+In the introduction some goals for the project was set. About 70 pages later these goals will now be followed up. \par
+
+The first goal was regarding the data exploration. This phase went well. With some simple techniques (summary statistics, unique values etc.) an overview of the dataset was quickly achieved. The decision to not do any outlier removal seems to have been the right choice. More information could possibly have been extracted from the cluster detected in the Principal Component Analysis but this wasn't further pursued. \par
+
+The second goal was to recreate the winning model. This was quickly achieved, but some uncertainty in the conclusion remains, due to the fact that the performance of the recreated model couldn't be tested on the Ford testset. \par
+
+After recreating the model the next goal was to improve on the model. This also seems to have been achieved by using the feature \fn{sdE1} found by forward selection. But as in the previous paragraph the conclusion is weakened by the lack of the Ford testset. Trying to improve the performance with the neural network didn't seem to give that much, and it seems as if the right feature selection is the most important step towards a good classifier. \par
+
+As a final goal, a good workspace setup for future project should be found. The session concept coupled with git and github for version control and Python/NumPy/Scipy for scientific computations was an extremely satisfying setup, and of all the goals in the problem statement, this may have been the one, that was solved the best.

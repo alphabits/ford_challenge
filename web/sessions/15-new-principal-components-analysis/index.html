@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="top" title="Ford challenge v1.0 documentation" href="../../index.html" />
     <link rel="up" title="Sessions" href="../index.html" />
-    <link rel="next" title="Session: Next Meeting" href="../next-meeting/index.html" />
+    <link rel="next" title="Session 16: Create Data Sets" href="../16-create-data-sets/index.html" />
     <link rel="prev" title="Session 14: Meeting with Morten" href="../14-meeting-with-morten/index.html" /> 
   </head>
   <body>
@@ -35,7 +35,7 @@
           <a href="../../genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="../next-meeting/index.html" title="Session: Next Meeting"
+          <a href="../16-create-data-sets/index.html" title="Session 16: Create Data Sets"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="../14-meeting-with-morten/index.html" title="Session 14: Meeting with Morten"
@@ -59,8 +59,8 @@
   <p class="topless"><a href="../14-meeting-with-morten/index.html"
                         title="previous chapter">Session 14: Meeting with Morten</a></p>
   <h4>Next topic</h4>
-  <p class="topless"><a href="../next-meeting/index.html"
-                        title="next chapter">Session: Next Meeting</a></p>
+  <p class="topless"><a href="../16-create-data-sets/index.html"
+                        title="next chapter">Session 16: Create Data Sets</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="../../_sources/sessions/15-new-principal-components-analysis/index.txt"
@@ -162,7 +162,8 @@
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Cumulative percentage of total variation explained by principal components&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;Principal component&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;</span><span class="si">% o</span><span class="s">f total variation&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;{0}/plots/pca-variation-explained.pdf&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">papertype</span><span class="o">=</span><span class="s">&#39;a4&#39;</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;pdf&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;{0}/plots/pca-variation-explained.pdf&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> 
+        <span class="n">papertype</span><span class="o">=</span><span class="s">&#39;a4&#39;</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;pdf&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 
 <span class="n">W</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">components_</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
@@ -178,7 +179,8 @@
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;1. Pricipal component&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;2. Principal component&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;{0}/plots/scatter-principal-components-{1}-points.pdf&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">num_points</span><span class="p">),</span> <span class="n">papertype</span><span class="o">=</span><span class="s">&#39;a4&#39;</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;pdf&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;{0}/plots/scatter-principal-components-{1}-points.pdf&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">path</span><span class="p">,</span> <span class="n">num_points</span><span class="p">),</span> <span class="n">papertype</span><span class="o">=</span><span class="s">&#39;a4&#39;</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;pdf&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
@@ -193,8 +195,8 @@
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s">&#39;1. Comp&#39;</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s">&#39;2. Comp&#39;</span><span class="p">)</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s">&#39;3. Comp&#39;</span><span class="p">)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;{0}/plots/scatter-principal-components-3d-{1}-{2}points.pdf&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">i</span><span class="p">,</span> <span class="n">num_points</span><span class="p">),</span> <span class="n">papertype</span><span class="o">=</span><span class="s">&#39;a4&#39;</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;pdf&#39;</span><span class="p">)</span>
-    <span class="c">#fig.savefig(&#39;{0}/plots/scatter-principal-components-3d-rotated-{1}.pdf&#39;.format(path, i*90), papertype=&#39;a4&#39;, format=&#39;pdf&#39;)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;{0}/plots/scatter-principal-components-3d-{1}-{2}points.pdf&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">path</span><span class="p">,</span><span class="n">i</span><span class="p">,</span> <span class="n">num_points</span><span class="p">),</span> <span class="n">papertype</span><span class="o">=</span><span class="s">&#39;a4&#39;</span><span class="p">,</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;pdf&#39;</span><span class="p">)</span>
     <span class="n">pylab</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;{0}/data/calculated_pca.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -202,12 +204,12 @@
 </pre></div>
 </div>
 <p>From the calculated PCA, a plot of the explained variance is created</p>
-<img alt="../../_images/pca-variation-explained6.png" src="../../_images/pca-variation-explained6.png" />
+<img alt="../../_images/pca-variation-explained7.png" src="../../_images/pca-variation-explained7.png" />
 <p>This looks a lot more plausible. Now the first 6 principal components are required to explained 50% of the total variation. And about 17 principal components are required to explain 90% of the total variation.</p>
 <p>A single scatter plot of the first two principal components is created</p>
-<img alt="../../_images/scatter-principal-components-800-points.png" src="../../_images/scatter-principal-components-800-points.png" />
+<img alt="../../_images/scatter-principal-components-800-points1.png" src="../../_images/scatter-principal-components-800-points1.png" />
 <p>At least three clusters can be seen on the plot. One cluster in the upper right with almost exclusively red datarows. A cluster in the lower left with many blue points and some red points. And a cluster in the lower right with a great mix of red and blue points. To get another view on the data, a 3d plot of the first three principal components is created</p>
-<img alt="../../_images/scatter-principal-components-3d-1-800points1.png" src="../../_images/scatter-principal-components-3d-1-800points1.png" />
+<img alt="../../_images/scatter-principal-components-3d-1-800points2.png" src="../../_images/scatter-principal-components-3d-1-800points2.png" />
 </div>
 </div>
 
@@ -224,7 +226,7 @@
           <a href="../../genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="../next-meeting/index.html" title="Session: Next Meeting"
+          <a href="../16-create-data-sets/index.html" title="Session 16: Create Data Sets"
              >next</a> |</li>
         <li class="right" >
           <a href="../14-meeting-with-morten/index.html" title="Session 14: Meeting with Morten"

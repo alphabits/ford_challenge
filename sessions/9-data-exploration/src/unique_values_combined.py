@@ -14,7 +14,6 @@ def get_dict(file_name):
 unique_pr_trial = get_dict('unique_values_pr_trial.json')
 unique_all_data = get_dict('unique_values.json')
 
-
 values_combined = {}
 
 for k in unique_all_data:
@@ -24,6 +23,5 @@ for k in unique_all_data:
     tmp["max_pr_trial"] = unique_pr_trial[k]["max"]
     values_combined[k] = tmp
 
-f = open(path + '/unique_values_combined.json', 'w')
-json.dump(values_combined, f, indent=4)
-f.close()
+with open(path + '/unique_values_combined.json', 'w') as f:
+    json.dump(values_combined, f, indent=4)

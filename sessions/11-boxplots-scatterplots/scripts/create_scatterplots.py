@@ -12,24 +12,19 @@ D = d.view()
 path = get_path(__file__) + '/..'
 savepath_template = '{0}/plots/scatterplots/{1}-{2}.pdf'
 
-with open('{0}/data/scatter_rows.txt'.format(path), 'r') as f:
-    rows = f.readlines()
+rows = np.random.random_integers(1,200000,400)
 
 data = D[rows,:]
 
 def is_alert_colors(is_alert):
-#    if is_alert == 1:
-#        return 'blue'
-#    else:
-#       return 'red'
     return 'blue' if is_alert==1 else 'red'
 
 colors = map(is_alert_colors, data[:,L.index('IsAlert')])
 
-features = ['P6', 'V1', 'V3', 'V6']
+#features = ['P6', 'V1', 'V3', 'V6']
+features = L[4:]
 
-#for f1, f2 in it.combinations(features, 2):
-for f1, f2 in [['E4', 'E5']]:
+for f1, f2 in it.combinations(features, 2):
     idx1, idx2 = L.index(f1), L.index(f2)
     plt.title('Feature {0} vs {1}'.format(f1, f2), {'size': 20})
     plt.scatter(data[:,idx1], data[:,idx2], c=colors)

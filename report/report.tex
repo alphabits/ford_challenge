@@ -66,11 +66,18 @@
 \newcommand\CI[2]{\mathbb{P}(\mu_{AUC} \in [#1, #2]) = 95\%}
 \newcommand\folder[1]{{\ttfamily #1}}
 
+% Control spacing around hline in table
+% Read more at: https://www.msu.edu/~harris41/latex_tablespacing.html
+\newcommand\T{\rule{0pt}{2.6ex}}
+\newcommand\B{\rule[-1.2ex]{0pt}{0pt}}
+
+
 \renewcommand\thefootnote{\fnsymbol{footnote}}
 
 \usepackage{lmodern}
 \usepackage{fouriernc}
 \usepackage{eucal}
+\usepackage{multirow}
 \usepackage[scaled]{beramono}
 \usepackage{listings}
 \lstset {                 % A rudimentary config that shows off some features.
@@ -141,9 +148,9 @@
 
 
 %%%%%%%%%%% MODIFY THESE LINES ONLY %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\def\thesisyear{2011} % Year thesis submitted
+\def\thesisyear{24. juni 2011} % Year thesis submitted
 \def\thesisnumber{70}  % Only number no year
-\def\thesisauthor{Anders Hørsted} % Thesis author
+\def\thesisauthor{Anders Hørsted - s082382} % Thesis author
 \def\thesistitle{Detection of human alertness using supervised learning} % Title of thesis
 \def\thesiskeywords{mathematical modelling}
 \def\thesisISBN{} %OBSOBS provide ISBN number for industrial phd students ONLY
@@ -167,7 +174,6 @@
 \markboth{}{}
 \input{acknowledge}
 \markboth{}{}
-
 %%%%%%%PREFACE CHAPTERS INCLUDE%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -184,28 +190,23 @@
 % Chapter 1, 2, ...
 %%%%%%%MAIN CHAPTERS INCLUDE%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%\part{Introduction and data exploration}
 \include{chapters/introduction}
 \include{chapters/the-competition}
 \include{chapters/data-exploration}
-%\part{Modelling}
 \include{chapters/theory-of-classification}
 \include{chapters/recreating-winning-approach}
 \include{chapters/improving-winning-approach}
 \include{chapters/other-classification-methods}
-%\part{Workflow and discussion}
-%\include{chapters/describing-the-workflow}
+\include{chapters/result-summary}
+\include{chapters/toolset}
 \include{chapters/discussion}
 \include{chapters/conclusion}
-%\appendix
 
 %%%%%%%APPENDIX CHAPTERS INCLUDE%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcounter{alphasect}
 \addtocounter{alphasect}{1}
 \renewcommand{\thechapter}{\Alph{alphasect}}
-\include{chapters/toolset}
-\addtocounter{alphasect}{1}
 \include{chapters/appendices}
 % Appendix A, B, ...
 %\include{Appendix1}

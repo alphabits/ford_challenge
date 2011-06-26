@@ -1,19 +1,19 @@
 \chapter{Introduction}
-Igennem de sidste 30 år er computerens ydeevne vokset markant. Den forbedrede ydeevne har givet mulighed for at udføre statistisk dataanalyse, i et omfang der ikke tidligere har været muligt. En af de ting der er blevet mulighed for, er at programmere såkaldte "classifiers". Et godt eksempel på en classifier, er de programmer bankerne bruger til at opdage evt. snyd med kreditkort. Baseret på alle tidligere korttransaktioner, og viden om hvilke der var "falske"\ transaktioner, kan bankerne programmere en classifier, der med høj præcision kan forudsige om en ny transaktion er snyd eller ej. \\
-Denne opgave tager udgangspunkt i en konkurrence på hjemmesiden kaggle.com. Konkurrencen er udbudt af Ford Motors og handler om at udvikle en classifier, der kan forudsige om en bilist er ved at blive ukoncentreret, mens han/hun kører bil. Til at udvikle denne classifier har Ford foretaget en række målinger på bilister, mens de kørte bil, og til hver måling er det blevet noteret om bilisten var opmærksom eller ej. Med udgangspunkt i disse målinger udarbejdes -- ved brug af de mest gængse metoder -- en række classifiers, og deres evne til at klassificere ny data sammenlignes.
 
-\section{The competition} % (fold)
-\label{sec:The competition}
+This decade could very well be the most exciting decade for anyone interested in data analysis. The ease with which data can be collected, combined with the very cheap storage prices makes it likely that before the end of this decade, most details about a person's life will in some way be collected digitally. The increasing amount of data calls for a continous refinement and advancement of both the computational and statistical techniques used to analyze the data. As it is exactly this borderland between statistics and computer science, that is the focus area of machine learning, it seems probable that much of the advancement in the near future will happen within the machine learning community. This of cause, makes machine learning an interesting study area and it wasn't a difficult decision to choose machine learning as the general topic for this project. \par
 
-% section The competition (end)
+Although the general topic was chosen, the question still remained about what should be the specific subject of the project. The idea soon emerged that the project could be based on one of the many online machine learning competitions, that have appeared within the last couple of years. The idea behind these online competitions, is that some private or public organization, releases a dataset along with a specific task to be solved using the dataset. One such competition, called The Ford Challenge, was announced in the beginning of January and as it was an exciting competion it was chosen as the subject for this project. \par
 
-\subsection{Problemformulering}
-I denne opgave vil jeg...
+In The Ford Challenge a model must be build, that can predict when a driver is about to become inattentive. By using data collected from various drivers it should be possible to let a computer detect patterns that are related to an inattentive driver. The task is indeed exciting but as the competition already ended in the beginning of March, active participation in the competition couldn't be the main focus of this project. Instead it was chosen to try and recreate the model of the Ford Challenge winner. When a performance similar to that of the winner was achieved, various techniques to improve on the winning model could be tried. Before any model could be build though, some thorough data exploration had to be done, as almost no information about the dataset was revealed by Ford. \par
+
+Apart from the goals specifically related to The Ford Competition, it was also strongly desired to set up a working environment for data analysis, based solely on open source tools. When these tools were found some time should be used to set up a flexible and simple working environment. \par
+
+The problem statement of this project is:
 \begin{itemize}
-    \item ... bruge de mest gængse klassifikationsmodeller (nearest neighbour, logistic regression, neural networks og SVM) til at lave en classifier der (forhåbentlig) kan forudsige om en bilist er ved at falde i søvn.
-    \item ... undersøge hvor stor indflydelse den indledende databehandling (feature selection og outlier removal) har på det endelige resultat.
-    \item ... undersøge om classifieren kan forbedres ved at implementere en Hidden Markov Model, der tager hensyn til det temporale aspekt af data.
-    \item ... implementere en ensemble classifier, der kombinerer resultatet af flere classifiers i én classifier.
+    \item Try to decide the datatype for all features in the dataset, by doing a thorough data exploration
+    \item Try to recreate the winning model of The Ford Competition.
+    \item Improve on the winning model by using other models than the winner.
+    \item Set up a working environment for data analysis, and reflect on possible ways to ease future data analysis projects.
 \end{itemize}
 
-\mytodo{Remeber to define the different datasets}
+Much time have went into solving the above problem statement, but much time was also spent working on this report. The report starts out by presenting the Ford Challenge, along with descriptions of some other machine learning competitions. After introducing the Ford Challenge, the dataset of the Ford Challenge is introduced in details. Then the data is thoroughly explored and some time is spent trying to decide the datatype of the various features. After the data exploration, a chapter about the theory of binary classification follows. The theory is kept at a basic level and should only be used as a quick summary. After the theory comes the modelling chapters. Results obtained from the various experiments are presented and a basic confidence interval is calculated. All results are summarized in the last chapter of the modelling section. Following the modelling section is a chapter about project management and the software used for this project. Normally this chapter would have been an appendix, but since setting up a working environment is part of the problem statement a chapter is devoted to this subject. Finally the report closes with a discussion, conclusion and appendices.

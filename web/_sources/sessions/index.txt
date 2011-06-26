@@ -27,4 +27,6 @@ Sessions
     21-report-structure-and-writing/index
     22-create-transparent-feature-plots/index
     23-meeting-with-morten/index
+    24-writing-helper-scripts/index
+    25-neural-network/index
     next-meeting/index

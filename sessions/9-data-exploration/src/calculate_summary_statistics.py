@@ -1,5 +1,3 @@
-# sessions/9-data-exploration/src/calculate_summary_statistics.py
-
 from json import dump
 
 from src.data_interface import trd, L

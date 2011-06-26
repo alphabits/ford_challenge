@@ -50,7 +50,7 @@ def get_title(model, epoch, num_hidden):
 
 
 def echo_result(model, epoch, num_hidden):
-    data = get_data(model_epoch, num_hidden)
+    data = get_data(model, epoch, num_hidden)
     auc = np.array(data['auc'])
     low, high, _ = ci(auc)
     title = get_title(model, epoch, num_hidden)
@@ -67,11 +67,41 @@ def get_data(model, epoch, num_hidden):
     return data
 
 
-def echo_all():
+def walk(f):
     for model in ['inference-features', 'forward-selection']:
         for epoch, num_hidden in product([8,20], [3,5]):
-            echo_result(model, epoch, num_hidden)
+            f(model, epoch, num_hidden)
+
+def echo_all():
+    walk(echo_result)
+
+def echo_summary_table_row(model, epoch, hidden):
+    translate = {
+        'inference-features': 'W',
+        'forward-selection': 'F'
+    }
+    data = get_data(model, epoch, hidden)
+    auc = np.array(data['auc'])
+    low, high, _ = ci(auc)
+    print r'& %s %s hidden %s iter & \T\B %.04f & %.06f & [%.04f,%.04f]\\\cline{2-5}' % (translate[model], hidden, epoch, auc.mean(), auc.std(ddof=1), low, high)
+
+def echo_logreg_rows():
+    datafiles = [
+        ('W', 'sessions/17-recreating-winning-entry/data/inference-features-for-report.json'),
+        ('F top 3', 'sessions/18-forward-selection/data/top-3-features-for-report.json'),
+        ('F all feat', 'sessions/18-forward-selection/data/all-features-for-report.json')
+    ]
+    for title, path in datafiles:
+        data = json.load(open(path))
+        auc = np.array(data['auc'])
+        low, high, _ = ci(auc)
+        print r'& %s & \T\B %.04f & %.06f & [%.04f,%.04f]\\\cline{2-5}' % (title, auc.mean(), auc.std(ddof=1), low, high)
+
+
+def echo_summary_table_rows():
+    walk(echo_summary_table_row)
+    echo_logreg_rows()
 
 
 if __name__ == '__main__':
-    echo_all()
+    echo_logreg_rows()

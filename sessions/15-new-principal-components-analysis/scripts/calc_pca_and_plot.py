@@ -36,7 +36,8 @@ ax = plt.gca()
 plt.title('Cumulative percentage of total variation explained by principal components')
 ax.set_xlabel('Principal component')
 ax.set_ylabel('% of total variation')
-plt.savefig('{0}/plots/pca-variation-explained.pdf'.format(path), papertype='a4', format='pdf')
+plt.savefig('{0}/plots/pca-variation-explained.pdf'.format(path), 
+        papertype='a4', format='pdf')
 plt.cla()
 
 W = pca.components_[:,0:3]
@@ -52,7 +53,8 @@ plt.title('Scatter plot of 1. and 2. pricipal component')
 ax = plt.gca()
 ax.set_xlabel('1. Pricipal component')
 ax.set_ylabel('2. Principal component')
-plt.savefig('{0}/plots/scatter-principal-components-{1}-points.pdf'.format(path, num_points), papertype='a4', format='pdf')
+plt.savefig('{0}/plots/scatter-principal-components-{1}-points.pdf'.format(
+        path, num_points), papertype='a4', format='pdf')
 plt.cla()
 
 for i in range(2):
@@ -67,8 +69,8 @@ for i in range(2):
     ax.set_xlabel('1. Comp')
     ax.set_ylabel('2. Comp')
     ax.set_zlabel('3. Comp')
-    fig.savefig('{0}/plots/scatter-principal-components-3d-{1}-{2}points.pdf'.format(path,i, num_points), papertype='a4', format='pdf')
-    #fig.savefig('{0}/plots/scatter-principal-components-3d-rotated-{1}.pdf'.format(path, i*90), papertype='a4', format='pdf')
+    fig.savefig('{0}/plots/scatter-principal-components-3d-{1}-{2}points.pdf'.format(
+            path,i, num_points), papertype='a4', format='pdf')
     pylab.close()
 
 with open('{0}/data/calculated_pca.json'.format(path), 'w') as f:
